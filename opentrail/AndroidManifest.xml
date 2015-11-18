@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="freemap.opentrail"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="15" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+     <uses-permission android:name="android.permission.INTERNET" />
+      <uses-permission android:name="android.permission.VIBRATE" />
+     
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:launchMode="singleTop"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="freemap.opentrail.OpenTrail"
+            android:label="@string/app_name" 
+            android:theme="@style/AppBaseTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="freemap.opentrail.FileChooser"
+        		android:label="Select map file">
+        </activity>
+		<activity android:name="freemap.opentrail.InputAnnotationActivity"
+				android:label="Add an annotation">
+		</activity>
+		<activity android:name="freemap.opentrail.OpenTrailPreferences"
+				android:label="OpenTrail Preferences" >
+		</activity>
+		<activity android:name="freemap.opentrail.POIListActivity"
+				android:label="POIs">
+		</activity>
+		<activity android:name="freemap.opentrail.POITypesListActivity"
+				android:label="POI Types">
+		</activity>
+		<activity android:name="freemap.opentrail.WalkrouteListActivity"
+				android:label="Nearby walk routes">
+		</activity>
+		<activity android:name="freemap.opentrail.RecordedWalkroutesListActivity"
+				android:label="Recorded walk routes">
+		</activity>
+		<activity android:name="freemap.opentrail.WalkrouteDetailsActivity"
+				android:label="Enter walk route details">
+		</activity>
+		<service android:name="GPSService"></service>
+    </application>
+
+</manifest>

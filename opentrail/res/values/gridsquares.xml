@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<array name="gridsquares">
+<item>England</item>
+<item>Wales</item>
+<item>West Cornwall (SW)</item>
+<item>South Devon and East Cornwall (SX)</item>
+<item>South Dorset (SY)</item>
+<item>Coastal South Hants and IoW (SZ)</item>
+<item>Coastal Sussex (TV)</item>
+<item>North Devon and Somerset (SS)</item>
+<item>Bristol, Bath and Somerset (ST)</item>
+<item>Central Southern England (SU)</item>
+<item>London and South East England (TQ)</item>
+<item>East Kent (TR)</item>
+<item>The Marches (SO)</item>
+<item>The Midlands (SP)</item>
+<item>Cambridge and surroundings (TL)</item>
+<item>Suffolk (TM)</item>
+<item>Manchester, Liverpool and Cheshire (SJ)</item>
+<item>Derbyshire and the Peak District (SK)</item>
+<item>The Wash (TF)</item>
+<item>North-east Norfolk (TG)</item>
+<item>Lancashire (SD)</item>
+<item>Yorkshire (SE)</item>
+<item>Eastern Yorkshire (TA)</item>
+<item>West Cumbria (NX)</item>
+<item>Cumbria and the North Pennines (NY)</item>
+<item>Newcastle and surroundings (NZ)</item>
+</array>
+</resources>

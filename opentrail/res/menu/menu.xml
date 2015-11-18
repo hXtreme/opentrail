@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:id="@+id/selectMapMenuItem" android:title="Select map source"/>
+<item android:id="@+id/myLocationMenuItem" android:title="My Location" android:showAsAction="ifRoom"/>
+<item android:id="@+id/inputAnnotationMenuItem" android:title="Add annotation" />
+<item android:id="@+id/settingsMenuItem" android:title="Settings" />
+<item android:id="@+id/uploadAnnotationsMenuItem" android:title="Upload saved annotations" />
+<item android:id="@+id/downloadLocalMapMenuItem" android:title="Download local map" />
+<item android:id="@+id/downloadMapMenuItem" android:title="Download any map" />
+<item android:id="@+id/poisMenuItem" android:title="Download POIs" />
+<item android:id="@+id/findPoisMenuItem" android:title="Find nearby POIs" />
+<item android:id="@+id/walkroutesMenuItem" android:title="Download walk routes" />
+<item android:id="@+id/findWalkroutesMenuItem" android:title="Find walk routes" />
+<item android:id="@+id/recordWalkrouteMenuItem" android:title="Record walk route" android:showAsAction="ifRoom"/>
+<item android:id="@+id/uploadWalkrouteMenuItem" android:title="Upload recorded walk route" />
+<item android:id="@+id/aboutMenuItem" android:title="About OpenTrail" />
+</menu>

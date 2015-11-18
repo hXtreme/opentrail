@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+	<string name="hello">Hello world</string>
+    <string name="map_source_option_view_name">Select map source</string>
+    <string name="input_annotation_name">Add note..</string>
+    <string name="app_name">OpenTrail</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="gps_waiting">Waiting for GPS location..</string>
+    <string name="walkroute_annotation">Walkroute annotation?</string>
+</resources>
+
