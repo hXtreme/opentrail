@@ -1,0 +1,29 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "freemap.opentrail03"
+        minSdkVersion 15
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile files ('libs/mapsforge-core-dev-SNAPSHOT.jar')
+    compile files ('libs/mapsforge-map-android-dev-SNAPSHOT.jar')
+    compile files ('libs/mapsforge-map-dev-SNAPSHOT.jar')
+    compile files ('libs/mapsforge-map-reader-dev-SNAPSHOT.jar')
+    compile files ('libs/mapsforgeplus-0.1-SNAPSHOT.jar')
+   // compile 'com.android.support:appcompat-v7:22.0.0'
+}
