@@ -1,6 +1,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" android:showAsAction="never" />
+
+        <item android:id="@+id/selectMapMenuItem" android:title="@string/selectmapsource"/>
+        <item android:id="@+id/myLocationMenuItem" android:title="@string/mylocation" android:showAsAction="ifRoom"/>
+        <item android:id="@+id/inputAnnotationMenuItem" android:title="@string/addannotation" />
+        <item android:id="@+id/settingsMenuItem" android:title="@string/settings" />
+        <item android:id="@+id/uploadAnnotationsMenuItem" android:title="@string/uploadsavedannotations" />
+        <item android:id="@+id/poisMenuItem" android:title="@string/downloadpois" />
+        <item android:id="@+id/findPoisMenuItem" android:title="@string/findnearbypois" />
+        <item android:id="@+id/walkroutesMenuItem" android:title="@string/downloadwalkroutes" />
+        <item android:id="@+id/findWalkroutesMenuItem" android:title="@string/findwalkroutes" />
+        <item android:id="@+id/recordWalkrouteMenuItem" android:title="@string/recordwalkroute" android:showAsAction="ifRoom"/>
+        <item android:id="@+id/uploadWalkrouteMenuItem" android:title="@string/uploadrecordedwalkroute" />
+        <item android:id="@+id/aboutMenuItem" android:title="@string/about" />
 </menu>

@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">opentrail03</string>
-    <string name="action_settings">Settings</string>
+    <string name="input_annotation_name">Add note..</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="gps_waiting">Waiting for GPS location..</string>
+    <string name="walkroute_annotation">Walkroute annotation?</string>
+    <string name="selectmapsource">Select map source"</string>
+    <string name="mylocation">My Location"</string>
+    <string name="addannotation">Add annotation</string>
+    <string name="settings">Settings</string>
+    <string name="uploadsavedannotations">Upload saved annotations</string>
+    <string name="downloadpois">Download POIs</string>
+    <string name="findnearbypois">Find nearby POIs</string>
+    <string name="downloadwalkroutes">Download walk routes</string>
+    <string name="findwalkroutes">Find walk routes</string>
+    <string name="recordwalkroute">Record walk route</string>
+    <string name="uploadrecordedwalkroute">Upload recorded walk route</string>
+    <string name="about">About OpenTrail</string>
 </resources>

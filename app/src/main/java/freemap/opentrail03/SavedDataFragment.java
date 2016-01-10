@@ -21,6 +21,7 @@ import freemap.datasource.FreemapDataset;
 
 public class SavedDataFragment extends Fragment
 {
+    /*
     private DataCallbackTask<?,?> dataTask;
     private HTTPCommunicationTask dfTask;
     private FreemapDataset pois;
@@ -119,4 +120,5 @@ public class SavedDataFragment extends Fragment
         pois = Shared.pois;
         walkroutes = Shared.walkroutes;
     }
+    */
 }
