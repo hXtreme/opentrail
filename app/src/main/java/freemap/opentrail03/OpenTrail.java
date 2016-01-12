@@ -66,6 +66,12 @@ public class OpenTrail extends Activity implements  ConditionalLoader.Callback,
 
         ds.setDownloadCache(downloadCache);
 
+        mv.setCenter(new LatLong(51.05, -0.72));
+        mv.setZoomLevel((byte) 14);
+
+        createTileRendererLayer();
+        locationDisplayer = new LocationDisplayer(this, mv, getResources().getDrawable(R.drawable.person));
+
         // http://www.androiddesignpatterns.com/2013/04/retaining-objects-across-config-changes.html
         /*
         FragmentManager fm = getFragmentManager();
@@ -84,11 +90,7 @@ public class OpenTrail extends Activity implements  ConditionalLoader.Callback,
         super.onStart();
         System.out.println("onStart()");
 
-        mv.setCenter(new LatLong(51.05, -0.72));
-        mv.setZoomLevel((byte) 14);
 
-        createTileRendererLayer();
-        locationDisplayer = new LocationDisplayer(this, mv, getResources().getDrawable(R.drawable.person));
 
         File styleFile = new File(dir + "freemap_v4.xml");
 
@@ -102,6 +104,7 @@ public class OpenTrail extends Activity implements  ConditionalLoader.Callback,
 
     public void onStop() {
         super.onStop();
+        mv.getLayerManager().getLayers().remove(tileRendererLayer);
         if(locationListener!=null) {
             locationListener.stopUpdates();
         }
@@ -141,6 +144,7 @@ public class OpenTrail extends Activity implements  ConditionalLoader.Callback,
 
             tileRendererLayer.setXmlRenderTheme(theme);
             mv.addLayer(tileRendererLayer);
+
 
             gotStyleFile = true;
 
