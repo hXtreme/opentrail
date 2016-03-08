@@ -32,18 +32,24 @@ public class LocationDisplayer implements MapLocationProcessor.LocationDisplayer
 
 
 
-    public void setLocationMarker(Point p) {
-
-        myLocOverlayItem = MapsforgeUtil.makeMarker(locationIcon, new LatLong(p.y, p.x));
-
+    public void addLocationMarker(Point p) {
+         myLocOverlayItem = MapsforgeUtil.makeMarker(locationIcon, new LatLong(p.y, p.x));
+         showLocationMarker();
     }
 
-    public void addLocationMarker() {
+    public void showLocationMarker() {
         if(mv!=null && myLocOverlayItem!=null && !markerShowing)
         {
             mv.addLayer(myLocOverlayItem);
            // mv.getLayerManager().getLayers().add(myLocOverlayItem);
             markerShowing=true;
+        }
+    }
+
+    public void hideLocationMarker() {
+        if(mv!=null && myLocOverlayItem!=null && markerShowing) {
+            mv.getLayerManager().getLayers().remove(myLocOverlayItem);
+            markerShowing=false;
         }
     }
 
@@ -53,11 +59,8 @@ public class LocationDisplayer implements MapLocationProcessor.LocationDisplayer
     }
 
     public void removeLocationMarker() {
-        if(mv!=null && myLocOverlayItem!=null && markerShowing)
-        {
-            mv.getLayerManager().getLayers().remove(myLocOverlayItem);
-            markerShowing=false;
-        }
+        hideLocationMarker();
+        myLocOverlayItem = null;
     }
 
     public boolean isLocationMarker() {

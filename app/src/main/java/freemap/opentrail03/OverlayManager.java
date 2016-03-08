@@ -1,3 +1,4 @@
+
 package freemap.opentrail03;
 
 import org.mapsforge.map.android.view.MapView;
@@ -25,12 +26,16 @@ import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-//import org.mapsforge.map.android.layer.MyLocationOverlay;
-import org.mapsforge.map.model.MapViewPosition;
+;
 
 
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Set;
+
+// 240116 is walkrouteShowing necessary? Removed it
+// is it necessary to test existence of tile renderer layer before adding things?
+// can we not just assume it will be there?
 
 public class OverlayManager extends LocationDisplayer implements
         freemap.datasource.FreemapDataset.AnnotationVisitor,
@@ -50,7 +55,9 @@ public class OverlayManager extends LocationDisplayer implements
 
 
     boolean includeAnnotations;
-    boolean poiShowing, walkrouteShowing, annotationsShowing, renderLayerAdded;
+    boolean poiShowing,  annotationsShowing;
+    // boolean renderLayerAdded; // can replace with tileLayer = null?
+    // boolean walkrouteShowing; // can replace with renderedWalkroute = null?
 
     public OverlayManager(Context ctx, MapView mapView, Drawable locationIcon,  Drawable markerIcon, Drawable annotationIcon,
                           Projection proj) {
@@ -68,19 +75,20 @@ public class OverlayManager extends LocationDisplayer implements
     }
 
     public void addTileRendererLayer(TileRendererLayer layer) {
-        if(!renderLayerAdded)
+        if(tileLayer==null) // !renderLayerAdded)
         {
             tileLayer=layer;
-            mv.getLayerManager().getLayers().add(layer);
-            renderLayerAdded = true;
+            mv.addLayer(layer);
+      //      renderLayerAdded = true;
         }
     }
 
     public void removeTileRendererLayer() {
-        if(renderLayerAdded)
+        if(tileLayer!=null)//renderLayerAdded)
         {
             mv.getLayerManager().getLayers().remove(tileLayer);
-            renderLayerAdded=false;
+            tileLayer = null;
+           // renderLayerAdded=false;
         }
     }
 
@@ -89,11 +97,11 @@ public class OverlayManager extends LocationDisplayer implements
     // as an overlay if the tile renderer layer has been added first.
     // "setting" also removes any existing object from the map
 
-    public void setWalkroute(Walkroute walkroute) {
-        setWalkroute(walkroute,true);
+    public void addWalkroute(Walkroute walkroute) {
+        addWalkroute(walkroute,true);
     }
 
-    public void setWalkroute(Walkroute walkroute, boolean doCentreMap) {
+    public void addWalkroute(Walkroute walkroute, boolean doCentreMap) {
         Log.d("newmapsforge", "setting walkroute to: " + walkroute.getId());
         // remove any existing walk route
         removeWalkroute(true);
@@ -101,7 +109,7 @@ public class OverlayManager extends LocationDisplayer implements
         LatLong gp = new LatLong(walkroute.getStart().y,walkroute.getStart().x);
 
         if(doCentreMap)
-            mv.getModel().mapViewPosition.setCenter(gp);
+            mv.setCenter(gp);
         ArrayList<TrackPoint> points = walkroute.getPoints();
         LatLong p[] = new LatLong[points.size()];
         for(int i=0; i<points.size(); i++)
@@ -124,13 +132,14 @@ public class OverlayManager extends LocationDisplayer implements
 
         // Only add the walk route if the tile render layer has been added already
 
-        if(renderLayerAdded)
-            addWalkroute();
+       // if(renderLayerAdded) // strictly necessary? wont render layer always be there?
+        if(tileLayer!=null)
+            showWalkroute();
     }
 
-    public void addWalkroute() {
+    public void showWalkroute() {
         // only add the walkroute as a layer if not added already
-        if(!walkrouteShowing && renderedWalkroute!=null && walkrouteStages!=null && renderedWalkroute.getLatLongs().size()>0)
+        if(renderedWalkroute!=null && walkrouteStages!=null && renderedWalkroute.getLatLongs().size()>0 && tileLayer!=null)
         {
             Log.d("newmapsforge", "addWalkroute(): adding walk route");
             mv.getLayerManager().getLayers().add(renderedWalkroute);
@@ -138,13 +147,14 @@ public class OverlayManager extends LocationDisplayer implements
             for(int i=0; i<walkrouteStages.size(); i++)
                 mv.getLayerManager().getLayers().add(walkrouteStages.get(i));
 
-            walkrouteShowing=true;
+          //  walkrouteShowing=true;
         }
     }
 
     public void removeWalkroute(boolean removeData) {
         Log.d("newmapsforge", "removeWalkroute(): removeData=" + removeData);
-        if(walkrouteShowing)
+       // if(walkrouteShowing)
+        if(renderedWalkroute != null)
         {
             Log.d("newmapsforge", "removeWalkroute(): removing rendered walkroute");
 
@@ -152,7 +162,7 @@ public class OverlayManager extends LocationDisplayer implements
                 mv.getLayerManager().getLayers().remove(walkrouteStages.get(i));
 
             mv.getLayerManager().getLayers().remove(renderedWalkroute);
-            walkrouteShowing = false;
+         //   walkrouteShowing = false;
 
         }
 
@@ -165,7 +175,7 @@ public class OverlayManager extends LocationDisplayer implements
     }
 
 
-    public void setPOI(POI poi) {
+    public void addPOI(POI poi) {
         if(lastAddedPOI!=null)
             removePOI();
 
@@ -174,7 +184,7 @@ public class OverlayManager extends LocationDisplayer implements
         LatLong gp = new LatLong(unproj.y,unproj.x);
 
 
-        mv.getModel().mapViewPosition.setCenter(gp);
+        mv.setCenter(gp);
 
         String name=poi.getValue("name");
         name=(name==null)? "unnamed":name;
@@ -182,16 +192,17 @@ public class OverlayManager extends LocationDisplayer implements
 
 
         lastAddedPOI = item;
-        if(renderLayerAdded)
-            addPOI();
+       // if(renderLayerAdded) again is this necessary?
+        if(tileLayer!=null)
+            showPOI();
     }
 
     // to be called in onStart() after adding the TileRendererLayer
     public void addAllOverlays() {
-        addLocationMarker();
-        addPOI();
-        addAnnotations();
-        addWalkroute();
+        showLocationMarker();
+        showPOI();
+        showAnnotations();
+        showWalkroute();
     }
 
     // called in onStop()
@@ -199,20 +210,24 @@ public class OverlayManager extends LocationDisplayer implements
         removeWalkroute(removeData);
         removeAnnotations();
         removePOI();
-        removeLocationMarker();
-        removeTileRendererLayer();
+        hideLocationMarker();
     }
 
+    /*
     public void setLocationMarker(Point p) {
         super.setLocationMarker(p);
-        if(renderLayerAdded)
-            super.addLocationMarker();
-    }
+      //  if(renderLayerAdded) again necessary?
 
-    public void addPOI() {
-        if(!poiShowing && lastAddedPOI!=null)
+        // 250116 dont like this its inconsistent
+        //if(tileLayer!=null) super.addLocationMarker();
+
+    }
+    */
+
+    public void showPOI() {
+        if(!poiShowing && lastAddedPOI!=null && tileLayer!=null)
         {
-            mv.getLayerManager().getLayers().add(lastAddedPOI);
+            mv.addLayer(lastAddedPOI);
             poiShowing = true;
         }
     }
@@ -234,32 +249,38 @@ public class OverlayManager extends LocationDisplayer implements
         }
     }
 
-    public void addAnnotations() {
+    public void showAnnotations() {
 
-        if(!annotationsShowing && indexedAnnotations!=null)
+        Log.d("OpenTrail", "showAnnotations(): annotationsShowing=" + annotationsShowing +
+            " indexedAnnotations=" + (indexedAnnotations!=null) + " tileLayer=" + tileLayer);
+        if(!annotationsShowing && indexedAnnotations!=null && tileLayer!=null)
         {
-            for(HashMap.Entry<Integer,Marker> entry: indexedAnnotations.entrySet())
-                mv.getLayerManager().getLayers().add(entry.getValue());
-            annotationsShowing = true;
+            Set<HashMap.Entry<Integer,Marker>> markersEntrySet = indexedAnnotations.entrySet();
+            for(HashMap.Entry<Integer,Marker> entry: markersEntrySet) {
 
+                Log.d("OpenTrail", "ADDING ANNOTATIONS (showAnnotations() loop - actually showing them)");
+                mv.getLayerManager().getLayers().add(entry.getValue());
+            }
+            annotationsShowing = markersEntrySet.size()>0;
         }
     }
 
 
+    // 290116 projection stuff - messy
+    public void addAnnotation(Annotation ann, boolean unproject) {
+        Point unproj = unproject ? proj.unproject(ann.getPoint()) : ann.getPoint();
+        Marker item = MapsforgeUtil.makeTappableMarker(ctx, annotationIcon, new LatLong(unproj.y,unproj.x), ann.getDescription());
 
+        indexedAnnotations.put(ann.getId(), item);
+    }
 
     public void visit(Annotation ann) {
 
         if(indexedAnnotations.get(ann.getId()) == null)
         {
-            Point unproj = proj.unproject(ann.getPoint());
-            Marker item = MapsforgeUtil.makeTappableMarker(ctx, annotationIcon, new LatLong(unproj.y,unproj.x), ann.getDescription());
-
-            indexedAnnotations.put(ann.getId(), item);
+            Log.d("OpenTrail", "OverlayManager: adding annotation (visit method) - not showing them");
+            addAnnotation(ann, true);
         }
-
-        if(renderLayerAdded)
-            addAnnotations();
     }
 
     public void redrawLocation() {

@@ -12,5 +12,10 @@ public class Shared {
 
     public static FreemapDataset pois;
     public static ArrayList<Walkroute> walkroutes;
+    public static SavedData savedData;
+
+    public static void initSavedDataInstance() {
+        savedData = SavedData.getInstance();
+    }
 
 }

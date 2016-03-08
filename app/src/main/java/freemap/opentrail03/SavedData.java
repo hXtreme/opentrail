@@ -6,6 +6,7 @@ package freemap.opentrail03;
 
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,17 +17,28 @@ import freemap.andromaps.DataCallbackTask;
 import freemap.andromaps.HTTPCommunicationTask;
 import freemap.data.Walkroute;
 import freemap.datasource.FreemapDataset;
+import android.app.Activity;
 
 public class SavedData
 {
-    /*
+
     private DataCallbackTask<?,?> dataTask;
     private HTTPCommunicationTask dfTask;
-    private FreemapDataset pois;
-    private ArrayList<Walkroute> walkroutes;
+  //  private FreemapDataset pois;
+   // private ArrayList<Walkroute> walkroutes;
 
+    private static SavedData instance;
 
-    public void onActivityCreated(OpenTrail activity)
+    private SavedData() { }
+
+    public static SavedData getInstance()
+    {
+        if(instance==null)
+            instance = new SavedData();
+        return instance;
+    }
+
+    public void reconnect(Context ctx, HTTPCommunicationTask.Callback callback)
     {
 
 
@@ -38,18 +50,21 @@ public class SavedData
         {
             Log.d("OpenTrail", "dataTask not null so reconnecting");
 
-            dataTask.reconnect(activity, activity);
+            dataTask.reconnect(ctx, callback);
         }
         if(dfTask!=null)
         {
             Log.d("OpenTrail", "dfTask not null so reconnecting");
 
-            dfTask.reconnect(activity,  activity);
+            dfTask.reconnect(ctx, callback);
         }
+        /* 250116 why is this necessary?
         if(Shared.pois==null && pois!=null)
+
             Shared.pois = pois;
         if(Shared.walkroutes==null && walkroutes!=null)
             Shared.walkroutes = walkroutes;
+            */
     }
 
     public void setHTTPCommunicationTask (HTTPCommunicationTask dfTask)
@@ -85,7 +100,7 @@ public class SavedData
         return dataTask;
     }
 
-    public void onDetach()
+    public void disconnect()
     {
 
 
@@ -109,8 +124,8 @@ public class SavedData
         else
             dfTask = null;
 
-        pois = Shared.pois;
-        walkroutes = Shared.walkroutes;
+ //       pois = Shared.pois;
+  //      walkroutes = Shared.walkroutes;
     }
-    */
+
 }
