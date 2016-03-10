@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import freemap.data.Walkroute;
 
+import freemap.data.WalkrouteSummary;
 import freemap.datasource.WalkroutesHandler;
 import freemap.datasource.WebXMLSource;
 
@@ -42,7 +43,7 @@ public class DownloadWalkroutesTask extends DataCallbackTask<Void,Void> {
                     + location.longitude;
             Log.d("OpenTrail","URL=" + url);
             WebXMLSource xmlsource = new WebXMLSource(url,new WalkroutesHandler());
-            setData((ArrayList<Walkroute>) xmlsource.getData());
+            setData((ArrayList<WalkrouteSummary>) xmlsource.getData());
 
 
             return "Successfully downloaded walk routes";
@@ -61,6 +62,6 @@ public class DownloadWalkroutesTask extends DataCallbackTask<Void,Void> {
     public void receive(Object data)
     {
         if(receiver!=null)
-            ((DataReceiver)receiver).receiveWalkroutes((ArrayList<Walkroute>)data);
+            ((DataReceiver)receiver).receiveWalkroutes((ArrayList<WalkrouteSummary>)data);
     }
 }

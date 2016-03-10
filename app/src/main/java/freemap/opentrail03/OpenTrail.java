@@ -32,6 +32,7 @@ import freemap.data.Annotation;
 import freemap.data.POI;
 import freemap.data.Point;
 import freemap.data.Walkroute;
+import freemap.data.WalkrouteSummary;
 import freemap.datasource.CachedTileDeliverer;
 import freemap.datasource.FreemapDataHandler;
 import freemap.datasource.FreemapDataset;
@@ -54,8 +55,7 @@ import java.util.ArrayList;
 // Problems:
 
 
-public class OpenTrail extends Activity implements ConditionalLoader.Callback,
-                                MapLocationProcessor.LocationReceiver {
+public class OpenTrail extends Activity  {
 
     MapView mv;
     TileRendererLayer tileRendererLayer;
@@ -77,6 +77,7 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
     DataReceiver dataReceiver;
     AlertDisplay alertDisplay;
     AlertDisplayManager alertDisplayMgr;
+
 
     boolean recordingWalkroute, waitingForNewPOIData;
     boolean prefGPSTracking, prefAutoDownload, prefAnnotations;
@@ -190,46 +191,34 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
                 if(ds!=null)
                 {
                     Shared.pois = ds;
-
                     alertDisplayMgr.setPOIs(Shared.pois);
-
-                    /* comment this lot out for the moment
-
-                     */
                     waitingForNewPOIData=false;
                     loadAnnotationOverlay();
-
                 }
             }
 
-            public void receiveWalkroutes(ArrayList<Walkroute> walkroutes)
-            {
+            public void receiveWalkroutes(ArrayList<WalkrouteSummary> walkroutes) {
                 Shared.walkroutes = walkroutes;
             }
 
-            public void receiveWalkroute(int idx, Walkroute walkroute)
-            {
+            public void receiveWalkroute(int idx, Walkroute walkroute) {
                 Log.d("OpenTrail", "received walkroute: index " + idx + " ID: " + walkroute.getId());
                 // again this whole walkroute handling stuff is messy and needs to be cleaned up??
-                setWalkroute(idx,walkroute);
+                setWalkroute(walkroute);
 
 
-                try
-                {
+                try {
                     wrCacheMgr.addWalkrouteToCache(walkroute);
                 }
-                catch(IOException e)
-                {
+                catch(IOException e) {
                     DialogUtils.showDialog(OpenTrail.this, "Downloaded walk route, but unable to save to cache: " +
                             e.getMessage());
                 }
             }
         };
 
-        alertDisplay = new AlertDisplay()
-        {
-            public void displayAnnotationInfo(String msg, int type, int alertId)
-            {
+        alertDisplay = new AlertDisplay() {
+            public void displayAnnotationInfo(String msg, int type, int alertId) {
                 DialogUtils.showDialog(OpenTrail.this, msg);
 
                 /*
@@ -275,14 +264,27 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
 
         File styleFile = new File(dir + "freemap_v4.xml");
 
-
-
         ConditionalLoader loader = new ConditionalLoader(this, 0, "http://www.free-map.org.uk/data/android/",
-                styleFile, this);
+                styleFile, new ConditionalLoader.Callback() {
+
+            public void receiveLoadedData(int id, Object data) {
+                switch(id) {
+                    case 0:
+                        loadStyleFile((File) data);
+                        doOverlays();
+
+                        // critical : start GPS only once tile renderer layer setup otherwise
+                        // my location marker might get added before tile renderer layer
+                        if(prefGPSTracking==true) {
+                            startGPS();
+                        }
+                        break;
+                    }
+                }
+            }
+        );
+
         loader.downloadOrLoad();
-
-
-
     }
 
     public void onStop() {
@@ -313,70 +315,7 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
         editor.putInt("zoom", mv.getModel().mapViewPosition.getZoomLevel());
         editor.commit();
         mv.destroyAll();
-
     }
-
-    private void startGPS() {
-        locationListener = new MapLocationProcessorWithListener(this, this, overlayManager);
-        locationListener.startUpdates(0, 0);
-    }
-
-    private void createTileRendererLayer() {
-        tileRendererLayer = new TileRendererLayer(tileCache, ds,
-                mv.getModel().mapViewPosition, false, true,
-                AndroidGraphicFactory.INSTANCE);
-
-    }
-
-    public void receiveLoadedData(int id, Object data) {
-        switch(id) {
-            case 0:
-                loadStyleFile((File) data);
-                doOverlays();
-
-                // critical : start GPS only once tile renderer layer setup otherwise
-                // my location marker might get added before tile renderer layer
-                if(prefGPSTracking==true) {
-                    startGPS();
-                }
-                break;
-        }
-    }
-
-    private void loadStyleFile(File styleFile) {
-
-        try {
-            if (theme == null) {
-                theme = new ExternalRenderTheme(styleFile);
-            }
-
-            Log.d("OpenTrail", "Loading style");
-            tileRendererLayer.setXmlRenderTheme(theme);
-
-            gotStyleFile = true;
-
-        } catch (IOException e) {
-            DialogUtils.showDialog(this, e.toString());
-        }
-    }
-
-    private void doOverlays() {
-        // 250116 Originally we added the tile renderer layer directly to the mapview here
-        // however this call does it anyway
-        overlayManager.addTileRendererLayer(tileRendererLayer);
-        overlayManager.addAllOverlays();
-
-        //mv.addLayer(tileRendererLayer);
-
-        // This is a bit messy, we are forced to give the location marker an arbitrary location
-
-        if(prefGPSTracking==true) {
-            Point markerPos = (location == null ? new Point(-0.72, 51.05) :
-                    new Point(location.longitude, location.latitude));
-            overlayManager.addLocationMarker(markerPos);
-        }
-    }
-
 
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -528,7 +467,7 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
                                 getResources().getDrawable(R.drawable.annotation) , gp, description);
 
                         // 290116 this seems a bad idea as it will add it before the map layer
-                     //   mv.addLayer(item);
+                         //   mv.addLayer(item)
 
                         int idInt = id.equals("0")? -(annCacheMgr.size()+1):Integer.parseInt(id);
 
@@ -581,7 +520,7 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
                         {
                             Walkroute wr= wrCacheMgr.getWalkrouteFromCache(wrId);
                             loadSuccess=true;
-                               setWalkroute(idx,wr);
+                               setWalkroute(wr);
 
                         }
                         catch(Exception e)
@@ -668,6 +607,76 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
         }
     }
 
+    private void startGPS() {
+        locationListener = new MapLocationProcessorWithListener(
+
+                new MapLocationProcessor.LocationReceiver() {
+                    public void noGPS() {
+
+                    }
+
+                    public void receiveLocation(double lon, double lat, boolean refresh) {
+                        location = new LatLong(lat, lon);
+                        Point pt = new Point(lon, lat);
+                        alertDisplayMgr.update(pt);
+
+                        if (prefAutoDownload && poiDeliverer.needNewData(pt)) {
+                            if (poiDeliverer.isCache(pt))
+                                Toast.makeText(OpenTrail.this, "Loading data from cache", Toast.LENGTH_SHORT).show();
+                            else
+                                Toast.makeText(OpenTrail.this, "Loading data from web", Toast.LENGTH_SHORT).show();
+                            startPOIDownload(false, false);
+
+                        }
+                        if (prefGPSTracking) {
+                            gotoMyLocation();
+                        }
+                    }
+                } , this, overlayManager);
+
+        locationListener.startUpdates(0, 0);
+    }
+
+    private void createTileRendererLayer() {
+        tileRendererLayer = new TileRendererLayer(tileCache, ds,
+                mv.getModel().mapViewPosition, false, true,
+                AndroidGraphicFactory.INSTANCE);
+    }
+
+    private void loadStyleFile(File styleFile) {
+
+        try {
+            if (theme == null) {
+                theme = new ExternalRenderTheme(styleFile);
+            }
+
+            Log.d("OpenTrail", "Loading style");
+            tileRendererLayer.setXmlRenderTheme(theme);
+
+            gotStyleFile = true;
+
+        } catch (IOException e) {
+            DialogUtils.showDialog(this, e.toString());
+        }
+    }
+
+    private void doOverlays() {
+        // 250116 Originally we added the tile renderer layer directly to the mapview here
+        // however this call does it anyway
+        overlayManager.addTileRendererLayer(tileRendererLayer);
+        overlayManager.addAllOverlays();
+
+        //mv.addLayer(tileRendererLayer);
+
+        // This is a bit messy, we are forced to give the location marker an arbitrary location
+
+        if(prefGPSTracking==true) {
+            Point markerPos = (location == null ? new Point(-0.72, 51.05) :
+                    new Point(location.longitude, location.latitude));
+            overlayManager.addLocationMarker(markerPos);
+        }
+    }
+
     public void launchInputAnnotationActivity(double lat, double lon)
     {
         if(this.location!=null)
@@ -678,7 +687,7 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
             extras.putDouble("lon", lon);
             extras.putBoolean("recordingWalkroute", recordingWalkroute);
             intent.putExtras(extras);
-            startActivityForResult(intent,1);
+            startActivityForResult(intent, 1);
         }
         else
         {
@@ -803,34 +812,15 @@ public class OpenTrail extends Activity implements ConditionalLoader.Callback,
         }
     }
 
-    private void setWalkroute(int idx, Walkroute walkroute) {
+    private void setWalkroute(Walkroute walkroute) {
      //   walkrouteIdx = idx; // 080316 ??? needed ???
-        Log.d("OpenTrail", "setWalkroute: idx=" + idx + " walkroute: " + walkroute.getId());
-        Shared.walkroutes.set(idx, walkroute);
+        Log.d("OpenTrail", "setWalkroute:  walkroute: " + walkroute.getId());
+
+        // 100316 changed this so that we only store the current walkroute in full
+        // others are stored as WalkrouteSummary objects as we need only store the summary
+        Shared.curWalkroute = walkroute;
         alertDisplayMgr.setWalkroute(walkroute);
         overlayManager.addWalkroute(walkroute);
-    }
-
-    public void noGPS() {
-
-    }
-
-    public void receiveLocation (double lon, double lat, boolean refresh) {
-        location = new LatLong (lat, lon);
-        Point pt = new Point(lon,lat);
-        alertDisplayMgr.update(pt);
-
-        if(prefAutoDownload && poiDeliverer.needNewData(pt)) {
-            if(poiDeliverer.isCache(pt))
-                Toast.makeText(this, "Loading data from cache", Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(this, "Loading data from web", Toast.LENGTH_SHORT).show();
-            startPOIDownload(false, false);
-
-        }
-        if(prefGPSTracking) {
-            gotoMyLocation();
-        }
     }
 
     public void gotoMyLocation() {
