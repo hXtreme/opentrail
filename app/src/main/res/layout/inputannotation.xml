@@ -35,6 +35,7 @@
   	android:id = "@+id/etAnnotation"
   	android:layout_above="@+id/chkbxWalkroute"
   	android:layout_alignParentTop="true"
+
   	 />
 
   	 

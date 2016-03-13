@@ -37,6 +37,10 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 
 
+
+// TODO really need to deal with saving the AsyncTask so it can be restored on orientation change:
+// as a quickfix have locked this activity to portrait.
+
 public class InputAnnotationActivity extends Activity implements InputAnnotationTask.Receiver
 {
 
@@ -64,8 +68,11 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
         Intent intent = this.getIntent();
         lat=intent.getExtras().getDouble("lat",91);
         lon=intent.getExtras().getDouble("lon",181);
-        recordingWalkroute = intent.getExtras().getBoolean("recordingWalkroute", false);
-        ((CheckBox)findViewById(R.id.chkbxWalkroute)).setChecked(recordingWalkroute);
+        recordingWalkroute = intent.getExtras().getBoolean("isRecordingWalkroute", false);
+
+        CheckBox chkbxWalkroute = (CheckBox)findViewById(R.id.chkbxWalkroute);
+        chkbxWalkroute.setChecked(recordingWalkroute);
+        chkbxWalkroute.setVisibility(recordingWalkroute ? View.VISIBLE: View.GONE);
 
         if(lat<180 && lon<90)
         {
@@ -78,7 +85,6 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
                 }
             });
             EditText et = (EditText)findViewById(R.id.etAnnotation);
-
             et.setOnKeyListener (new OnKeyListener() {
 
                 public boolean onKey(View v, int keyCode, KeyEvent event)
@@ -193,14 +199,4 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
         //finish();
     }
 
-    public Object onRetainNonConfigurationInstance()
-    {
-        Object saved = null;
-        if(iaTask!=null && iaTask.getStatus()==AsyncTask.Status.RUNNING)
-        {
-            iaTask.disconnect();
-            saved=iaTask;
-        }
-        return saved;
-    }
 }

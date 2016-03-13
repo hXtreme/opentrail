@@ -22,13 +22,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InputAnnotationActivity" android:label="Input annotation details" />
+        <activity android:name=".InputAnnotationActivity" android:label="Input annotation details"
+            android:screenOrientation="portrait"/>
         <activity android:name=".POIListActivity" android:label="Choose a POI" />
         <activity android:name=".POITypesListActivity" android:label="Choose a POI type" />
         <activity android:name=".RecordedWalkroutesListActivity" android:label="Choose recorded route" />
         <activity android:name=".WalkrouteDetailsActivity" android:label="Enter walk route details" />
         <activity android:name=".WalkrouteListActivity" android:label="Choose walk route" />
         <activity android:name=".OpenTrailPreferences" android:label="@string/settings" />
+        <service android:name="GPSService"></service>
     </application>
 
 </manifest>

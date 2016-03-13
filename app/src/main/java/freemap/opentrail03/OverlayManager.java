@@ -102,14 +102,19 @@ public class OverlayManager extends LocationDisplayer implements
     }
 
     public void addWalkroute(Walkroute walkroute, boolean doCentreMap) {
-        Log.d("newmapsforge", "setting walkroute to: " + walkroute.getId());
+        Log.d("OpenTrail", "addWalkroute(): walkroute details: " + walkroute.getId() +
+                " length=" + walkroute.getPoints().size());
         // remove any existing walk route
         removeWalkroute(true);
         renderedWalkroute = new Polyline (MapsforgeUtil.makePaint(Color.BLUE, 5, Style.STROKE), AndroidGraphicFactory.INSTANCE);
-        LatLong gp = new LatLong(walkroute.getStart().y,walkroute.getStart().x);
 
-        if(doCentreMap)
-            mv.setCenter(gp);
+        if(doCentreMap) {
+            Point p = walkroute.getStart();
+            if(p!=null) {
+                LatLong gp = new LatLong(p.y, p.x);
+                mv.setCenter(gp);
+            }
+        }
         ArrayList<TrackPoint> points = walkroute.getPoints();
         LatLong p[] = new LatLong[points.size()];
         for(int i=0; i<points.size(); i++)
@@ -132,14 +137,30 @@ public class OverlayManager extends LocationDisplayer implements
 
         // Only add the walk route if the tile render layer has been added already
 
+        Log.d("OpenTrail", "NOW SHOWING WALKROUTE: tileLayer=" + (tileLayer!=null));
        // if(renderLayerAdded) // strictly necessary? wont render layer always be there?
-        if(tileLayer!=null)
+        if(tileLayer!=null) {
+            Log.d("OpenTrail", "calling showWalkroute() from addWalkroute()");
             showWalkroute();
+        }
+    }
+
+    // 120316 do this to avoid having to redraw the *whole* walkroute every time we add a point...
+    public void addPointToWalkroute(Point p) {
+        renderedWalkroute.getLatLongs().add(new LatLong(p.y, p.x));
+        renderedWalkroute.requestRedraw();
+    }
+
+    public boolean hasRenderedWalkroute() {
+        return renderedWalkroute != null && renderedWalkroute.getLatLongs().size() > 0;
     }
 
     public void showWalkroute() {
+        if(renderedWalkroute==null) return;
+        Log.d("OpenTrail", "showWalkroute(): " +renderedWalkroute.getLatLongs().size() + " "+
+                walkrouteStages + " " + tileLayer);
         // only add the walkroute as a layer if not added already
-        if(renderedWalkroute!=null && walkrouteStages!=null && renderedWalkroute.getLatLongs().size()>0 && tileLayer!=null)
+        if(hasRenderedWalkroute() && walkrouteStages!=null && tileLayer!=null)
         {
             Log.d("newmapsforge", "addWalkroute(): adding walk route");
             mv.getLayerManager().getLayers().add(renderedWalkroute);
@@ -154,8 +175,7 @@ public class OverlayManager extends LocationDisplayer implements
     public void removeWalkroute(boolean removeData) {
         Log.d("newmapsforge", "removeWalkroute(): removeData=" + removeData);
        // if(walkrouteShowing)
-        if(renderedWalkroute != null)
-        {
+        if(renderedWalkroute != null) {
             Log.d("newmapsforge", "removeWalkroute(): removing rendered walkroute");
 
             for(int i=0; i<walkrouteStages.size(); i++)
@@ -166,11 +186,11 @@ public class OverlayManager extends LocationDisplayer implements
 
         }
 
-        if(removeData)
-        {
+        if(removeData) {
             Log.d("newmapsforge", "removeWalkroute(): removing data");
             while(walkrouteStages.size() > 0)
                 walkrouteStages.remove(0);
+            renderedWalkroute = null;
         }
     }
 
@@ -202,6 +222,7 @@ public class OverlayManager extends LocationDisplayer implements
         showLocationMarker();
         showPOI();
         showAnnotations();
+        Log.d("OpenTrail", "calling showWalkroute() from addAllOverlays()");
         showWalkroute();
     }
 
