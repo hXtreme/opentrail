@@ -133,6 +133,51 @@ public class OpenTrail extends Activity  {
 
         wrCacheMgr = new WalkrouteCacheManager(opentrailDir +"/walkroutes/");
 
+        overlayManager = new OverlayManager (this, mv, getResources().getDrawable(R.mipmap.person),
+                getResources().getDrawable(R.mipmap.marker),
+                getResources().getDrawable(R.mipmap.annotation),
+                proj);
+
+        mapLocationProcessor=new MapLocationProcessorBR(new MapLocationProcessor.LocationReceiver() {
+            public void noGPS() {
+
+            }
+
+            public void receiveLocation(double lon, double lat, boolean refresh) {
+                OpenTrail.this.location = new LatLong(lat, lon);
+                Point pt = new Point(lon, lat);
+
+                try {
+                    Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
+
+                    if(recordingWalkroute!=null && recordingWalkroute.getPoints().size()!=0) {
+
+                        if (overlayManager.hasRenderedWalkroute()) {
+                            overlayManager.addPointToWalkroute(pt);
+                        } else {
+                            overlayManager.addWalkroute(recordingWalkroute, false);
+                        }
+                    }
+                } catch(Exception e) {
+                    DialogUtils.showDialog(OpenTrail.this, "Unable to read GPS track for drawing");
+                }
+
+                alertDisplayMgr.update(pt);
+
+                if (prefAutoDownload && poiDeliverer.needNewData(pt)) {
+                    if (poiDeliverer.isCache(pt))
+                        Toast.makeText(OpenTrail.this, "Loading data from cache", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(OpenTrail.this, "Loading data from web", Toast.LENGTH_SHORT).show();
+                    startPOIDownload(false, false);
+
+                }
+                if (prefGPSTracking) {
+                    gotoMyLocation();
+                }
+            }
+        } ,this,overlayManager);
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if(savedInstanceState!=null) {
             lat = savedInstanceState.getFloat("lat", 51.05f);
@@ -167,7 +212,7 @@ public class OpenTrail extends Activity  {
         }
 
         initPos = new LatLong(lat, lon);
-
+        Log.d("OpenTrail", "initPos=" + initPos);
         mv.setCenter(initPos);
         mv.setZoomLevel((byte) zoom);
 
@@ -181,10 +226,7 @@ public class OpenTrail extends Activity  {
         Shared.savedData.reconnect(this, httpCallback);
 
 
-        overlayManager = new OverlayManager (this, mv, getResources().getDrawable(R.mipmap.person),
-                                                 getResources().getDrawable(R.mipmap.marker),
-                                                 getResources().getDrawable(R.mipmap.annotation),
-                                                 proj);
+
 
         annCacheMgr = new AnnotationCacheManager(opentrailDir +"/annotations");
         Log.d("OpenTrail", "Projection ID: " + proj.getID());
@@ -218,45 +260,7 @@ public class OpenTrail extends Activity  {
         }
 
 
-        mapLocationProcessor=new MapLocationProcessorBR(new MapLocationProcessor.LocationReceiver() {
-            public void noGPS() {
-
-            }
-
-            public void receiveLocation(double lon, double lat, boolean refresh) {
-                location = new LatLong(lat, lon);
-                Point pt = new Point(lon, lat);
-
-                try {
-                    Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
-
-                    if(recordingWalkroute!=null && recordingWalkroute.getPoints().size()!=0) {
-
-                        if (overlayManager.hasRenderedWalkroute()) {
-                            overlayManager.addPointToWalkroute(pt);
-                        } else {
-                            overlayManager.addWalkroute(recordingWalkroute, false);
-                        }
-                    }
-                } catch(Exception e) {
-                    DialogUtils.showDialog(OpenTrail.this, "Unable to read GPS track for drawing");
-                }
-
-                alertDisplayMgr.update(pt);
-
-                if (prefAutoDownload && poiDeliverer.needNewData(pt)) {
-                    if (poiDeliverer.isCache(pt))
-                        Toast.makeText(OpenTrail.this, "Loading data from cache", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(OpenTrail.this, "Loading data from web", Toast.LENGTH_SHORT).show();
-                    startPOIDownload(false, false);
-
-                }
-                if (prefGPSTracking) {
-                    gotoMyLocation();
-                }
-            }
-        } ,this,overlayManager);
+     ;
         filter = new IntentFilter();
         filter.addAction("freemap.opentrail.providerenabled");
         filter.addAction("freemap.opentrail.statuschanged");
@@ -553,8 +557,7 @@ public class OpenTrail extends Activity  {
     }
 
 
-    public void onActivityResult(int request, int result, Intent i)
-    {
+    public void onActivityResult(int request, int result, Intent i) {
         Bundle extras;
         if(result==RESULT_OK) {
             switch(request) {
@@ -768,8 +771,7 @@ public class OpenTrail extends Activity  {
         }
     }
 
-    public void launchInputAnnotationActivity(double lat, double lon)
-    {
+    public void launchInputAnnotationActivity(double lat, double lon) {
         if(this.location!=null)
         {
             Intent intent = new Intent(this,InputAnnotationActivity.class);
@@ -800,8 +802,7 @@ public class OpenTrail extends Activity  {
         }
     }
 
-    public void uploadCachedAnnotations()
-    {
+    public void uploadCachedAnnotations() {
         if(annCacheMgr.isEmpty()) {
             DialogUtils.showDialog(this, "No annotations to upload");
         } else {
@@ -932,8 +933,8 @@ public class OpenTrail extends Activity  {
         super.onSaveInstanceState(state);
         if (this.location!=null) {
 
-            state.putDouble("lat", this.location.latitude);
-            state.putDouble("lon", this.location.longitude);
+            state.putFloat("lat", (float)this.location.latitude);
+            state.putFloat("lon", (float)this.location.longitude);
 
         }
         state.putInt("zoom", mv.getModel().mapViewPosition.getZoomLevel());
