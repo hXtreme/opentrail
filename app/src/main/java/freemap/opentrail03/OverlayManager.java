@@ -49,6 +49,7 @@ public class OverlayManager extends LocationDisplayer implements
     HashMap<Integer,Marker> indexedAnnotations;
     Projection proj;
     Polyline renderedWalkroute;
+    ArrayList<Polyline> renderedWalkroutes;
     ArrayList<Marker> walkrouteStages;
     Marker lastAddedPOI;
     TileRendererLayer tileLayer;
@@ -208,10 +209,8 @@ public class OverlayManager extends LocationDisplayer implements
 
         String name=poi.getValue("name");
         name=(name==null)? "unnamed":name;
-        Marker item = MapsforgeUtil.makeTappableMarker(ctx, markerIcon, gp, name);
+        lastAddedPOI = MapsforgeUtil.makeTappableMarker(ctx, markerIcon, gp, name);
 
-
-        lastAddedPOI = item;
        // if(renderLayerAdded) again is this necessary?
         if(tileLayer!=null)
             showPOI();
