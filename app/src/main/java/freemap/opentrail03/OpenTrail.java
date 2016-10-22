@@ -174,6 +174,7 @@ public class OpenTrail extends Activity  {
                 }
                 if (prefGPSTracking) {
                     gotoMyLocation();
+                    overlayManager.requestRedraw();
                 }
             }
         } ,this,overlayManager);
@@ -382,7 +383,6 @@ public class OpenTrail extends Activity  {
                 }
             }
         );
-
         loader.downloadOrLoad();
 
 
@@ -756,8 +756,11 @@ public class OpenTrail extends Activity  {
         //mv.addLayer(tileRendererLayer);
 
         // This is a bit messy, we are forced to give the location marker an arbitrary location
+        // when we first create it.
 
-        if(prefGPSTracking==true) {
+        // 061016 add isLocationMarker() test so we don't add one again
+
+        if(prefGPSTracking==true && !overlayManager.isLocationMarker()) {
             Point markerPos = (location == null ? new Point(-0.72, 51.05) :
                     new Point(location.longitude, location.latitude));
             overlayManager.addLocationMarker(markerPos);
