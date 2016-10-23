@@ -39,6 +39,7 @@ import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.core.model.LatLong;
 
+import freemap.andromaps.ConfigChangeSafeTask;
 import freemap.andromaps.HTTPUploadTask;
 import freemap.data.Annotation;
 import freemap.data.POI;
@@ -91,6 +92,8 @@ public class OpenTrail extends Activity  {
     ServiceConnection gpsServiceConn;
     GPSService gpsService;
     Walkroute curDownloadedWalkroute;
+    DownloadCache downloadCache;
+    long lastCacheClearTime;
 
     IntentFilter filter;
 
@@ -117,7 +120,7 @@ public class OpenTrail extends Activity  {
 
         opentrailDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/opentrail/";
 
-        DownloadCache downloadCache = new DownloadCache(new File(opentrailDir +"geojson/"));
+        downloadCache = new DownloadCache(new File(opentrailDir +"geojson/"));
 
         ds = new GeoJSONDataSource("http://www.free-map.org.uk/fm/ws/tsvr.php",
                 "way=highway,natural,waterway,railway&poi=natural,place,amenity&ext=20&contour=1&outProj=4326");
@@ -130,6 +133,8 @@ public class OpenTrail extends Activity  {
         float lat = 50.9f, lon = -1.4f;
         int zoom = 14;
 
+        int cacheClearFreq = 0;
+        lastCacheClearTime = System.currentTimeMillis();
 
         wrCacheMgr = new WalkrouteCacheManager(opentrailDir +"/walkroutes/");
 
@@ -186,6 +191,7 @@ public class OpenTrail extends Activity  {
             zoom = savedInstanceState.getInt("zoom", 14);
             isRecordingWalkroute = savedInstanceState.getBoolean("isRecordingWalkroute", false);
             waitingForNewPOIData = savedInstanceState.getBoolean("waitingForNewPOIData");
+            lastCacheClearTime = savedInstanceState.getLong("lastCacheClearTime", System.currentTimeMillis());
             int curWalkrouteId = savedInstanceState.getInt("curWalkrouteId", 0);
             if(curWalkrouteId > 0) {
                 try {
@@ -200,6 +206,8 @@ public class OpenTrail extends Activity  {
             zoom = prefs.getInt("zoom", 14);
             isRecordingWalkroute = prefs.getBoolean("isRecordingWalkroute", false);
             waitingForNewPOIData = prefs.getBoolean("waitingForNewPOIData", false);
+            lastCacheClearTime = prefs.getLong("lastCacheClearTime", System.currentTimeMillis());
+            cacheClearFreq = Integer.parseInt(prefs.getString("prefCacheClearFreq", "0"));
             boolean prefGPSTrackingTest = prefs.getBoolean("prefGPSTracking", false);
             if(prefGPSTrackingTest) {
                 LocationManager mgr = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -210,6 +218,11 @@ public class OpenTrail extends Activity  {
                     mapLocationProcessor.getProcessor().showGpsWaiting("Waiting for GPS");
                 }
             }
+        }
+
+        // 86400000 = number of milliseconds in a day
+        if(cacheClearFreq>0 && System.currentTimeMillis() - lastCacheClearTime > cacheClearFreq*86400000L) {
+            clearCache();
         }
 
         initPos = new LatLong(lat, lon);
@@ -423,6 +436,7 @@ public class OpenTrail extends Activity  {
             editor.putFloat("lon", (float) location.longitude);
         }
         editor.putInt("zoom", mv.getModel().mapViewPosition.getZoomLevel());
+        editor.putLong("lastCacheClearTime", lastCacheClearTime);
         editor.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
         editor.commit();
         mv.destroyAll();
@@ -435,7 +449,7 @@ public class OpenTrail extends Activity  {
 
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem recordWalkrouteMenuItem = menu.findItem(R.id.recordWalkrouteMenuItem);
-        recordWalkrouteMenuItem.setTitle(isRecordingWalkroute ? "Stop recording":"Record walk route");
+        recordWalkrouteMenuItem.setTitle(isRecordingWalkroute ? "Stop recording" : "Record walk route");
         return true;
     }
 
@@ -547,6 +561,12 @@ public class OpenTrail extends Activity  {
                  case R.id.uploadWalkrouteMenuItem:
                      showRecordedWalkroutesActivity();
                      break;
+
+                case R.id.clearCacheMenuItem:
+                    clearCache();
+                    break;
+
+
                 default:
                     retcode=false;
                     break;
@@ -906,6 +926,23 @@ public class OpenTrail extends Activity  {
 
     }
 
+    private void clearCache() {
+        ConfigChangeSafeTask<Void,Void> clearCacheTask = new ConfigChangeSafeTask<Void,Void>(this) {
+
+            public String doInBackground(Void... unused) {
+                boolean result = downloadCache.clear();
+                if (result) {
+                    lastCacheClearTime = System.currentTimeMillis();
+                    return "Cache cleared successfully";
+                } else {
+                    return "Unable to clear cache";
+                }
+            }
+        };
+        clearCacheTask.setDialogDetails("Clearing", "Clearing cache...");
+        clearCacheTask.execute();
+    }
+
     private String makeCacheDir(String projID) {
         String cachedir = opentrailDir +"/cache/" + projID.toLowerCase().replace("epsg:", "")+"/";
         File dir = new File(cachedir);
@@ -943,6 +980,7 @@ public class OpenTrail extends Activity  {
         state.putInt("zoom", mv.getModel().mapViewPosition.getZoomLevel());
         state.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
         state.putBoolean("waitingForNewPOIData",waitingForNewPOIData);
+        state.putLong("lastCacheClearTime", lastCacheClearTime);
         if(curDownloadedWalkroute != null) {
             state.putInt("curWalkrouteId", curDownloadedWalkroute.getId());
         }

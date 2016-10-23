@@ -4,6 +4,7 @@
         <item android:id="@+id/myLocationMenuItem" android:title="@string/mylocation" android:showAsAction="ifRoom"/>
         <item android:id="@+id/inputAnnotationMenuItem" android:title="@string/addannotation" />
         <item android:id="@+id/settingsMenuItem" android:title="@string/settings" />
+        <item android:id="@+id/clearCacheMenuItem" android:title="@string/clearCache" />
         <item android:id="@+id/uploadAnnotationsMenuItem" android:title="@string/uploadsavedannotations" />
         <item android:id="@+id/poisMenuItem" android:title="@string/downloadpois" />
         <item android:id="@+id/findPoisMenuItem" android:title="@string/findnearbypois" />

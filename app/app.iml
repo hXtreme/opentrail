@@ -82,16 +82,16 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="jcoord-1.0" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-map-android-dev-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="javaproj-1.0.6-noawt" level="project" />
-    <orderEntry type="library" exported="" name="Andromaps-debug-" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-core-dev-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-map-reader-dev-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-map-writer-dev-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="mapsforgeplus-0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="freemaplib_proj" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-map-dev-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="javaproj-1.0.6-noawt" level="project" />
+    <orderEntry type="library" exported="" name="jcoord-1.0" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-map-reader-dev-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Andromaps-debug-" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-map-android-dev-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="mapsforge-map-awt-dev-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-map-dev-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-core-dev-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="mapsforgeplus-0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-map-writer-dev-SNAPSHOT" level="project" />
   </component>
 </module>
