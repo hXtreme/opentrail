@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 
@@ -108,9 +110,12 @@ public class OpenTrail extends Activity  {
 
         AndroidGraphicFactory.createInstance(this.getApplication());
 
-        mv = new MapView(this);
+  //      mv = new MapView(this);
 
-        setContentView(mv);
+        setContentView(R.layout.activity_main);
+        mv = (MapView)findViewById(R.id.mapView);
+
+
         mv.setBuiltInZoomControls(true);
         mv.setClickable(true);
 
@@ -118,12 +123,18 @@ public class OpenTrail extends Activity  {
                 mv.getModel().displayModel.getTileSize(), 1f,
                 mv.getModel().frameBufferModel.getOverdrawFactor());
 
+        SearchManager sMgr = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView)findViewById(R.id.searchView);
+        searchView.setSearchableInfo(sMgr.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false);
+        searchView.setSubmitButtonEnabled(true);
+
         opentrailDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/opentrail/";
 
         downloadCache = new DownloadCache(new File(opentrailDir +"geojson/"));
 
         ds = new GeoJSONDataSource("http://www.free-map.org.uk/fm/ws/tsvr.php",
-                "way=highway,natural,waterway,railway&poi=natural,place,amenity&ext=20&contour=1&outProj=4326");
+                "way=highway,natural,waterway,railway,power,barrier,landuse&poi=all&ext=20&contour=1&coastline=1&outProj=4326");
 
         ds.setDownloadCache(downloadCache);
 

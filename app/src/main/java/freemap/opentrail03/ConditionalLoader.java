@@ -71,7 +71,7 @@ public class ConditionalLoader implements HTTPCommunicationTask.Callback {
 
     }
     public void downloadFinished (int id, Object data) {
-        DialogUtils.showDialog(ctx,((File)data).getAbsolutePath());
+    //    DialogUtils.showDialog(ctx,((File)data).getAbsolutePath());
         callback.receiveLoadedData(id, data);
     }
 
