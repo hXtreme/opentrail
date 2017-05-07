@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rendertheme xmlns="http://mapsforge.org/renderTheme"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://mapsforge.org/renderTheme renderTheme.xsd"
+version="4" map-background="#add8e6">
+
+<rule e="way" k="natural" v="nosea" zoom-min="1">
+<area fill="#f2efe9" stroke="#f2efe9"/>
+</rule>
+
+<rule e="way" k="natural" v="wood" zoom-min="8">
+<area fill="#c0ffc0" />
+</rule>
+
+<rule e="way" k="landuse" v="forest" zoom-min="8">
+<area fill="#c0ffc0" />
+</rule>
+
+<rule e="way" k="contourtype" v="major" zoom-min="13">
+<line stroke="#fb9b67" stroke-width="0.5" />
+   <pathText k="ele" font-size="10"  fill="#fb9b67"/>
+</rule>
+
+<rule e="way" k="contourtype" v="minor" zoom-min="14">
+<line stroke="#fb9b67" stroke-width="0.25" />
+    <pathText k="ele" font-size="10" fill="#fb9b67"/>
+</rule>
+
+<rule e="way" k="natural" v="water" zoom-min="8">
+<area fill="#add8e6" />
+</rule>
+
+<rule e="way" k="landuse" v="reservoir" zoom-min="8">
+<area fill="#add8e6" />
+</rule>
+
+<rule e="way" k="natural" v="heath" zoom-min="8">
+<area fill="#ffffc0" />
+</rule>
+
+<rule e="way" k="natural" v="moor" zoom-min="8">
+<area fill="#ffc0ff" />
+</rule>
+
+<rule e="way" k="natural" v="coastline" zoom-min="4">
+<line stroke="#add8e6" stroke-width="4" />
+</rule>
+
+<rule e="way" k="waterway" v="stream" zoom-min="12">
+<line stroke="#add8e6" stroke-width="1" />
+</rule>
+
+<rule e="way" k="waterway" v="river" zoom-min="8">
+<line stroke="#add8e6" stroke-width="2" />
+</rule>
+
+<rule e="way" k="highway" v="path|footway|bridleway|steps|pedestrian" 
+zoom-min="14">
+<line stroke="#000000" stroke-width="0.5" stroke-dasharray="2,4" />
+</rule>
+
+<rule e="way" k="highway" v="cycleway" 
+zoom-min="14">
+<line stroke="#0000ff" stroke-width="0.5" stroke-dasharray="2,4" />
+</rule>
+
+<rule e="way" k="highway" v="track|byway" zoom-min="13">
+<line stroke="#000000" stroke-width="0.5" stroke-dasharray="4,4" />
+</rule>
+
+<rule e="way" k="highway" v="residential|residential_link|service|service_link"
+zoom-min="12" zoom-max="15">
+<line stroke="#000000" stroke-width="2" />
+</rule>
+
+<rule e="way" k="highway" v="residential|residential_link|service|service_link"
+zoom-min="16">
+<line stroke="#000000" stroke-width="3" />
+</rule>
+
+<rule e="way" k="highway" v="unclassified|unclassified_link|tertiary|tertiary_link" zoom-min="10" zoom-max="15">
+<line stroke="#000000" stroke-width="3" />
+</rule>
+
+<rule e="way" k="highway" v="unclassified|unclassified_link|tertiary|tertiary_link" zoom-min="16">
+<line stroke="#000000" stroke-width="4" />
+</rule>
+
+<rule e="way" k="highway" v="secondary|secondary_link|primary|primary_link|trunk|trunk_link|motorway|motorway_link" zoom-min="8" zoom-max="15">
+<line stroke="#000000" stroke-width="4" />
+</rule>
+
+<rule e="way" k="highway" v="secondary|secondary_link|primary|primary_link|trunk|trunk_link|motorway|motorway_link" zoom-min="16">
+<line stroke="#000000" stroke-width="6" />
+</rule>
+
+<rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="12" zoom-max="15">
+<line stroke="#ffffff" stroke-width="1" />
+</rule>
+
+<rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="16">
+<line stroke="#ffffff" stroke-width="2" />
+<pathText k="name" font-size="16" /> 
+</rule>
+
+<rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="10"
+zoom-max="15">
+<line stroke="#ffffff" stroke-width="2" />
+</rule>
+
+<rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="16">
+<line stroke="#ffffff" stroke-width="3" />
+<pathText k="name" font-size="16" /> 
+</rule>
+
+<rule e="way" k="designation" v="public_footpath" zoom-min="14">
+<line stroke="#00ff00" stroke-width="1" />
+</rule>
+
+<rule e="way" k="designation" v="public_bridleway" zoom-min="14">
+<line stroke="#aa5500" stroke-width="1"  />
+</rule>
+
+<rule e="way" k="designation" 
+v="public_byway|byway|byway_open_to_all_traffic|restricted_byway"
+zoom-min="14">
+<line stroke="#ff0000" stroke-width="1"  />
+</rule>
+
+<rule e="way" k="highway" v="tertiary|tertiary_link" zoom-min="10"
+zoom-max="15">
+<line stroke="#ffffcc" stroke-width="2" />
+</rule>
+
+<rule e="way" k="highway" v="tertiary|tertiary_link" zoom-min="16">
+<line stroke="#ffffcc" stroke-width="4" />
+<pathText k="name" font-size="16" /> 
+</rule>
+
+<rule e="way" k="highway" v="secondary|secondary_link" zoom-min="8"
+zoom-max="15">
+<line stroke="#fee0b8" stroke-width="3" />
+</rule>
+
+<rule e="way" k="highway" v="secondary|secondary_link" zoom-min="16">
+<line stroke="#fee0b8" stroke-width="5" />
+<pathText k="name" font-size="16" /> 
+</rule>
+
+<rule e="way" k="highway" v="primary|primary_link" zoom-min="8"
+zoom-max="15">
+<line stroke="#f4c3c4" stroke-width="3" />
+</rule>
+
+<rule e="way" k="highway" v="primary|primary_link" zoom-min="16">
+<line stroke="#f4c3c4" stroke-width="5" />
+<pathText k="name" font-size="16" /> 
+</rule>
+
+<rule e="way" k="highway" v="trunk|trunk_link" zoom-min="8"
+zoom-max="15">
+<line stroke="#cdeacd" stroke-width="3" />
+</rule>
+
+<rule e="way" k="highway" v="trunk|trunk_link" zoom-min="16">
+<line stroke="#cdeacd" stroke-width="5" />
+<pathText k="name" font-size="16" /> 
+</rule>
+
+<rule e="way" k="highway" v="motorway|motorway_link" zoom-min="8"
+zoom-max="15">
+<line stroke="#809bc0" stroke-width="3" />
+</rule>
+
+<rule e="way" k="highway" v="motorway|motorway_link" zoom-min="16">
+<line stroke="#809bc0" stroke-width="5" />
+</rule>
+
+<rule e="way" k="railway" v="rail|preserved_rail|preserved" zoom-min="8">
+<line stroke="#000000" stroke-width="3" />
+</rule>
+
+<rule e="way" k="barrier" v="fence|hedge|wall|retaining_wall|ditch">
+<line stroke="#404040" stroke-width="0.25" />
+</rule>
+
+<rule e="way" k="power" v="line" zoom-min="14">
+<line stroke="#808080" stroke-width="1" />
+</rule>
+
+
+<rule e="node" k="place" v="hamlet|suburb" zoom-min="14" zoom-max="18">
+<caption k="name" font-size="16" font-style="bold" />
+</rule>
+
+<rule e="node" k="place" v="village" zoom-min="14" zoom-max="18">
+<caption k="name" font-size="18" font-style="bold" />
+</rule>
+
+<rule e="node" k="place" v="town" zoom-min="14" zoom-max="18">
+<caption k="name" font-size="20" font-style="bold" />
+</rule>
+
+<rule e="node" k="place" v="city" zoom-min="14" zoom-max="18">
+<caption k="name" font-size="24" font-style="bold" />
+</rule>
+
+
+<rule e="node" k="place" v="village" zoom-min="12" zoom-max="13">
+<caption k="name" 
+    font-size="16" fill="#000000" position="below_right" font-style="bold" />
+</rule>
+
+<rule e="node" k="place" v="town" zoom-min="12" zoom-max="13">
+<caption k="name" font-size="18" font-style="bold" />
+<caption k="name" 
+    font-size="16" fill="#000000" position="below_right" font-style="bold" />
+</rule>
+
+<rule e="node" k="place" v="city" zoom-min="12" zoom-max="13">
+<caption k="name" font-size="20" font-style="bold" />
+</rule>
+
+<rule e="node" k="place" v="town" zoom-min="10" zoom-max="11">
+<caption k="name" font-size="16" font-style="bold" />
+</rule>
+
+<rule e="node" k="place" v="city" zoom-min="10" zoom-max="11">
+<caption k="name" font-size="18" font-style="bold" />
+</rule>
+
+<rule e="node" k="natural" v="peak" zoom-min="13">
+<symbol id="peak" src="assets:symbols/peak.png" display="always" />
+<caption k="name" symbol-id="peak" font-size="10" fill="#000000"/>
+</rule>
+
+<rule e="node" k="amenity" v="pub" zoom-min="14" zoom-max="14">
+<symbol id="pub" src="assets:symbols/pub.png" />
+<caption k="name" symbol-id="pub" font-size="10" fill="#000000" />
+</rule>
+
+    <rule e="node" k="amenity" v="pub" zoom-min="15" >
+        <symbol id="pub_large" src="assets:symbols/pub.large.png" />
+        <caption k="name" symbol-id="pub_large" font-size="12" fill="#000000" />
+    </rule>
+
+<rule e="node" k="amenity" v="restaurant" zoom-min="14" zoom-max="14">
+<symbol id="restaurant" src="assets:symbols/restaurant.png" />
+<caption k="name" symbol-id="restaurant" font-size="10" fill="#000000" />
+</rule>
+
+    <rule e="node" k="amenity" v="restaurant" zoom-min="15">
+        <symbol id="restaurant_large" src="assets:symbols/restaurant.large.png" />
+        <caption k="name" symbol-id="restaurant_large" font-size="12" fill="#000000" />
+    </rule>
+
+
+<rule e="node" k="amenity" v="cafe" zoom-min="14" zoom-max="14">
+<symbol id="cafe" src="assets:symbols/cafe.png" />
+<caption k="name" symbol-id="cafe" font-size="10" fill="#000000" />
+</rule>
+
+    <rule e="node" k="amenity" v="cafe" zoom-min="15">
+        <symbol id="cafe_large" src="assets:symbols/cafe.large.png" />
+        <caption k="name" symbol-id="cafe_large" font-size="12" fill="#000000" />
+    </rule>
+
+<rule e="node" k="railway" v="station" zoom-min="13">
+<symbol id="station" src="assets:symbols/rsmall.png" display="always" />
+<caption k="name" symbol-id="station" font-size="10" fill="#ff0000"/>
+</rule>
+
+<rule e="node" k="man_made" v="mast|communications_tower" zoom-min="13" zoom-max="14">
+<symbol id="mast" src="assets:symbols/mast.png" />
+</rule>
+
+    <rule e="node" k="man_made" v="mast|communications_tower" zoom-min="15">
+        <symbol id="mast_large" src="assets:symbols/mast.large.png" />
+    </rule>
+
+
+    <rule e="node" k="power" v="tower" zoom-min="13" zoom-max="14">
+<symbol id="powertower" src="assets:symbols/powertower.png" />
+</rule>
+
+    <rule e="node" k="power" v="tower" zoom-min="15">
+        <symbol id="powertower_large" src="assets:symbols/powertower.large.png" />
+    </rule>
+
+<rule e="node" k="barrier" v="gate" zoom-min="15">
+<symbol id="gate" src="assets:symbols/gate.png" />
+</rule>
+
+<rule e="node" k="barrier" v="stile" zoom-min="15">
+<symbol id="stile" src="assets:symbols/stile.large.png" />
+</rule>
+
+<rule e="node" k="tourism" v="viewpoint" zoom-min="14" zoom-max="14">
+<symbol id="viewpoint" src="assets:symbols/viewpoint.png" />
+</rule>
+
+    <rule e="node" k="tourism" v="viewpoint" zoom-min="15">
+        <symbol id="viewpoint_large" src="assets:symbols/viewpoint.large.png" />
+    </rule>
+
+<rule e="node" k="amenity" v="parking" zoom-min="15">
+<symbol id="parking" src="assets:symbols/carpark.png" />
+</rule>
+
+</rendertheme>

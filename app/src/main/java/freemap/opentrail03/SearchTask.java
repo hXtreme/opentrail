@@ -1,6 +1,7 @@
 package freemap.opentrail03;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -27,7 +29,7 @@ public class SearchTask extends DataCallbackTask<String,Void>  {
     public SearchTask(Context ctx, SearchTask.Receiver receiver) {
         super(ctx,receiver);
         setShowProgressDialog(true);
-        setShowDialogOnFinish(true);
+        setShowDialogOnFinish(false);
         setDialogDetails("Searching...","Searching for places...");
     }
 
@@ -37,9 +39,9 @@ public class SearchTask extends DataCallbackTask<String,Void>  {
 
         try {
 
-            ArrayList<POI> pois = new ArrayList<POI>();
-            URL url = new URL("http://www.free-map.org.uk/fm/ws/search.php?q="+searchTerm[0] +
-                        "&format=json&outProj=4326&poi=all");
+            ArrayList<POI> pois = new ArrayList<>();
+            URL url = new URL("http://www.free-map.org.uk/fm/ws/search.php?q="+ URLEncoder.encode(searchTerm[0],"UTF-8") +
+                        "&format=json&outProj=27700&poi=all");
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             InputStream in = connection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -47,16 +49,22 @@ public class SearchTask extends DataCallbackTask<String,Void>  {
             while((line=reader.readLine()) != null) {
                 data += line;
             }
+
+            Log.d("OpenTrail", "data="+ data);
             JSONObject object = new JSONObject(data);
             JSONArray features = object.getJSONArray("features");
+            Log.d("OpenTrail", "Number of features: " + features.length());
             for(int i=0; i<features.length(); i++) {
                 POI curPOI;
                 JSONObject curFeature = features.getJSONObject(i);
                 JSONObject geometry = curFeature.getJSONObject("geometry");
                 if(geometry!=null) {
+                    Log.d("OpenTrail", "For "+i+ " found a geometry");
                     JSONArray coords = geometry.getJSONArray("coordinates");
                     if(coords!=null) {
+
                         curPOI = new POI (coords.getDouble(0), coords.getDouble(1));
+
                         JSONObject properties = curFeature.getJSONObject("properties");
                         if(properties!=null) {
                             Iterator<String> keys = properties.keys();
@@ -72,20 +80,22 @@ public class SearchTask extends DataCallbackTask<String,Void>  {
             setData(pois);
             return "Successfully downloaded";
         } catch(Exception e) {
-            return "ERROR with search:" + e.toString() + " " + e.getMessage();
+            return "ERROR with search:" +  e.getMessage();
+        }
+    }
+
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        // show dialog only if there was an error (in which case data will be null)
+        if(data==null) {
+            showFinishDialog(result);
         }
     }
 
     public void receive(Object data) {
         if(receiver!=null) {
+            Log.d("OpenTrail", "RECEIVER: received: " + data);
             ((SearchTask.Receiver) receiver).receivePOIs((ArrayList<POI>) data);
-        }
-    }
-
-    // show dialog only if there was an error (in which case data will be null)
-    protected void showFinishDialog(String result) {
-        if(data==null) {
-            super.showFinishDialog(result);
         }
     }
 }

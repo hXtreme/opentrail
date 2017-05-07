@@ -13,21 +13,23 @@ import freemap.data.POI;
  * Created by nick on 03/05/17.
  */
 
-public class SearchActivity extends ListActivity implements SearchTask.Receiver {
+public class SearchResultsActivity extends AbstractPOIListActivity implements SearchTask.Receiver {
+
+    ArrayList<POI> foundPOIs;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
         Intent intent = getIntent();
-        if(intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            SearchTask task = new SearchTask(this, this);
-            task.execute(query);
-        }
+        SearchTask task = new SearchTask(this, this);
+        task.execute(intent.getStringExtra("query"));
     }
 
     public void receivePOIs(ArrayList<POI> pois) {
+        foundPOIs = pois;
+        populateList();
+    }
 
+    public ArrayList<POI> getPOIs() {
+        return foundPOIs;
     }
 }

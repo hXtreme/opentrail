@@ -2,8 +2,9 @@ package freemap.opentrail03;
 
 
 
+import org.mapsforge.core.model.LatLong;
+
 import java.util.ArrayList;
-import freemap.data.Walkroute;
 import freemap.data.WalkrouteSummary;
 import freemap.datasource.FreemapDataset;
 

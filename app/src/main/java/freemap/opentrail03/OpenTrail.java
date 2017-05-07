@@ -32,19 +32,19 @@ import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.mapsforge.map.android.rendertheme.AssetsRenderTheme;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
-import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 import freemap.andromaps.ConfigChangeSafeTask;
 import freemap.andromaps.HTTPUploadTask;
 import freemap.data.Annotation;
-import freemap.data.POI;
 import freemap.data.Point;
 import freemap.data.Walkroute;
 import freemap.data.WalkrouteSummary;
@@ -69,15 +69,15 @@ import java.util.ArrayList;
 // Problems:
 
 
-public class OpenTrail extends Activity  {
+public class OpenTrail extends Activity {
 
     MapView mv;
     TileRendererLayer tileRendererLayer;
     GeoJSONDataSource ds;
-    ExternalRenderTheme theme;
+    XmlRenderTheme theme;
     TileCache tileCache;
     String opentrailDir;
-    boolean gotStyleFile;
+    boolean loadedRenderTheme;
 
     MapLocationProcessorBR mapLocationProcessor;
 
@@ -108,12 +108,13 @@ public class OpenTrail extends Activity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         AndroidGraphicFactory.createInstance(this.getApplication());
 
-  //      mv = new MapView(this);
+        Log.d("OpenTrail", "***onCreate()");
 
         setContentView(R.layout.activity_main);
-        mv = (MapView)findViewById(R.id.mapView);
+        mv = (MapView) findViewById(R.id.mapView);
 
 
         mv.setBuiltInZoomControls(true);
@@ -123,15 +124,15 @@ public class OpenTrail extends Activity  {
                 mv.getModel().displayModel.getTileSize(), 1f,
                 mv.getModel().frameBufferModel.getOverdrawFactor());
 
-        SearchManager sMgr = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)findViewById(R.id.searchView);
+        SearchManager sMgr = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setSearchableInfo(sMgr.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
         searchView.setSubmitButtonEnabled(true);
 
-        opentrailDir = Environment.getExternalStorageDirectory().getAbsolutePath()+"/opentrail/";
+        opentrailDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/opentrail/";
 
-        downloadCache = new DownloadCache(new File(opentrailDir +"geojson/"));
+        downloadCache = new DownloadCache(new File(opentrailDir + "geojson/"));
 
         ds = new GeoJSONDataSource("http://www.free-map.org.uk/fm/ws/tsvr.php",
                 "way=highway,natural,waterway,railway,power,barrier,landuse&poi=all&ext=20&contour=1&coastline=1&outProj=4326");
@@ -140,21 +141,21 @@ public class OpenTrail extends Activity  {
 
         proj = new OSGBProjection();
         cachedir = makeCacheDir(proj.getID());
-        
+
         float lat = 50.9f, lon = -1.4f;
         int zoom = 14;
 
         int cacheClearFreq = 0;
         lastCacheClearTime = System.currentTimeMillis();
 
-        wrCacheMgr = new WalkrouteCacheManager(opentrailDir +"/walkroutes/");
+        wrCacheMgr = new WalkrouteCacheManager(opentrailDir + "/walkroutes/");
 
-        overlayManager = new OverlayManager (this, mv, getResources().getDrawable(R.mipmap.person),
+        overlayManager = new OverlayManager(this, mv, getResources().getDrawable(R.mipmap.person),
                 getResources().getDrawable(R.mipmap.marker),
                 getResources().getDrawable(R.mipmap.annotation),
                 proj);
 
-        mapLocationProcessor=new MapLocationProcessorBR(new MapLocationProcessor.LocationReceiver() {
+        mapLocationProcessor = new MapLocationProcessorBR(new MapLocationProcessor.LocationReceiver() {
             public void noGPS() {
 
             }
@@ -163,10 +164,11 @@ public class OpenTrail extends Activity  {
                 OpenTrail.this.location = new LatLong(lat, lon);
                 Point pt = new Point(lon, lat);
 
+
                 try {
                     Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
 
-                    if(recordingWalkroute!=null && recordingWalkroute.getPoints().size()!=0) {
+                    if (recordingWalkroute != null && recordingWalkroute.getPoints().size() != 0) {
 
                         if (overlayManager.hasRenderedWalkroute()) {
                             overlayManager.addPointToWalkroute(pt);
@@ -174,7 +176,7 @@ public class OpenTrail extends Activity  {
                             overlayManager.addWalkroute(recordingWalkroute, false);
                         }
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     DialogUtils.showDialog(OpenTrail.this, "Unable to read GPS track for drawing");
                 }
 
@@ -193,10 +195,10 @@ public class OpenTrail extends Activity  {
                     overlayManager.requestRedraw();
                 }
             }
-        } ,this,overlayManager);
+        }, this, overlayManager);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if(savedInstanceState!=null) {
+        if (savedInstanceState != null) {
             lat = savedInstanceState.getFloat("lat", 51.05f);
             lon = savedInstanceState.getFloat("lon", -0.72f);
             zoom = savedInstanceState.getInt("zoom", 14);
@@ -204,14 +206,14 @@ public class OpenTrail extends Activity  {
             waitingForNewPOIData = savedInstanceState.getBoolean("waitingForNewPOIData");
             lastCacheClearTime = savedInstanceState.getLong("lastCacheClearTime", System.currentTimeMillis());
             int curWalkrouteId = savedInstanceState.getInt("curWalkrouteId", 0);
-            if(curWalkrouteId > 0) {
+            if (curWalkrouteId > 0) {
                 try {
                     curDownloadedWalkroute = wrCacheMgr.getWalkrouteFromCache(curWalkrouteId);
-                }catch(Exception e) {
+                } catch (Exception e) {
                     DialogUtils.showDialog(this, "Could not retrieve current walk route from cache:  " + e);
                 }
             }
-        } else if (prefs!=null) {
+        } else if (prefs != null) {
             lat = prefs.getFloat("lat", 51.05f);
             lon = prefs.getFloat("lon", -0.72f);
             zoom = prefs.getInt("zoom", 14);
@@ -220,24 +222,23 @@ public class OpenTrail extends Activity  {
             lastCacheClearTime = prefs.getLong("lastCacheClearTime", System.currentTimeMillis());
             cacheClearFreq = Integer.parseInt(prefs.getString("prefCacheClearFreq", "0"));
             boolean prefGPSTrackingTest = prefs.getBoolean("prefGPSTracking", false);
-            if(prefGPSTrackingTest) {
-                LocationManager mgr = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-                if(!mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    DialogUtils.showDialog(this,"GPS not enabled, please enable it to see current location");
-                }
-                else {
+            if (prefGPSTrackingTest) {
+                LocationManager mgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (!mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    DialogUtils.showDialog(this, "GPS not enabled, please enable it to see current location");
+                } else {
                     mapLocationProcessor.getProcessor().showGpsWaiting("Waiting for GPS");
                 }
             }
         }
 
         // 86400000 = number of milliseconds in a day
-        if(cacheClearFreq>0 && System.currentTimeMillis() - lastCacheClearTime > cacheClearFreq*86400000L) {
+        if (cacheClearFreq > 0 && System.currentTimeMillis() - lastCacheClearTime > cacheClearFreq * 86400000L) {
             clearCache();
         }
 
         initPos = new LatLong(lat, lon);
-        Log.d("OpenTrail", "initPos=" + initPos);
+
         mv.setCenter(initPos);
         mv.setZoomLevel((byte) zoom);
 
@@ -251,41 +252,39 @@ public class OpenTrail extends Activity  {
         Shared.savedData.reconnect(this, httpCallback);
 
 
+        annCacheMgr = new AnnotationCacheManager(opentrailDir + "/annotations");
 
 
-        annCacheMgr = new AnnotationCacheManager(opentrailDir +"/annotations");
-        Log.d("OpenTrail", "Projection ID: " + proj.getID());
-
-        FreemapFileFormatter formatter=new FreemapFileFormatter(this.proj.getID());
+        FreemapFileFormatter formatter = new FreemapFileFormatter(this.proj.getID());
         formatter.setScript("bsvr.php");
         formatter.selectPOIs("place,amenity,natural");
         formatter.selectAnnotations(true);
-        WebDataSource wds=new WebDataSource("http://www.free-map.org.uk/fm/ws/",formatter);
-        poiDeliverer=new CachedTileDeliverer("poi",wds, new XMLDataInterpreter
-                (new FreemapDataHandler()),5000,5000,this.proj,cachedir);
+        WebDataSource wds = new WebDataSource("http://www.free-map.org.uk/fm/ws/", formatter);
+        poiDeliverer = new CachedTileDeliverer("poi", wds, new XMLDataInterpreter
+                (new FreemapDataHandler()), 5000, 5000, this.proj, cachedir);
         poiDeliverer.setCache(true);
         poiDeliverer.setReprojectCachedData(true);
 
-        if (Shared.pois==null) {
+        if (Shared.pois == null) {
             Shared.pois = new FreemapDataset();
             Shared.pois.setProjection(proj);
         }
 
-        File wrDir = new File(opentrailDir+"/walkroutes/");
-        if(!wrDir.exists()) {
+        File wrDir = new File(opentrailDir + "/walkroutes/");
+        if (!wrDir.exists()) {
             wrDir.mkdir();
         }
 
         alertDisplayMgr = new AlertDisplayManager(alertDisplay, 50);
 
-        if(curDownloadedWalkroute != null && curDownloadedWalkroute.getPoints().size() > 0){
+        if (curDownloadedWalkroute != null && curDownloadedWalkroute.getPoints().size() > 0) {
 
             alertDisplayMgr.setWalkroute(curDownloadedWalkroute);
             overlayManager.addWalkroute(curDownloadedWalkroute);
         }
 
 
-     ;
+        ;
         filter = new IntentFilter();
         filter.addAction("freemap.opentrail.providerenabled");
         filter.addAction("freemap.opentrail.statuschanged");
@@ -293,14 +292,12 @@ public class OpenTrail extends Activity  {
 
 
         dataReceiver = new DataReceiver() {
-            public void receivePOIs(FreemapDataset ds)
-            {
+            public void receivePOIs(FreemapDataset ds) {
                 Log.d("OpenTrail", "POIs received");
-                if(ds!=null)
-                {
+                if (ds != null) {
                     Shared.pois = ds;
                     alertDisplayMgr.setPOIs(Shared.pois);
-                    waitingForNewPOIData=false;
+                    waitingForNewPOIData = false;
                     loadAnnotationOverlay();
                 }
             }
@@ -310,15 +307,14 @@ public class OpenTrail extends Activity  {
             }
 
             public void receiveWalkroute(int idx, Walkroute walkroute) {
-                Log.d("OpenTrail", "received walkroute: index " + idx + " ID: " + walkroute.getId());
+
 
                 setWalkroute(walkroute);
 
 
                 try {
                     wrCacheMgr.addWalkrouteToCache(walkroute);
-                }
-                catch(IOException e) {
+                } catch (IOException e) {
                     DialogUtils.showDialog(OpenTrail.this, "Downloaded walk route, but unable to save to cache: " +
                             e.getMessage());
                 }
@@ -331,13 +327,12 @@ public class OpenTrail extends Activity  {
 
 
                 Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                if(ringtoneUri!=null)
-                {
+                if (ringtoneUri != null) {
                     Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), ringtoneUri);
                     r.play();
                 }
-                String summary = (type==AlertDisplay.ANNOTATION) ? "New walk note" : "New walk route stage";
-                NotificationManager mgr = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                String summary = (type == AlertDisplay.ANNOTATION) ? "New walk note" : "New walk route stage";
+                NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
                 Notification.Builder nBuilder = new Notification.Builder(OpenTrail.this).setSmallIcon(R.drawable.marker).setContentTitle(summary).
                         setContentText(msg);
@@ -355,7 +350,7 @@ public class OpenTrail extends Activity  {
 
         gpsServiceConn = new ServiceConnection() {
             public void onServiceConnected(ComponentName n, IBinder binder) {
-                gpsService = ((GPSService.Binder)binder).getService();
+                gpsService = ((GPSService.Binder) binder).getService();
 
             }
 
@@ -364,16 +359,20 @@ public class OpenTrail extends Activity  {
             }
         };
 
-        Intent bindServiceIntent = new Intent(this,GPSService.class);
+        Intent bindServiceIntent = new Intent(this, GPSService.class);
         bindService(bindServiceIntent, gpsServiceConn, Context.BIND_AUTO_CREATE);
 
-        registerReceiver(mapLocationProcessor,filter);
+        registerReceiver(mapLocationProcessor, filter);
 
+        if (loadedRenderTheme=loadAssetsRenderTheme("freemap_v4.xml")) {
+            doOverlays();
+        }
     }
 
     protected void onStart() {
         super.onStart();
 
+        Log.d("OpenTrail", "***onStart()");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         prefGPSTracking = prefs.getBoolean("prefGPSTracking", true);
@@ -385,43 +384,23 @@ public class OpenTrail extends Activity  {
     public void onResume() {
 
         super.onResume();
+        if(loadedRenderTheme) {
 
-        File styleFile = new File(opentrailDir + "freemap_v4.xml");
-
-        ConditionalLoader loader = new ConditionalLoader(this, 0, "http://www.free-map.org.uk/data/android/",
-                styleFile, new ConditionalLoader.Callback() {
-
-            public void receiveLoadedData(int id, Object data) {
-                switch(id) {
-                    case 0:
-                        loadStyleFile((File) data);
-                        doOverlays();
-
-                        // critical : start GPS only once tile renderer layer setup otherwise
-                        // my location marker might get added before tile renderer layer
-
-                        startGPS();
-
-                        break;
-                    }
-                }
-            }
-        );
-        loader.downloadOrLoad();
-
-
+            startGPS();
+        }
     }
 
     public void onStop() {
         super.onStop();
+        Log.d("OpenTrail", "***onStop()");
     }
 
     public void onPause() {
         super.onPause();
 
-        // remove all markers
-        overlayManager.removeAllOverlays(false);
-        overlayManager.removeTileRendererLayer();
+        Log.d("OpenTrail", "***onPause()");
+
+
 
         /*
         if(locationListener!=null) {
@@ -429,12 +408,21 @@ public class OpenTrail extends Activity  {
         }
         */
         // this was in onStop() in former version of opentrail
-        Intent stopIfNotLoggingBroadcast = new Intent("freemap.opentrail.stopifnotlogging");
-        sendBroadcast(stopIfNotLoggingBroadcast);
+        if(loadedRenderTheme) {
+            Intent stopIfNotLoggingBroadcast = new Intent("freemap.opentrail.stopifnotlogging");
+            sendBroadcast(stopIfNotLoggingBroadcast);
+
+        }
     }
 
     protected void onDestroy() {
         super.onDestroy();
+
+        // remove all markers
+        // MOVED FROM ONPAUSE
+        overlayManager.removeAllOverlays(false);
+
+        overlayManager.removeTileRendererLayer();
 
         unregisterReceiver(mapLocationProcessor);
         unbindService(gpsServiceConn);
@@ -442,7 +430,7 @@ public class OpenTrail extends Activity  {
         Shared.savedData.disconnect();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = prefs.edit();
-        if(location!=null) {
+        if (location != null) {
             editor.putFloat("lat", (float) location.latitude);
             editor.putFloat("lon", (float) location.longitude);
         }
@@ -453,7 +441,32 @@ public class OpenTrail extends Activity  {
         mv.destroyAll();
     }
 
-    public boolean onCreateOptionsMenu (Menu menu) {
+    // according to the docs, if it's a single top activity and the activity is already on the
+    // top of the stack, this gets called if a new intent is received, not onCreate()
+    // so we can use this to handle a search intent
+    // https://developer.android.com/guide/topics/manifest/activity-element.html
+    // https://developer.android.com/reference/android/app/Activity.html#onNewIntent(android.content.Intent)
+
+    public void onNewIntent(Intent intent) {
+        // was the intent a search intent? if so launch the search activity
+        // blog.dpdearing.com/2011/05/getting-android-to-call-onactivityresult-after-onsearchrequested
+
+        // called before onResume()
+        if (intent != null && intent.ACTION_SEARCH.equals(intent.getAction())) {
+            Intent launchSearchResultsIntent = new Intent(this, SearchResultsActivity.class);
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            if (location != null) {
+                Point p = new OSGBProjection().project(new Point(location.longitude,
+                        location.latitude));
+                launchSearchResultsIntent.putExtra("projectedX", p.x);
+                launchSearchResultsIntent.putExtra("projectedY", p.y);
+            }
+            launchSearchResultsIntent.putExtra("query", query);
+            startActivityForResult(launchSearchResultsIntent, 1);
+        }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -464,32 +477,32 @@ public class OpenTrail extends Activity  {
         return true;
     }
 
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         LatLong loc = this.location != null ? this.location : initPos;
-        boolean retcode=true;
-        if(item.getItemId()==R.id.aboutMenuItem) {
+        boolean retcode = true;
+        if (item.getItemId() == R.id.aboutMenuItem) {
             about();
-        }else {
+        } else {
             Intent intent = null;
-            switch(item.getItemId()) {
+            switch (item.getItemId()) {
                 case R.id.myLocationMenuItem:
-                    if(this.location!=null) {
+                    if (this.location != null) {
                         gotoMyLocation();
                     } else {
-                        DialogUtils.showDialog(this,"Location not known yet");
+                        DialogUtils.showDialog(this, "Location not known yet");
                     }
                     break;
 
                 case R.id.inputAnnotationMenuItem:
-                    if(this.location!=null) {
+                    if (this.location != null) {
                         launchInputAnnotationActivity(this.location.latitude,
-                                    this.location.longitude);
+                                this.location.longitude);
                     } else {
 
-                            // TEST??? might produce unwanted null object if commented out
-                            // this.location = new LatLong(50.9, 1.4);
+                        // TEST??? might produce unwanted null object if commented out
+                        // this.location = new LatLong(50.9, 1.4);
 
-                            DialogUtils.showDialog(this,"Location not known yet");
+                        DialogUtils.showDialog(this, "Location not known yet");
                     }
 
                     break;
@@ -497,13 +510,13 @@ public class OpenTrail extends Activity  {
 
                 case R.id.settingsMenuItem:
 
-                    intent = new Intent(this,OpenTrailPreferences.class);
+                    intent = new Intent(this, OpenTrailPreferences.class);
                     startActivity(intent);
 
                     break;
 
                 case R.id.poisMenuItem:
-                    if(this.location!=null) {
+                    if (this.location != null) {
                         SharedPreferences sprefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         startPOIDownload(true, sprefs.getBoolean("prefForcePOIDownload", false));
                     } else {
@@ -513,31 +526,31 @@ public class OpenTrail extends Activity  {
 
                 case R.id.findPoisMenuItem:
 
-                    if(loc==null) {
+                    if (loc == null) {
                         DialogUtils.showDialog(this, "Location not known yet");
-                    }else {
-                        intent = new Intent(this,POITypesListActivity.class);
-                        Point p = this.proj.project(new Point(loc.longitude,loc.latitude));
+                    } else {
+                        intent = new Intent(this, POITypesListActivity.class);
+                        Point p = this.proj.project(new Point(loc.longitude, loc.latitude));
                         intent.putExtra("projectedX", p.x);
                         intent.putExtra("projectedY", p.y);
-                        startActivityForResult(intent,1);
+                        startActivityForResult(intent, 1);
                     }
                     break;
 
                 case R.id.walkroutesMenuItem:
-                     if(loc==null) {
-                         DialogUtils.showDialog(this, "Location not known");
-                     } else {
+                    if (loc == null) {
+                        DialogUtils.showDialog(this, "Location not known");
+                    } else {
 
-                            Shared.savedData.setDataCallbackTask(new DownloadWalkroutesTask(this, dataReceiver, loc ));
-                            ((DownloadWalkroutesTask)Shared.savedData.getDataCallbackTask()).execute();
-                     }
+                        Shared.savedData.setDataCallbackTask(new DownloadWalkroutesTask(this, dataReceiver, loc));
+                        ((DownloadWalkroutesTask) Shared.savedData.getDataCallbackTask()).execute();
+                    }
                     break;
 
                 case R.id.findWalkroutesMenuItem:
-                    if(Shared.walkroutes!=null) {
-                        intent = new Intent(this,WalkrouteListActivity.class);
-                        startActivityForResult(intent,2);
+                    if (Shared.walkroutes != null) {
+                        intent = new Intent(this, WalkrouteListActivity.class);
+                        startActivityForResult(intent, 2);
                     } else {
                         DialogUtils.showDialog(this, "No walk routes downloaded yet");
                     }
@@ -554,7 +567,7 @@ public class OpenTrail extends Activity  {
 
                     overlayManager.removeWalkroute(true);
 
-                    if(isRecordingWalkroute) {
+                    if (isRecordingWalkroute) {
 
                         mv.invalidate();
 
@@ -569,9 +582,9 @@ public class OpenTrail extends Activity  {
                         showWalkrouteDetailsActivity();
                     }
                     break;
-                 case R.id.uploadWalkrouteMenuItem:
-                     showRecordedWalkroutesActivity();
-                     break;
+                case R.id.uploadWalkrouteMenuItem:
+                    showRecordedWalkroutesActivity();
+                    break;
 
                 case R.id.clearCacheMenuItem:
                     clearCache();
@@ -579,87 +592,98 @@ public class OpenTrail extends Activity  {
 
 
                 default:
-                    retcode=false;
+                    retcode = false;
                     break;
-                }
             }
-            return retcode;
+        }
+        return retcode;
 
     }
 
 
     public void onActivityResult(int request, int result, Intent i) {
         Bundle extras;
-        if(result==RESULT_OK) {
-            switch(request) {
+        if (result == RESULT_OK) {
+            switch (request) {
 
                 case 0:
                     extras = i.getExtras();
-                    if(extras.getBoolean("success")) {
+                    if (extras.getBoolean("success")) {
                         boolean isWalkrouteAnnotation = extras.getBoolean("walkrouteAnnotation");
 
-                        String id=extras.getString("ID"),description=extras.getString("description");
-                        LatLong gp = new LatLong(extras.getDouble("lat"),extras.getDouble("lon"));
-                        Point p = new Point(extras.getDouble("lon"),extras.getDouble("lat"));
+                        String id = extras.getString("ID"), description = extras.getString("description");
+                        LatLong gp = new LatLong(extras.getDouble("lat"), extras.getDouble("lon"));
+                        Point p = new Point(extras.getDouble("lon"), extras.getDouble("lat"));
 
                         Marker item = MapsforgeUtil.makeTappableMarker(this, isWalkrouteAnnotation ?
                                 getResources().getDrawable(R.drawable.marker) :
-                                getResources().getDrawable(R.drawable.annotation) , gp, description);
+                                getResources().getDrawable(R.drawable.annotation), gp, description);
 
                         // 290116 this seems a bad idea as it will add it before the map layer
-                         //   mv.addLayer(item)
+                        //   mv.addLayer(item)
 
-                        int idInt = id.equals("0")? -(annCacheMgr.size()+1):Integer.parseInt(id);
+                        int idInt = id.equals("0") ? -(annCacheMgr.size() + 1) : Integer.parseInt(id);
 
                         mv.invalidate(); // 280116 needed?
 
                         Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
 
-                        if(isWalkrouteAnnotation && isRecordingWalkroute && recordingWalkroute!=null) {
+                        if (isWalkrouteAnnotation && isRecordingWalkroute && recordingWalkroute != null) {
                             recordingWalkroute.addStage(p, description);
-                        } else if(idInt<0) {
+                        } else if (idInt < 0) {
                             try {
-                                Annotation an=new Annotation(idInt,p.x,p.y,description);
+                                Annotation an = new Annotation(idInt, p.x, p.y, description);
                                 annCacheMgr.addAnnotation(an); // adding in wgs84 latlon
                                 Shared.pois.add(an); // this reprojects it
 
                                 // 290116 add the annotation to the layer
                                 overlayManager.addAnnotation(an, false);
-                            } catch(IOException e) {
-                                DialogUtils.showDialog(this,"Could not save annotation, please enable upload");
+                            } catch (IOException e) {
+                                DialogUtils.showDialog(this, "Could not save annotation, please enable upload");
                             }
                         }
                     }
                     break;
                 case 1:
-                    extras = i.getExtras();
+
+                    /* replace this by code to move to POI's location
                     POI poi = Shared.pois.getPOIById(Integer.parseInt(extras.getString("osmId")));
 
                     if(poi!=null) {
                         overlayManager.addPOI(poi);
+                    }
+                    */
+                    // 060517 POI activity now returns the projected x and y of the selected POI
+                    // so get this, unproject and set the mapview's centre point to this point
+                    if(i!=null) {
+                        extras = i.getExtras();
+                        if (extras.containsKey("foundX") && extras.containsKey("foundY")) {
+                            Point llPoint = this.proj.unproject(new Point(extras.getDouble("foundX"), extras.getDouble("foundY")));
+                            mv.setCenter(new LatLong(llPoint.y, llPoint.x));
+                        }
                     }
                     break;
 
                 case 2:
                     extras = i.getExtras();
                     int idx = extras.getInt("selectedRoute"), wrId = Shared.walkroutes.get(idx).getId();
-                    boolean loadSuccess=false;
+                    boolean loadSuccess = false;
 
-                    if(wrCacheMgr.isInCache(wrId)) {
+                    if (wrCacheMgr.isInCache(wrId)) {
                         try {
-                            Walkroute wr= wrCacheMgr.getWalkrouteFromCache(wrId);
-                            loadSuccess=true;
-                               setWalkroute(wr);
+                            Walkroute wr = wrCacheMgr.getWalkrouteFromCache(wrId);
+                            loadSuccess = true;
+                            setWalkroute(wr);
 
-                        } catch(Exception e) {
-                            DialogUtils.showDialog(this,"Unable to retrieve route from cache: " +
-                                    e.getMessage()+". Loading from network");
+                        } catch (Exception e) {
+                            DialogUtils.showDialog(this, "Unable to retrieve route from cache: " +
+                                    e.getMessage() + ". Loading from network");
                         }
                     }
-                    if(!loadSuccess) {
+                    if (!loadSuccess) {
 
                         Shared.savedData.setDataCallbackTask(new DownloadWalkrouteTask(this, dataReceiver));
-                        ((DownloadWalkrouteTask)Shared.savedData.getDataCallbackTask()).execute(wrId, idx);
+                        ((DownloadWalkrouteTask) Shared.savedData.getDataCallbackTask()).execute(wrId, idx);
                     }
                     break;
 
@@ -673,23 +697,22 @@ public class OpenTrail extends Activity  {
 
                     Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
 
-                    if(recordingWalkroute!=null) {
+                    if (recordingWalkroute != null) {
                         recordingWalkroute.setTitle(title);
                         recordingWalkroute.setDescription(description);
 
 
-
-                        AsyncTask<String,Void,Boolean> addToCacheTask = new AsyncTask<String,Void,Boolean>() {
+                        AsyncTask<String, Void, Boolean> addToCacheTask = new AsyncTask<String, Void, Boolean>() {
 
                             Walkroute recWR;
                             String errMsg;
 
-                            private AsyncTask<String,Void,Boolean> init(Walkroute recWR) {
+                            private AsyncTask<String, Void, Boolean> init(Walkroute recWR) {
                                 this.recWR = recWR;
                                 return this;
                             }
 
-                            public Boolean doInBackground(String...fname) {
+                            public Boolean doInBackground(String... fname) {
 
 
                                 try {
@@ -698,7 +721,7 @@ public class OpenTrail extends Activity  {
                                     wrCacheMgr.renameRecordingWalkroute(fname[0]);
                                     gpsService.clearRecordingWalkroute();
 
-                                } catch(IOException e) {
+                                } catch (IOException e) {
                                     errMsg = e.toString();
                                     return false;
                                 }
@@ -706,9 +729,9 @@ public class OpenTrail extends Activity  {
                             }
 
                             protected void onPostExecute(Boolean result) {
-                                if(!result) {
+                                if (!result) {
                                     DialogUtils.showDialog(OpenTrail.this, "Unable to save walk route: error=" + errMsg);
-                                }else {
+                                } else {
                                     overlayManager.removeWalkroute(true);
 
                                     DialogUtils.showDialog(OpenTrail.this, "Successfully saved walk route.");
@@ -732,6 +755,24 @@ public class OpenTrail extends Activity  {
         }
     }
 
+    private void loadStyleFile(File styleFile) {
+
+        try {
+            if (theme == null) {
+             //  theme = new ExternalRenderTheme(styleFile);
+               theme = new AssetsRenderTheme(this, "", "freemap_v4.xml");
+            }
+
+            Log.d("OpenTrail", "Loading style");
+            tileRendererLayer.setXmlRenderTheme(theme);
+
+            loadedRenderTheme = true;
+
+        } catch (IOException e) {
+            DialogUtils.showDialog(this, e.toString());
+        }
+    }
+
     private void startGPS() {
         // note service stuff below copied from old opentrail
         // in that, onResume() called "refreshDisplay(true)" (only) before doing this
@@ -740,7 +781,7 @@ public class OpenTrail extends Activity  {
         //http://developer.android.com/guide/components/bound-services.html
         //we need this as the activity requires data from the service, but we
         //also need the service to keep going once the activity finishes
-        Intent startServiceIntent = new Intent(this,GPSService.class);
+        Intent startServiceIntent = new Intent(this, GPSService.class);
         startServiceIntent.putExtra("wrCacheLoc", opentrailDir + "/walkroutes/");
         startServiceIntent.putExtra("isRecordingWalkroute", isRecordingWalkroute);
         startService(startServiceIntent);
@@ -761,28 +802,19 @@ public class OpenTrail extends Activity  {
                 AndroidGraphicFactory.INSTANCE);
     }
 
-    private void loadStyleFile(File styleFile) {
-
+    private boolean loadAssetsRenderTheme(String filename) {
         try {
-            if (theme == null) {
-                theme = new ExternalRenderTheme(styleFile);
-            }
-
-            Log.d("OpenTrail", "Loading style");
+            theme = new AssetsRenderTheme(this, "", filename);
             tileRendererLayer.setXmlRenderTheme(theme);
-
-            gotStyleFile = true;
-
+            return true;
         } catch (IOException e) {
             DialogUtils.showDialog(this, e.toString());
+            return false;
         }
     }
 
     private void doOverlays() {
-        // 250116 Originally we added the tile renderer layer directly to the mapview here
-        // however this call does it anyway
-        overlayManager.addTileRendererLayer(tileRendererLayer);
-        overlayManager.addAllOverlays();
+
 
         //mv.addLayer(tileRendererLayer);
 
@@ -790,6 +822,11 @@ public class OpenTrail extends Activity  {
         // when we first create it.
 
         // 061016 add isLocationMarker() test so we don't add one again
+
+        // 250116 Originally we added the tile renderer layer directly to the mapview here
+        // however this call does it anyway
+        overlayManager.addTileRendererLayer(tileRendererLayer);
+        overlayManager.addAllOverlays();
 
         if(prefGPSTracking==true && !overlayManager.isLocationMarker()) {
             Point markerPos = (location == null ? new Point(-0.72, 51.05) :
@@ -922,8 +959,6 @@ public class OpenTrail extends Activity  {
 
     private void setWalkroute(Walkroute walkroute) {
 
-        Log.d("OpenTrail", "setWalkroute:  walkroute: " + walkroute.getId());
-
         // 100316 changed this so that we only store the current walkroute in full
         // others are stored as WalkrouteSummary objects as we need only store the summary
         curDownloadedWalkroute = walkroute;
@@ -964,7 +999,6 @@ public class OpenTrail extends Activity  {
 
     public void loadAnnotationOverlay() {
         if (overlayManager!=null) {
-            Log.d("OpenTrail", "operating on annotations...");
             Shared.pois.operateOnAnnotations(overlayManager);
             overlayManager.showAnnotations();
             overlayManager.requestRedraw();
@@ -973,7 +1007,7 @@ public class OpenTrail extends Activity  {
 
     public void about() {
 
-        DialogUtils.showDialog(this, "OpenTrail 0.3 (beta), using Mapsforge 0.5. Uses OpenStreetMap data, copyright 2004-16 " +
+        DialogUtils.showDialog(this, "OpenTrail 0.3 (beta), using Mapsforge 0.5+. Uses OpenStreetMap data, copyright 2004-16 " +
                 "OpenStreetMap contributors, Open Database Licence. Uses " +
                 "Ordnance Survey OpenData LandForm Panorama contours, Crown Copyright." +
                 "Person icon taken from the osmdroid project. Annotation icon based on " +
