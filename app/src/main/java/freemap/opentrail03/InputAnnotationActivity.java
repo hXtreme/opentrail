@@ -35,7 +35,7 @@ import android.preference.PreferenceManager;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-
+import android.widget.Spinner;
 
 
 // TODO really need to deal with saving the AsyncTask so it can be restored on orientation change:
@@ -49,6 +49,7 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
     ArrayList<NameValuePair> postData;
     Intent resultIntent;
     boolean recordingWalkroute;
+    Spinner spAnnotationType;
 
     public class OKListener implements OnClickListener
     {
@@ -69,6 +70,8 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
         lat=intent.getExtras().getDouble("lat",91);
         lon=intent.getExtras().getDouble("lon",181);
         recordingWalkroute = intent.getExtras().getBoolean("isRecordingWalkroute", false);
+
+        spAnnotationType = (Spinner)findViewById(R.id.annotationType);
 
         CheckBox chkbxWalkroute = (CheckBox)findViewById(R.id.chkbxWalkroute);
         chkbxWalkroute.setChecked(recordingWalkroute);
@@ -129,13 +132,14 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
     public void sendAnnotation()
     {
         EditText text=(EditText)findViewById(R.id.etAnnotation);
-        String annText = Uri.encode(text.getText().toString());
+        String annText = Uri.encode(text.getText().toString()),
+                annotationType = String.valueOf(spAnnotationType.getSelectedItemPosition() + 1);
 
-
-        postData = new ArrayList<NameValuePair>();
+        postData = new ArrayList<>();
         postData.add(new BasicNameValuePair("action","create"));
         postData.add(new BasicNameValuePair("lon",String.valueOf(lon)));
         postData.add(new BasicNameValuePair("lat",String.valueOf(lat)));
+        postData.add(new BasicNameValuePair("annotationType", annotationType));
         postData.add(new BasicNameValuePair("text",annText));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         iaTask=new InputAnnotationTask(this, this);

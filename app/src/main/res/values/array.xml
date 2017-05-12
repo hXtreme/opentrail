@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="annotationTypes">
+        <item>Path blockage/issue</item>
+        <item>Path directions</item>
+    </string-array>
+</resources>

@@ -3,9 +3,8 @@
   <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent" android:layout_height="fill_parent">
   
-   
-     
-  	 
+
+
   <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"  
   android:layout_width="fill_parent" android:layout_height="wrap_content"
   android:id="@+id/tlInputAnnotation"
@@ -27,13 +26,27 @@
   </TableLayout>
     
    <CheckBox android:text="@string/walkroute_annotation" android:layout_width="wrap_content" android:layout_height="wrap_content"
-       android:layout_above="@+id/tlInputAnnotation" android:id="@+id/chkbxWalkroute" android:checked="false" /> 
-     
-   <EditText android:layout_width="fill_parent"
+       android:layout_above="@id/tlInputAnnotation" android:id="@+id/chkbxWalkroute" android:checked="false" />
+
+    <Spinner android:id="@+id/annotationType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/annotationTypes"
+        android:prompt="@string/annotationTypePrompt"
+        android:layout_above="@id/chkbxWalkroute"/>
+
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/annotationType"
+        android:layout_above="@id/annotationType"
+         android:id="@+id/tvAnnotationType"
+        android:gravity="top"/>
+
+    <EditText android:layout_width="fill_parent"
   	android:layout_height="fill_parent"
   	android:inputType="text"
   	android:id = "@+id/etAnnotation"
-  	android:layout_above="@+id/chkbxWalkroute"
+  	android:layout_above="@id/tvAnnotationType"
   	android:layout_alignParentTop="true"
 
   	 />

@@ -1,15 +1,11 @@
 
 package freemap.opentrail03;
 
-import org.mapsforge.map.android.view.MapView;
-
-
 import android.graphics.drawable.Drawable;
 import android.content.Context;
 import android.util.Log;
 
 import freemap.data.Annotation;
-import freemap.data.POI;
 import freemap.data.Point;
 import freemap.data.TrackPoint;
 import freemap.data.Walkroute;
@@ -26,7 +22,7 @@ import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-;
+import org.mapsforge.map.android.view.MapView;
 
 
 import java.util.HashMap;
@@ -37,36 +33,42 @@ import java.util.Set;
 // is it necessary to test existence of tile renderer layer before adding things?
 // can we not just assume it will be there?
 
-public class OverlayManager extends LocationDisplayer implements
+public class OverlayManager  implements
         freemap.datasource.FreemapDataset.AnnotationVisitor,
         MapLocationProcessor.LocationDisplayer {
 
 
+    protected Context ctx;
+    protected Drawable locationIcon;
+    protected Marker myLocOverlayItem;
+    protected MapView mv;
+    protected boolean markerShowing; // to prevent exceptions when marker added twice
 
     Paint outline;
-    Drawable markerIcon, annotationIcon;
+    Drawable markerIcon;
+    Drawable[] annotationIcons;
 
     HashMap<Integer,Marker> indexedAnnotations;
     Projection proj;
     Polyline renderedWalkroute;
-    ArrayList<Polyline> renderedWalkroutes;
     ArrayList<Marker> walkrouteStages;
-    Marker lastAddedPOI;
     TileRendererLayer tileLayer;
 
 
-    boolean includeAnnotations;
-    boolean poiShowing,  annotationsShowing;
-    // boolean renderLayerAdded; // can replace with tileLayer = null?
-    // boolean walkrouteShowing; // can replace with renderedWalkroute = null?
+    boolean annotationsShowing;
 
-    public OverlayManager(Context ctx, MapView mapView, Drawable locationIcon,  Drawable markerIcon, Drawable annotationIcon,
+
+    public OverlayManager(Context ctx, MapView mapView, Drawable locationIcon,  Drawable markerIcon, Drawable[] annotationIcons,
                           Projection proj) {
 
-        super(ctx,mapView,locationIcon);
+
+
+        this.mv = mapView;
+        this.ctx = ctx;
+        this.locationIcon = locationIcon;
 
         this.markerIcon = markerIcon;
-        this.annotationIcon = annotationIcon;
+        this.annotationIcons = annotationIcons;
         this.proj = proj;
 
         outline = MapsforgeUtil.makePaint(Color.BLUE, 5, Style.STROKE); // also alpha 128
@@ -75,28 +77,61 @@ public class OverlayManager extends LocationDisplayer implements
         indexedAnnotations = new HashMap<Integer,Marker>();
     }
 
+
+
+    public void addLocationMarker(Point p) {
+        myLocOverlayItem = MapsforgeUtil.makeMarker(locationIcon, new LatLong(p.y, p.x));
+        showLocationMarker();
+    }
+
+    public void showLocationMarker() {
+        if(mv!=null && myLocOverlayItem!=null && !markerShowing)
+        {
+            mv.addLayer(myLocOverlayItem);
+            // mv.getLayerManager().getLayers().add(myLocOverlayItem);
+            markerShowing=true;
+        }
+    }
+
+    public void hideLocationMarker() {
+        if(mv!=null && myLocOverlayItem!=null && markerShowing) {
+            mv.getLayerManager().getLayers().remove(myLocOverlayItem);
+            markerShowing=false;
+        }
+    }
+
+    public void moveLocationMarker(Point p) {
+        if(myLocOverlayItem!=null)
+            myLocOverlayItem.setLatLong(new LatLong(p.y, p.x));
+    }
+
+    public void removeLocationMarker() {
+        hideLocationMarker();
+        myLocOverlayItem = null;
+    }
+
+    public boolean isLocationMarker() {
+        return myLocOverlayItem != null;
+    }
+
+
+
     public void addTileRendererLayer(TileRendererLayer layer) {
-        if(tileLayer==null) // !renderLayerAdded)
+        if(tileLayer==null)
         {
             tileLayer=layer;
             mv.addLayer(layer);
-      //      renderLayerAdded = true;
         }
     }
 
     public void removeTileRendererLayer() {
-        if(tileLayer!=null)//renderLayerAdded)
+        if(tileLayer!=null)
         {
             mv.getLayerManager().getLayers().remove(tileLayer);
             tileLayer = null;
-           // renderLayerAdded=false;
         }
     }
 
-    // Note the difference between "setting" an overlay and adding it.
-    // "Setting" it merely creates the overlay layer but will only actually add it
-    // as an overlay if the tile renderer layer has been added first.
-    // "setting" also removes any existing object from the map
 
     public void addWalkroute(Walkroute walkroute) {
         addWalkroute(walkroute,true);
@@ -163,7 +198,7 @@ public class OverlayManager extends LocationDisplayer implements
         // only add the walkroute as a layer if not added already
         if(hasRenderedWalkroute() && walkrouteStages!=null && tileLayer!=null)
         {
-            Log.d("newmapsforge", "addWalkroute(): adding walk route");
+            Log.d("OpenTrail", "addWalkroute(): adding walk route");
             mv.getLayerManager().getLayers().add(renderedWalkroute);
 
             for(int i=0; i<walkrouteStages.size(); i++)
@@ -174,7 +209,7 @@ public class OverlayManager extends LocationDisplayer implements
     }
 
     public void removeWalkroute(boolean removeData) {
-        Log.d("newmapsforge", "removeWalkroute(): removeData=" + removeData);
+        Log.d("OpenTrail", "removeWalkroute(): removeData=" + removeData);
        // if(walkrouteShowing)
         if(renderedWalkroute != null) {
             Log.d("newmapsforge", "removeWalkroute(): removing rendered walkroute");
@@ -196,30 +231,10 @@ public class OverlayManager extends LocationDisplayer implements
     }
 
 
-    public void addPOI(POI poi) {
-        if(lastAddedPOI!=null)
-            removePOI();
-
-
-        Point unproj = proj.unproject(poi.getPoint());
-        LatLong gp = new LatLong(unproj.y,unproj.x);
-
-
-        mv.setCenter(gp);
-
-        String name=poi.getValue("name");
-        name=(name==null)? "unnamed":name;
-        lastAddedPOI = MapsforgeUtil.makeTappableMarker(ctx, markerIcon, gp, name);
-
-       // if(renderLayerAdded) again is this necessary?
-        if(tileLayer!=null)
-            showPOI();
-    }
 
     // to be called in onStart() after adding the TileRendererLayer
     public void addAllOverlays() {
         showLocationMarker();
-        showPOI();
         showAnnotations();
         Log.d("OpenTrail", "calling showWalkroute() from addAllOverlays()");
         showWalkroute();
@@ -229,35 +244,7 @@ public class OverlayManager extends LocationDisplayer implements
     public void removeAllOverlays(boolean removeData) {
         removeWalkroute(removeData);
         removeAnnotations();
-        removePOI();
         hideLocationMarker();
-    }
-
-    /*
-    public void setLocationMarker(Point p) {
-        super.setLocationMarker(p);
-      //  if(renderLayerAdded) again necessary?
-
-        // 250116 dont like this its inconsistent
-        //if(tileLayer!=null) super.addLocationMarker();
-
-    }
-    */
-
-    public void showPOI() {
-        if(!poiShowing && lastAddedPOI!=null && tileLayer!=null)
-        {
-            mv.addLayer(lastAddedPOI);
-            poiShowing = true;
-        }
-    }
-
-    public void removePOI() {
-        if(poiShowing)
-        {
-            mv.getLayerManager().getLayers().remove(lastAddedPOI);
-            poiShowing = false;
-        }
     }
 
     public void removeAnnotations() {
@@ -289,7 +276,9 @@ public class OverlayManager extends LocationDisplayer implements
     // 290116 projection stuff - messy
     public void addAnnotation(Annotation ann, boolean unproject) {
         Point unproj = unproject ? proj.unproject(ann.getPoint()) : ann.getPoint();
-        Marker item = MapsforgeUtil.makeTappableMarker(ctx, annotationIcon, new LatLong(unproj.y,unproj.x), ann.getDescription());
+        int type = ann.getType().equals("") ? 2:  Integer.parseInt(ann.getType());
+        Marker item = MapsforgeUtil.makeTappableMarker(ctx, annotationIcons[type-1],
+                new LatLong(unproj.y,unproj.x), ann.getDescription());
 
         indexedAnnotations.put(ann.getId(), item);
     }

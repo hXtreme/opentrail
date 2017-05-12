@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -152,7 +153,8 @@ public class OpenTrail extends Activity {
 
         overlayManager = new OverlayManager(this, mv, getResources().getDrawable(R.mipmap.person),
                 getResources().getDrawable(R.mipmap.marker),
-                getResources().getDrawable(R.mipmap.annotation),
+                new Drawable[] {getResources().getDrawable(R.mipmap.caution),
+                        getResources().getDrawable(R.mipmap.interest)},
                 proj);
 
         mapLocationProcessor = new MapLocationProcessorBR(new MapLocationProcessor.LocationReceiver() {

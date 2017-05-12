@@ -29,7 +29,7 @@ dependencies {
 */
     compile fileTree (dir:'libs', include: ['*.jar'])
 
-    compile (name: 'Andromaps-debug', ext: 'aar')
+   compile (name: 'Andromaps-debug', ext: 'aar')
    // compile 'com.android.support:appcompat-v7:22.0.0'
 }
 
