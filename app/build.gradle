@@ -20,17 +20,18 @@ android {
 }
 
 dependencies {
-/*
-    compile files ('libs/mapsforge-core-dev-SNAPSHOT.jar')
-    compile files ('libs/mapsforge-map-android-dev-SNAPSHOT.jar')
-    compile files ('libs/mapsforge-map-dev-SNAPSHOT.jar')
-    compile files ('libs/mapsforge-map-reader-dev-SNAPSHOT.jar')
-    compile files ('libs/mapsforgeplus-0.1-SNAPSHOT.jar')
-*/
-    compile fileTree (dir:'libs', include: ['*.jar'])
-
-   compile (name: 'Andromaps-debug', ext: 'aar')
    // compile 'com.android.support:appcompat-v7:22.0.0'
+    compile project (":andromaps")
+    compile 'org.mapsforge:mapsforge-core:0.8.0'
+    compile 'org.mapsforge:mapsforge-map:0.8.0'
+    compile 'org.mapsforge:mapsforge-map-reader:0.8.0'
+    compile 'org.mapsforge:mapsforge-map-android:0.8.0'
+    compile 'freemap:freemaplib:20170509'
+    compile 'freemap:freemaplibProj:20131013'
+    compile 'freemap:mapsforgegeojson:0.1-SNAPSHOT'
+    compile 'uk.me.jstott:jcoord:1.0'
+    compile 'com.jhlabs:javaproj:1.0.6-noawt'
+
 }
 
 // this will include the *.aar files as long as they are in "libs"

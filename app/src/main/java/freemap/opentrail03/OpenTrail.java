@@ -56,8 +56,8 @@ import freemap.datasource.FreemapFileFormatter;
 import freemap.datasource.WebDataSource;
 import freemap.datasource.WalkrouteCacheManager;
 import freemap.datasource.XMLDataInterpreter;
-import freemap.mapsforgeplus.GeoJSONDataSource;
-import freemap.mapsforgeplus.DownloadCache;
+import freemap.mapsforgegeojson.GeoJSONDataSource;
+import freemap.mapsforgegeojson.DownloadCache;
 import freemap.andromaps.DialogUtils;
 import freemap.andromaps.MapLocationProcessor;
 import freemap.datasource.AnnotationCacheManager;
@@ -66,8 +66,6 @@ import freemap.proj.OSGBProjection;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-// Problems:
 
 
 public class OpenTrail extends Activity {
@@ -111,8 +109,6 @@ public class OpenTrail extends Activity {
 
 
         AndroidGraphicFactory.createInstance(this.getApplication());
-
-        Log.d("OpenTrail", "***onCreate()");
 
         setContentView(R.layout.activity_main);
         mv = (MapView) findViewById(R.id.mapView);
@@ -194,6 +190,7 @@ public class OpenTrail extends Activity {
                 }
                 if (prefGPSTracking) {
                     gotoMyLocation();
+                    tileRendererLayer.requestRedraw();
                     overlayManager.requestRedraw();
                 }
             }
@@ -374,7 +371,6 @@ public class OpenTrail extends Activity {
     protected void onStart() {
         super.onStart();
 
-        Log.d("OpenTrail", "***onStart()");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         prefGPSTracking = prefs.getBoolean("prefGPSTracking", true);
@@ -384,7 +380,6 @@ public class OpenTrail extends Activity {
     }
 
     public void onResume() {
-
         super.onResume();
         if(loadedRenderTheme) {
 
@@ -394,21 +389,11 @@ public class OpenTrail extends Activity {
 
     public void onStop() {
         super.onStop();
-        Log.d("OpenTrail", "***onStop()");
     }
 
     public void onPause() {
         super.onPause();
 
-        Log.d("OpenTrail", "***onPause()");
-
-
-
-        /*
-        if(locationListener!=null) {
-            locationListener.stopUpdates();
-        }
-        */
         // this was in onStop() in former version of opentrail
         if(loadedRenderTheme) {
             Intent stopIfNotLoggingBroadcast = new Intent("freemap.opentrail.stopifnotlogging");
@@ -418,13 +403,10 @@ public class OpenTrail extends Activity {
     }
 
     protected void onDestroy() {
+        // from minimal Mapsforge example - this should (hopefully...) destroy everything
+        mv.destroyAll();
+        AndroidGraphicFactory.clearResourceMemoryCache();
         super.onDestroy();
-
-        // remove all markers
-        // MOVED FROM ONPAUSE
-        overlayManager.removeAllOverlays(false);
-
-        overlayManager.removeTileRendererLayer();
 
         unregisterReceiver(mapLocationProcessor);
         unbindService(gpsServiceConn);
@@ -440,7 +422,7 @@ public class OpenTrail extends Activity {
         editor.putLong("lastCacheClearTime", lastCacheClearTime);
         editor.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
         editor.commit();
-        mv.destroyAll();
+
     }
 
     // according to the docs, if it's a single top activity and the activity is already on the
@@ -514,7 +496,6 @@ public class OpenTrail extends Activity {
 
                     intent = new Intent(this, OpenTrailPreferences.class);
                     startActivity(intent);
-
                     break;
 
                 case R.id.poisMenuItem:
@@ -648,15 +629,9 @@ public class OpenTrail extends Activity {
                     break;
                 case 1:
 
-                    /* replace this by code to move to POI's location
-                    POI poi = Shared.pois.getPOIById(Integer.parseInt(extras.getString("osmId")));
-
-                    if(poi!=null) {
-                        overlayManager.addPOI(poi);
-                    }
-                    */
                     // 060517 POI activity now returns the projected x and y of the selected POI
                     // so get this, unproject and set the mapview's centre point to this point
+                    // Note: no marker added at the POI now
                     if(i!=null) {
                         extras = i.getExtras();
                         if (extras.containsKey("foundX") && extras.containsKey("foundY")) {
@@ -757,24 +732,6 @@ public class OpenTrail extends Activity {
         }
     }
 
-    private void loadStyleFile(File styleFile) {
-
-        try {
-            if (theme == null) {
-             //  theme = new ExternalRenderTheme(styleFile);
-               theme = new AssetsRenderTheme(this, "", "freemap_v4.xml");
-            }
-
-            Log.d("OpenTrail", "Loading style");
-            tileRendererLayer.setXmlRenderTheme(theme);
-
-            loadedRenderTheme = true;
-
-        } catch (IOException e) {
-            DialogUtils.showDialog(this, e.toString());
-        }
-    }
-
     private void startGPS() {
         // note service stuff below copied from old opentrail
         // in that, onResume() called "refreshDisplay(true)" (only) before doing this
@@ -787,20 +744,11 @@ public class OpenTrail extends Activity {
         startServiceIntent.putExtra("wrCacheLoc", opentrailDir + "/walkroutes/");
         startServiceIntent.putExtra("isRecordingWalkroute", isRecordingWalkroute);
         startService(startServiceIntent);
-
-        /* non-service code
-
-        locationListener = new MapLocationProcessorWithListener(
-
-                new MapLocationProcessor.LocationReceiver() { ...etc... }, this, overlayManager);
-
-        locationListener.startUpdates(0, 0);
-        */
     }
 
     private void createTileRendererLayer() {
         tileRendererLayer = new TileRendererLayer(tileCache, ds,
-                mv.getModel().mapViewPosition, false, true,
+                mv.getModel().mapViewPosition,
                 AndroidGraphicFactory.INSTANCE);
     }
 
@@ -818,8 +766,6 @@ public class OpenTrail extends Activity {
     private void doOverlays() {
 
 
-        //mv.addLayer(tileRendererLayer);
-
         // This is a bit messy, we are forced to give the location marker an arbitrary location
         // when we first create it.
 
@@ -827,7 +773,8 @@ public class OpenTrail extends Activity {
 
         // 250116 Originally we added the tile renderer layer directly to the mapview here
         // however this call does it anyway
-        overlayManager.addTileRendererLayer(tileRendererLayer);
+       // overlayManager.addTileRendererLayer(tileRendererLayer);
+        mv.addLayer(tileRendererLayer);
         overlayManager.addAllOverlays();
 
         if(prefGPSTracking==true && !overlayManager.isLocationMarker()) {
@@ -1003,13 +950,14 @@ public class OpenTrail extends Activity {
         if (overlayManager!=null) {
             Shared.pois.operateOnAnnotations(overlayManager);
             overlayManager.showAnnotations();
+            tileRendererLayer.requestRedraw();
             overlayManager.requestRedraw();
         }
     }
 
     public void about() {
 
-        DialogUtils.showDialog(this, "OpenTrail 0.3 (beta), using Mapsforge 0.5+. Uses OpenStreetMap data, copyright 2004-16 " +
+        DialogUtils.showDialog(this, "OpenTrail 0.3 (beta), using Mapsforge. Uses OpenStreetMap data, copyright 2004-17 " +
                 "OpenStreetMap contributors, Open Database Licence. Uses " +
                 "Ordnance Survey OpenData LandForm Panorama contours, Crown Copyright." +
                 "Person icon taken from the osmdroid project. Annotation icon based on " +
