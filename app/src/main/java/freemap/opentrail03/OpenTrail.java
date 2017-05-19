@@ -274,6 +274,30 @@ public class OpenTrail extends Activity {
             wrDir.mkdir();
         }
 
+        alertDisplay = new AlertDisplay() {
+            public void displayAnnotationInfo(String msg, int type, int alertId) {
+                DialogUtils.showDialog(OpenTrail.this, msg);
+
+
+                Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                if (ringtoneUri != null) {
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), ringtoneUri);
+                    r.play();
+                }
+                String summary = (type == AlertDisplay.ANNOTATION) ? "New walk note" : "New walk route stage";
+                NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                Notification.Builder nBuilder = new Notification.Builder(OpenTrail.this).setSmallIcon(R.drawable.marker).setContentTitle(summary).
+                        setContentText(msg);
+                Intent intent = new Intent(OpenTrail.this, OpenTrail.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                PendingIntent pIntent = PendingIntent.getActivity(OpenTrail.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                nBuilder.setContentIntent(pIntent);
+                mgr.notify(alertId, nBuilder.getNotification()); // deprecated api level 16 - use build() instead
+
+            }
+        };
+
         alertDisplayMgr = new AlertDisplayManager(alertDisplay, 50);
 
         if (curDownloadedWalkroute != null && curDownloadedWalkroute.getPoints().size() > 0) {
@@ -320,29 +344,7 @@ public class OpenTrail extends Activity {
             }
         };
 
-        alertDisplay = new AlertDisplay() {
-            public void displayAnnotationInfo(String msg, int type, int alertId) {
-                DialogUtils.showDialog(OpenTrail.this, msg);
 
-
-                Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                if (ringtoneUri != null) {
-                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), ringtoneUri);
-                    r.play();
-                }
-                String summary = (type == AlertDisplay.ANNOTATION) ? "New walk note" : "New walk route stage";
-                NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                Notification.Builder nBuilder = new Notification.Builder(OpenTrail.this).setSmallIcon(R.drawable.marker).setContentTitle(summary).
-                        setContentText(msg);
-                Intent intent = new Intent(OpenTrail.this, OpenTrail.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                PendingIntent pIntent = PendingIntent.getActivity(OpenTrail.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                nBuilder.setContentIntent(pIntent);
-                mgr.notify(alertId, nBuilder.getNotification()); // deprecated api level 16 - use build() instead
-
-            }
-        };
 
 
         alertDisplayMgr.setPOIs(Shared.pois);
