@@ -37,6 +37,8 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.widget.Spinner;
 
+import freemap.andromaps.DialogUtils;
+
 
 // TODO really need to deal with saving the AsyncTask so it can be restored on orientation change:
 // as a quickfix have locked this activity to portrait.
@@ -50,6 +52,7 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
     Intent resultIntent;
     boolean recordingWalkroute;
     Spinner spAnnotationType;
+    String annotationType;
 
     public class OKListener implements OnClickListener
     {
@@ -76,7 +79,7 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
         CheckBox chkbxWalkroute = (CheckBox)findViewById(R.id.chkbxWalkroute);
         chkbxWalkroute.setChecked(recordingWalkroute);
         chkbxWalkroute.setVisibility(recordingWalkroute ? View.VISIBLE: View.GONE);
-
+        
         if(lat<180 && lon<90)
         {
             cancel1.setOnClickListener(new OnClickListener() {
@@ -132,8 +135,8 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
     public void sendAnnotation()
     {
         EditText text=(EditText)findViewById(R.id.etAnnotation);
-        String annText = Uri.encode(text.getText().toString()),
-                annotationType = String.valueOf(spAnnotationType.getSelectedItemPosition() + 1);
+        String annText = Uri.encode(text.getText().toString());
+        annotationType = String.valueOf(spAnnotationType.getSelectedItemPosition() + 1);
 
         postData = new ArrayList<>();
         postData.add(new BasicNameValuePair("action","create"));
@@ -169,6 +172,7 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
     public void receiveResponse(String response)
     {
         boolean success = iaTask.isSuccess() && response!=null;
+        DialogUtils.showDialog(this, "ID of Annotation=" + response);
         done(response, iaTask.getResultMsg(), success);
     }
 
@@ -185,6 +189,7 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
             extras.putBoolean("walkrouteAnnotation" ,((CheckBox)findViewById(R.id.chkbxWalkroute)).isChecked());
             extras.putDouble("lon", lon);
             extras.putDouble("lat", lat);
+            extras.putString("annotationType", annotationType);
         }
         resultIntent.putExtras(extras);
 

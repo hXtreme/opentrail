@@ -584,10 +584,11 @@ public class OpenTrail extends Activity {
                         String id = extras.getString("ID"), description = extras.getString("description");
                         LatLong gp = new LatLong(extras.getDouble("lat"), extras.getDouble("lon"));
                         Point p = new Point(extras.getDouble("lon"), extras.getDouble("lat"));
-
+                        String annotationType = extras.getString("annotationType");
                         Marker item = MapsforgeUtil.makeTappableMarker(this, isWalkrouteAnnotation ?
-                                getResources().getDrawable(R.drawable.marker) :
-                                getResources().getDrawable(R.drawable.annotation), gp, description);
+                                getResources().getDrawable(R.mipmap.flag) :
+                                (annotationType.equals("1")?getResources().getDrawable(R.mipmap.caution):
+                                getResources().getDrawable(R.mipmap.interest)), gp, description);
 
                         // 290116 this seems a bad idea as it will add it before the map layer
                         //   mv.addLayer(item)
@@ -603,7 +604,7 @@ public class OpenTrail extends Activity {
                             recordingWalkroute.addStage(p, description);
                         } else if (idInt < 0) {
                             try {
-                                Annotation an = new Annotation(idInt, p.x, p.y, description);
+                                Annotation an = new Annotation(idInt, p.x, p.y, description, annotationType);
                                 annCacheMgr.addAnnotation(an); // adding in wgs84 latlon
                                 Shared.pois.add(an); // this reprojects it
 
