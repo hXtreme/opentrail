@@ -185,7 +185,7 @@ public class OpenTrail extends Activity {
                         Toast.makeText(OpenTrail.this, "Loading data from cache", Toast.LENGTH_SHORT).show();
                     else
                         Toast.makeText(OpenTrail.this, "Loading data from web", Toast.LENGTH_SHORT).show();
-                    startPOIDownload(false, false);
+                    startPOIDownload(false, false, OpenTrail.this.location);
 
                 }
                 if (prefGPSTracking) {
@@ -467,12 +467,11 @@ public class OpenTrail extends Activity {
         LatLong loc = this.location != null ? this.location :
             mv.getModel().mapViewPosition.getCenter();
 
-
         boolean retcode = true;
         if (item.getItemId() == R.id.aboutMenuItem) {
             about();
         } else {
-            Intent intent = null;
+            Intent intent;
             switch (item.getItemId()) {
                 case R.id.myLocationMenuItem:
                     if (this.location != null) {
@@ -495,7 +494,7 @@ public class OpenTrail extends Activity {
 
                 case R.id.poisMenuItem:
                     SharedPreferences sprefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    startPOIDownload(true, sprefs.getBoolean("prefForcePOIDownload", false));
+                    startPOIDownload(true, sprefs.getBoolean("prefForcePOIDownload", false), loc);
                     break;
 
                 case R.id.findPoisMenuItem:
@@ -781,34 +780,21 @@ public class OpenTrail extends Activity {
     }
 
     public void launchInputAnnotationActivity(double lat, double lon) {
-        if(this.location!=null)
-        {
-            Intent intent = new Intent(this,InputAnnotationActivity.class);
-            Bundle extras = new Bundle();
-            extras.putDouble("lat", lat);
-            extras.putDouble("lon", lon);
-            extras.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
-            intent.putExtras(extras);
-            startActivityForResult(intent, 0);
-        }
-        else
-        {
-            DialogUtils.showDialog(this,"Location unknown");
-        }
 
+        Intent intent = new Intent(this,InputAnnotationActivity.class);
+        Bundle extras = new Bundle();
+        extras.putDouble("lat", lat);
+        extras.putDouble("lon", lon);
+        extras.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
+        intent.putExtras(extras);
+        startActivityForResult(intent, 0);
     }
 
-    private void startPOIDownload(boolean showDialog, boolean forceWebDownload)
+    private void startPOIDownload(boolean showDialog, boolean forceWebDownload, LatLong loc)
     {
-        LatLong loc = this.location != null ? this.location :
-                mv.getModel().mapViewPosition.getCenter();
-        if (loc!=null) {
-            if(Shared.savedData.getDataCallbackTask()==null || Shared.savedData.getDataCallbackTask().getStatus()!= AsyncTask.Status.RUNNING) {
-                Shared.savedData.setDataCallbackTask(new DownloadPOIsTask(this, poiDeliverer, dataReceiver, showDialog, forceWebDownload, location));
-                ((DownloadPOIsTask)Shared.savedData.getDataCallbackTask()).execute();
-            }
-        } else {
-            DialogUtils.showDialog(this,"Location unknown");
+        if(Shared.savedData.getDataCallbackTask()==null || Shared.savedData.getDataCallbackTask().getStatus()!= AsyncTask.Status.RUNNING) {
+                Shared.savedData.setDataCallbackTask(new DownloadPOIsTask(this, poiDeliverer, dataReceiver, showDialog, forceWebDownload, loc));
+                ((DownloadPOIsTask) Shared.savedData.getDataCallbackTask()).execute();
         }
     }
 
