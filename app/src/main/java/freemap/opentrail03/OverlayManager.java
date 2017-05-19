@@ -254,7 +254,7 @@ public class OverlayManager  implements
     }
 
     public void visit(Annotation ann) {
-
+        Log.d("OpenTrail", "Annotation visit()");
         if(indexedAnnotations.get(ann.getId()) == null)
         {
             Log.d("OpenTrail", "OverlayManager: adding annotation (visit method) - not showing them");

@@ -31,8 +31,8 @@
 
             <!-- blog.dpdearing.com/2011/05/getting-android-to-call-onactivityresult-after-onsearchrequested-->
         </activity>
-        <activity android:name=".InputAnnotationActivity" android:label="Input annotation details"
-            android:screenOrientation="portrait"/>
+        <!-- why was this always portrait? -->
+        <activity android:name=".InputAnnotationActivity" android:label="Input annotation details" />
         <activity android:name=".POIListActivity" android:label="Choose a POI" />
         <activity android:name=".POITypesListActivity" android:label="Choose a POI type" />
         <activity android:name=".RecordedWalkroutesListActivity" android:label="Choose recorded route" />

@@ -44,7 +44,8 @@
      android:text="Description" />
  <EditText android:layout_width="fill_parent"
      android:layout_height="fill_parent"
-     android:id="@+id/etWrDescription" />
+     android:id="@+id/etWrDescription"
+     android:gravity="top"/>
  
 </LinearLayout>
 </RelativeLayout>

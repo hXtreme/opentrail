@@ -46,7 +46,9 @@ public class InputAnnotationTask extends DataCallbackTask<ArrayList<NameValuePai
             {
                 setData(resp);
                 success=true;
-                return "Annotation added with ID " + resp;
+             //   return "Annotation added with ID " + resp;
+                // 160517 i think above will ballsup the ID to beadded to the annotations
+                return resp;
             }
             else if (comm.getStatusCode()==401)
             {

@@ -133,7 +133,7 @@ zoom-max="15">
 </rule>
 
 <rule e="way" k="highway" v="tertiary|tertiary_link" zoom-min="16">
-<line stroke="#ffffcc" stroke-width="4" />
+<line stroke="#ffffcc" stroke-width="3" />
 <pathText k="name" font-size="16" /> 
 </rule>
 
@@ -284,7 +284,7 @@ zoom-max="15">
     </rule>
 
 
-    <rule e="node" k="power" v="tower" zoom-min="13" zoom-max="14">
+    <rule e="node" k="power" v="tower" zoom-min="14" zoom-max="14">
 <symbol id="powertower" src="assets:symbols/powertower.png" />
 </rule>
 

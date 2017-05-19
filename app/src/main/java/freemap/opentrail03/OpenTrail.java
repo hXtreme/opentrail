@@ -462,7 +462,10 @@ public class OpenTrail extends Activity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        LatLong loc = this.location != null ? this.location : initPos;
+        LatLong loc = this.location != null ? this.location :
+            mv.getModel().mapViewPosition.getCenter();
+
+
         boolean retcode = true;
         if (item.getItemId() == R.id.aboutMenuItem) {
             about();
@@ -478,17 +481,7 @@ public class OpenTrail extends Activity {
                     break;
 
                 case R.id.inputAnnotationMenuItem:
-                    if (this.location != null) {
-                        launchInputAnnotationActivity(this.location.latitude,
-                                this.location.longitude);
-                    } else {
-
-                        // TEST??? might produce unwanted null object if commented out
-                        // this.location = new LatLong(50.9, 1.4);
-
-                        DialogUtils.showDialog(this, "Location not known yet");
-                    }
-
+                    launchInputAnnotationActivity(loc.latitude, loc.longitude);
                     break;
 
 
@@ -499,25 +492,18 @@ public class OpenTrail extends Activity {
                     break;
 
                 case R.id.poisMenuItem:
-                    if (this.location != null) {
-                        SharedPreferences sprefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                        startPOIDownload(true, sprefs.getBoolean("prefForcePOIDownload", false));
-                    } else {
-                        DialogUtils.showDialog(this, "Location not known yet");
-                    }
+                    SharedPreferences sprefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    startPOIDownload(true, sprefs.getBoolean("prefForcePOIDownload", false));
                     break;
 
                 case R.id.findPoisMenuItem:
 
-                    if (loc == null) {
-                        DialogUtils.showDialog(this, "Location not known yet");
-                    } else {
-                        intent = new Intent(this, POITypesListActivity.class);
-                        Point p = this.proj.project(new Point(loc.longitude, loc.latitude));
-                        intent.putExtra("projectedX", p.x);
-                        intent.putExtra("projectedY", p.y);
-                        startActivityForResult(intent, 1);
-                    }
+                    intent = new Intent(this, POITypesListActivity.class);
+                    Point p = this.proj.project(new Point(loc.longitude, loc.latitude));
+                    intent.putExtra("projectedX", p.x);
+                    intent.putExtra("projectedY", p.y);
+                    startActivityForResult(intent, 1);
+
                     break;
 
                 case R.id.walkroutesMenuItem:
@@ -604,6 +590,7 @@ public class OpenTrail extends Activity {
 
                         // 290116 this seems a bad idea as it will add it before the map layer
                         //   mv.addLayer(item)
+
 
                         int idInt = id.equals("0") ? -(annCacheMgr.size() + 1) : Integer.parseInt(id);
 
@@ -811,7 +798,8 @@ public class OpenTrail extends Activity {
 
     private void startPOIDownload(boolean showDialog, boolean forceWebDownload)
     {
-        LatLong loc = this.location != null ? this.location : initPos;
+        LatLong loc = this.location != null ? this.location :
+                mv.getModel().mapViewPosition.getCenter();
         if (loc!=null) {
             if(Shared.savedData.getDataCallbackTask()==null || Shared.savedData.getDataCallbackTask().getStatus()!= AsyncTask.Status.RUNNING) {
                 Shared.savedData.setDataCallbackTask(new DownloadPOIsTask(this, poiDeliverer, dataReceiver, showDialog, forceWebDownload, location));
