@@ -148,7 +148,7 @@ public class OpenTrail extends Activity {
         wrCacheMgr = new WalkrouteCacheManager(opentrailDir + "/walkroutes/");
 
         overlayManager = new OverlayManager(this, mv, getResources().getDrawable(R.mipmap.person),
-                getResources().getDrawable(R.mipmap.marker),
+                getResources().getDrawable(R.mipmap.flag),
                 new Drawable[] {getResources().getDrawable(R.mipmap.caution),
                         getResources().getDrawable(R.mipmap.interest)},
                 proj);
