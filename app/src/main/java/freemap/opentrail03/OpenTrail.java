@@ -150,6 +150,7 @@ public class OpenTrail extends Activity {
         overlayManager = new OverlayManager(this, mv, getResources().getDrawable(R.mipmap.person),
                 getResources().getDrawable(R.mipmap.flag),
                 new Drawable[] {getResources().getDrawable(R.mipmap.caution),
+                        getResources().getDrawable(R.mipmap.directions),
                         getResources().getDrawable(R.mipmap.interest)},
                 proj);
 
@@ -366,7 +367,7 @@ public class OpenTrail extends Activity {
         registerReceiver(mapLocationProcessor, filter);
 
         if (loadedRenderTheme=loadAssetsRenderTheme("freemap_v4.xml")) {
-            doOverlays();
+            addOverlays();
         }
     }
 
@@ -378,6 +379,9 @@ public class OpenTrail extends Activity {
         prefGPSTracking = prefs.getBoolean("prefGPSTracking", true);
         prefAnnotations = prefs.getBoolean("prefAnnotations", true);
         prefAutoDownload = prefs.getBoolean("prefAutoDownload", false);
+
+        overlayManager.setAnnotationsShowing(prefAnnotations);
+        overlayManager.requestRedraw();
 
     }
 
@@ -590,26 +594,36 @@ public class OpenTrail extends Activity {
                                 (annotationType.equals("1")?getResources().getDrawable(R.mipmap.caution):
                                 getResources().getDrawable(R.mipmap.interest)), gp, description);
 
-                        // 290116 this seems a bad idea as it will add it before the map layer
-                        //   mv.addLayer(item)
-
 
                         int idInt = id.equals("0") ? -(annCacheMgr.size() + 1) : Integer.parseInt(id);
 
-                        mv.invalidate(); // 280116 needed?
+                        Log.d("OpenTrail", "idInt=" + idInt);
+                        mv.invalidate();
 
                         Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
 
                         if (isWalkrouteAnnotation && isRecordingWalkroute && recordingWalkroute != null) {
                             recordingWalkroute.addStage(p, description);
-                        } else if (idInt < 0) {
+                            ArrayList<Walkroute.Stage> stages = recordingWalkroute.getStages();
+                            overlayManager.addStageToWalkroute(stages.get(stages.size()-1));
+                            overlayManager.requestRedraw();
+                  //      } else if (idInt < 0) { // 240516 why???
+                        } else {
                             try {
                                 Annotation an = new Annotation(idInt, p.x, p.y, description, annotationType);
                                 annCacheMgr.addAnnotation(an); // adding in wgs84 latlon
-                                Shared.pois.add(an); // this reprojects it
 
                                 // 290116 add the annotation to the layer
+                                // 240517 must add before the overlay manager!! Otherwise the next call
+                                // reprojects the thing and then we're screwed
                                 overlayManager.addAnnotation(an, false);
+
+                                overlayManager.requestRedraw();
+
+                                Shared.pois.add(an); // this reprojects it
+
+
+                                Log.d("OpenTrail","annotation ought to have been added: ID=" + an.getId());
                             } catch (IOException e) {
                                 DialogUtils.showDialog(this, "Could not save annotation, please enable upload");
                             }
@@ -752,19 +766,15 @@ public class OpenTrail extends Activity {
         }
     }
 
-    private void doOverlays() {
+    private void addOverlays() {
 
 
         // This is a bit messy, we are forced to give the location marker an arbitrary location
         // when we first create it.
 
-        // 061016 add isLocationMarker() test so we don't add one again
 
-        // 250116 Originally we added the tile renderer layer directly to the mapview here
-        // however this call does it anyway
-       // overlayManager.addTileRendererLayer(tileRendererLayer);
         mv.addLayer(tileRendererLayer);
-        overlayManager.addAllOverlays();
+        // 270517 remove addAllOverlays(): no longer necessary as overlays always added straight away
 
         if(prefGPSTracking==true && !overlayManager.isLocationMarker()) {
             Point markerPos = (location == null ? new Point(-0.72, 51.05) :
@@ -926,7 +936,7 @@ public class OpenTrail extends Activity {
     public void loadAnnotationOverlay() {
         if (overlayManager!=null) {
             Shared.pois.operateOnAnnotations(overlayManager);
-            overlayManager.showAnnotations();
+        //    overlayManager.showAnnotations(); // no need now - above call does this
             tileRendererLayer.requestRedraw();
             overlayManager.requestRedraw();
         }

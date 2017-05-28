@@ -14,10 +14,12 @@ import org.apache.http.NameValuePair;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.CheckBox;
 
@@ -79,7 +81,13 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
         CheckBox chkbxWalkroute = (CheckBox)findViewById(R.id.chkbxWalkroute);
         chkbxWalkroute.setChecked(recordingWalkroute);
         chkbxWalkroute.setVisibility(recordingWalkroute ? View.VISIBLE: View.GONE);
-        
+
+        chkbxWalkroute.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton btn, boolean isChecked) {
+                spAnnotationType.setVisibility(isChecked ? View.GONE: View.VISIBLE);
+            }
+        });
+
         if(lat<180 && lon<90)
         {
             cancel1.setOnClickListener(new OnClickListener() {

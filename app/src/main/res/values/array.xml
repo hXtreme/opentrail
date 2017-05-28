@@ -3,5 +3,6 @@
     <string-array name="annotationTypes">
         <item>Path blockage/issue</item>
         <item>Path directions</item>
+        <item>Place of interest</item>
     </string-array>
 </resources>
