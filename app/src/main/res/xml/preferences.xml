@@ -13,7 +13,7 @@
         android:key="prefAnnotations" />
     <CheckBoxPreference
         android:title="Auto-download"
-        android:defaultValue="false"
+        android:defaultValue="true"
         android:summary="Auto-download POIs and annotations as you move to a new area."
         android:key="prefAutoDownload" />
     <CheckBoxPreference
