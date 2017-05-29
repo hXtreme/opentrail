@@ -181,7 +181,6 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
     public void receiveResponse(String response)
     {
         boolean success = iaTask.isSuccess() && response!=null;
-        DialogUtils.showDialog(this, "ID of Annotation=" + response);
         done(response, iaTask.getResultMsg(), success);
     }
 
