@@ -59,10 +59,10 @@ public abstract class AbstractPOIListActivity extends ListActivity {
                         String featureType = pois.get(i).getValue("featuretype"),
                                 isIn = pois.get(i).getValue("is_in");
                         names[i] = pois.get(i).getValue("name");
-                        types[i] = (featureType == null ? "unknown" : featureType) + ", "+
-                                 (isIn == null ? "" : isIn+", ") +
+                        types[i] = (featureType == null ? "unknown" : featureType) +
+                                 (isIn == null ? "" : ", " + isIn) +
                                 (hasLocation ?
-                                        "distance=" + df.format(pois.get(i).distanceTo(p) / 1000.0)
+                                        ", distance=" + df.format(pois.get(i).distanceTo(p) / 1000.0)
                                                 + "km " + pois.get(i).directionFrom(p) : "");
                     }
                     adapter = new AnnotatedListAdapter(this, android.R.layout.simple_list_item_1, names, types);

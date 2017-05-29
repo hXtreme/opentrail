@@ -81,6 +81,7 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
         CheckBox chkbxWalkroute = (CheckBox)findViewById(R.id.chkbxWalkroute);
         chkbxWalkroute.setChecked(recordingWalkroute);
         chkbxWalkroute.setVisibility(recordingWalkroute ? View.VISIBLE: View.GONE);
+        spAnnotationType.setVisibility(recordingWalkroute ? View.GONE: View.VISIBLE);
 
         chkbxWalkroute.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton btn, boolean isChecked) {

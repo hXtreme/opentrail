@@ -103,13 +103,14 @@ public class OpenTrail extends Activity {
     boolean prefGPSTracking, prefAutoDownload, prefAnnotations;
     String cachedir;
 
+    SearchView searchView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
         AndroidGraphicFactory.createInstance(this.getApplication());
-
         setContentView(R.layout.activity_main);
         mv = (MapView) findViewById(R.id.mapView);
 
@@ -122,7 +123,7 @@ public class OpenTrail extends Activity {
                 mv.getModel().frameBufferModel.getOverdrawFactor());
 
         SearchManager sMgr = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) findViewById(R.id.searchView);
+        searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setSearchableInfo(sMgr.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
         searchView.setSubmitButtonEnabled(true);
@@ -369,6 +370,8 @@ public class OpenTrail extends Activity {
         if (loadedRenderTheme=loadAssetsRenderTheme("freemap_v4.xml")) {
             addOverlays();
         }
+
+
     }
 
     protected void onStart() {
@@ -391,6 +394,8 @@ public class OpenTrail extends Activity {
 
             startGPS();
         }
+
+        mv.requestFocus();
     }
 
     public void onStop() {
