@@ -117,10 +117,10 @@ public class SavedData
         this.task = dataTask;
     }
 
-    public DataCallbackTask<?,?> getDataCallbackTask()
+    public CallbackTask<?,?> getDataCallbackTask()
     {
 
-        return (DataCallbackTask<?,?>) task;
+        return (CallbackTask<?,?>) task;
     }
 
     public void disconnect()
