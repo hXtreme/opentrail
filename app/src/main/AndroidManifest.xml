@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="freemap.opentrail03" >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="freemap.opentrail03">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -8,9 +9,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 
-    <application
+    <application tools:replace="android:icon"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/footpathsign_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <!-- this specifies the searchable activity-->

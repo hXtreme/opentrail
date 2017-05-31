@@ -100,7 +100,7 @@ public class OpenTrail extends Activity {
 
 
     boolean isRecordingWalkroute, waitingForNewPOIData;
-    boolean prefGPSTracking, prefAutoDownload, prefAnnotations;
+    boolean prefGPSTracking, prefAutoDownload, prefAnnotations, prefNoUpload;
     String cachedir;
 
     SearchView searchView;
@@ -382,6 +382,7 @@ public class OpenTrail extends Activity {
         prefGPSTracking = prefs.getBoolean("prefGPSTracking", true);
         prefAnnotations = prefs.getBoolean("prefAnnotations", true);
         prefAutoDownload = prefs.getBoolean("prefAutoDownload", false);
+        prefNoUpload = prefs.getBoolean("prefNoUpload", false);
 
         overlayManager.setAnnotationsShowing(prefAnnotations);
         overlayManager.requestRedraw();
@@ -405,15 +406,21 @@ public class OpenTrail extends Activity {
     public void onPause() {
         super.onPause();
 
-        // this was in onStop() in former version of opentrail
-        if(loadedRenderTheme) {
-            Intent stopIfNotLoggingBroadcast = new Intent("freemap.opentrail.stopifnotlogging");
-            sendBroadcast(stopIfNotLoggingBroadcast);
 
-        }
     }
 
     protected void onDestroy() {
+
+
+        // this was in onStop() in former version of opentrail
+        // 300517 now in onDestroy() as we want the service to continue going if the activity
+        // is running but not visible (i.e to show notifications of directions etc)
+
+        if(loadedRenderTheme) {
+            Intent stopIfNotLoggingBroadcast = new Intent("freemap.opentrail.stopifnotlogging");
+            sendBroadcast(stopIfNotLoggingBroadcast);
+        }
+
         // from minimal Mapsforge example - this should (hopefully...) destroy everything
         mv.destroyAll();
         AndroidGraphicFactory.clearResourceMemoryCache();
@@ -600,9 +607,9 @@ public class OpenTrail extends Activity {
                                 getResources().getDrawable(R.mipmap.interest)), gp, description);
 
 
-                        int idInt = id.equals("0") ? -(annCacheMgr.size() + 1) : Integer.parseInt(id);
 
-                        Log.d("OpenTrail", "idInt=" + idInt);
+
+
                         mv.invalidate();
 
                         Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
@@ -614,9 +621,12 @@ public class OpenTrail extends Activity {
                             overlayManager.requestRedraw();
                   //      } else if (idInt < 0) { // 240516 why???
                         } else {
+                            int idInt = id.equals("0") ? -(annCacheMgr.size() + 1) : Integer.parseInt(id);
                             try {
                                 Annotation an = new Annotation(idInt, p.x, p.y, description, annotationType);
-                                annCacheMgr.addAnnotation(an); // adding in wgs84 latlon
+                                if(prefNoUpload) {
+                                    annCacheMgr.addAnnotation(an); // adding in wgs84 latlon
+                                }
 
                                 // 290116 add the annotation to the layer
                                 // 240517 must add before the overlay manager!! Otherwise the next call

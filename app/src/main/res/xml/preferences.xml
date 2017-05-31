@@ -44,8 +44,8 @@
         android:summary="Frequency to auto-clear the map data cache in days. Use 0 if you don't want to auto-clear the cache."
         android:key="prefCacheClearFreq" />
     <CheckBoxPreference
-        android:title="Save annotations on the device"
-        android:summary="Save annotations on the device for later upload, rather than uploading in-the-field"
+        android:title="Save notes on the device"
+        android:summary="Save notes on the device for later upload, rather than uploading in-the-field"
         android:defaultValue="false"
         android:key="prefNoUpload" />
 </PreferenceScreen>

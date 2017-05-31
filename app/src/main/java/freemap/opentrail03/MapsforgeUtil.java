@@ -19,6 +19,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import freemap.andromaps.DialogUtils;
+
 
 public class MapsforgeUtil
 {
@@ -38,7 +40,7 @@ public class MapsforgeUtil
         {
             if (contains(viewPosition,tapPoint))
             {
-                Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
+                DialogUtils.showDialog(ctx, msg);
                 return true;
             }
             return false;
