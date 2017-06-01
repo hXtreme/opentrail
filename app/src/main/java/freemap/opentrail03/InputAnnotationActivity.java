@@ -135,6 +135,7 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
     {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean wrAnnotation = ((CheckBox)findViewById(R.id.chkbxWalkroute)).isChecked();
+        annotationType = String.valueOf(spAnnotationType.getSelectedItemPosition() + 1);
         if(wrAnnotation || prefs.getBoolean("prefNoUpload", false) == true)
             done("0",wrAnnotation ? "Added to walk route"  :   "Annotation will be stored on device", true);
         else
@@ -145,7 +146,6 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
     {
         EditText text=(EditText)findViewById(R.id.etAnnotation);
         String annText = Uri.encode(text.getText().toString());
-        annotationType = String.valueOf(spAnnotationType.getSelectedItemPosition() + 1);
 
         postData = new ArrayList<>();
         postData.add(new BasicNameValuePair("action","create"));

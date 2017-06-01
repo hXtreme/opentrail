@@ -43,7 +43,9 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
+import freemap.andromaps.Base64;
 import freemap.andromaps.ConfigChangeSafeTask;
+import freemap.andromaps.HTTPCommunicationTask;
 import freemap.andromaps.HTTPUploadTask;
 import freemap.data.Annotation;
 import freemap.data.Point;
@@ -601,6 +603,7 @@ public class OpenTrail extends Activity {
                         LatLong gp = new LatLong(extras.getDouble("lat"), extras.getDouble("lon"));
                         Point p = new Point(extras.getDouble("lon"), extras.getDouble("lat"));
                         String annotationType = extras.getString("annotationType");
+                        Log.d("OpenTrail", "Annotation type=" + annotationType);
                         Marker item = MapsforgeUtil.makeTappableMarker(this, isWalkrouteAnnotation ?
                                 getResources().getDrawable(R.mipmap.flag) :
                                 (annotationType.equals("1")?getResources().getDrawable(R.mipmap.caution):
@@ -834,12 +837,21 @@ public class OpenTrail extends Activity {
                 postData.add(new BasicNameValuePair("action","createMulti"));
                 postData.add(new BasicNameValuePair("inProj","4326"));
                 postData.add(new BasicNameValuePair("data",xml));
+                Log.d("OpenTrail", "XML to send=" + xml);
 
-
-                Shared.savedData.executeHTTPCommunicationTask(new HTTPUploadTask
+                HTTPUploadTask task  = new HTTPUploadTask
                         (this, "http://www.free-map.org.uk/fm/ws/annotation.php",
                                 postData,
-                                "Upload annotations?", httpCallback, 2), "Uploading...", "Uploading annotations...");
+                                "Upload annotations?", httpCallback, 2) {
+                    public void onPostExecute(String result) {
+                        Log.d("OpenTrail", "Result=" + result);
+                        super.onPostExecute(result);
+                    }
+                };
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String username=prefs.getString("prefUsername",""), password=prefs.getString("prefPassword","");
+                task.setLoginDetails(username, password);
+                Shared.savedData.executeHTTPCommunicationTask(task, "Uploading...", "Uploading annotations...");
             } catch(IOException e) {
                 DialogUtils.showDialog(this,"Error retrieving cached annotations: " + e.getMessage());
             }
@@ -982,4 +994,38 @@ public class OpenTrail extends Activity {
             state.putInt("curWalkrouteId", curDownloadedWalkroute.getId());
         }
     }
+
+    public class HTTPCallback implements HTTPCommunicationTask.Callback {
+
+        Context ctx;
+
+        public HTTPCallback(Context ctx) {
+            this.ctx = ctx;
+        }
+
+        public void downloadFinished(int id, Object addData) {
+
+            switch(id) {
+
+
+                case 2:
+                    annCacheMgr.deleteCache();
+                    break;
+
+                case 3:
+                    // walkroute uploaded
+
+                    break;
+            }
+        }
+
+        public void downloadCancelled(int id) {
+
+        }
+
+        public void downloadError(int id) {
+            DialogUtils.showDialog(ctx,"Upload/download task failed");
+        }
+    }
+
 }
