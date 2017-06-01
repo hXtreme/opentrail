@@ -42,6 +42,7 @@ import android.widget.Spinner;
 import freemap.andromaps.DialogUtils;
 
 
+
 // TODO really need to deal with saving the AsyncTask so it can be restored on orientation change:
 // as a quickfix have locked this activity to portrait.
 
@@ -212,7 +213,7 @@ public class InputAnnotationActivity extends Activity implements InputAnnotation
                     }
                 }
 
-        ).setMessage(msg).setCancelable(false).show();
+        ).setMessage("Successfully uploaded").setCancelable(false).show();
         //finish();
     }
 
