@@ -45,6 +45,7 @@
         <activity android:name=".WalkrouteListActivity" android:label="Choose walk route" />
         <activity android:name=".OpenTrailPreferences" android:label="@string/settings" />
         <activity android:name=".SearchResultsActivity"></activity>
+        <activity android:name=".UserGuide"></activity>
         <service android:name="GPSService"></service>
 
     </application>

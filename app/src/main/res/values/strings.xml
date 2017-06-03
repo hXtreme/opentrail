@@ -12,12 +12,13 @@
     <string name="clearCache">Clear map cache now</string>
     <string name="uploadsavedannotations">Upload saved notes</string>
     <string name="downloadpois">Download POIs</string>
-    <string name="findnearbypois">Find nearby POIs</string>
+    <string name="findnearbypois">Find nearby downloaded POIs</string>
     <string name="downloadwalkroutes">Download walk routes</string>
-    <string name="findwalkroutes">Find walk routes</string>
+    <string name="findwalkroutes">Find downloaded walk routes</string>
     <string name="recordwalkroute">Record walk route</string>
     <string name="uploadrecordedwalkroute">Upload recorded walk route</string>
     <string name="about">About OpenTrail</string>
     <string name="annotationTypePrompt">Please select note type</string>
     <string name="annotationType">Note type:</string>
+    <string name="userguide">User guide</string>
 </resources>

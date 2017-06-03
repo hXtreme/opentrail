@@ -43,7 +43,6 @@ import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
-import freemap.andromaps.Base64;
 import freemap.andromaps.ConfigChangeSafeTask;
 import freemap.andromaps.HTTPCommunicationTask;
 import freemap.andromaps.HTTPUploadTask;
@@ -117,6 +116,7 @@ public class OpenTrail extends Activity {
         mv = (MapView) findViewById(R.id.mapView);
 
 
+        mv.getMapScaleBar().setVisible(true);
         mv.setBuiltInZoomControls(true);
         mv.setClickable(true);
 
@@ -413,6 +413,7 @@ public class OpenTrail extends Activity {
 
     protected void onDestroy() {
 
+        mv.destroyAll();
 
         // this was in onStop() in former version of opentrail
         // 300517 now in onDestroy() as we want the service to continue going if the activity
@@ -424,7 +425,7 @@ public class OpenTrail extends Activity {
         }
 
         // from minimal Mapsforge example - this should (hopefully...) destroy everything
-        mv.destroyAll();
+
         AndroidGraphicFactory.clearResourceMemoryCache();
         super.onDestroy();
 
@@ -578,6 +579,10 @@ public class OpenTrail extends Activity {
                     clearCache();
                     break;
 
+
+                case R.id.userGuideMenuItem:
+                    intent = new Intent(this, UserGuide.class);
+                    startActivity(intent);
 
                 default:
                     retcode = false;

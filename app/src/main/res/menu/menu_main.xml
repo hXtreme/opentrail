@@ -12,5 +12,6 @@
         <item android:id="@+id/findWalkroutesMenuItem" android:title="@string/findwalkroutes" />
         <item android:id="@+id/recordWalkrouteMenuItem" android:title="@string/recordwalkroute" android:showAsAction="ifRoom"/>
         <item android:id="@+id/uploadWalkrouteMenuItem" android:title="@string/uploadrecordedwalkroute" />
+        <item android:id="@+id/userGuideMenuItem" android:title="@string/userguide" />
         <item android:id="@+id/aboutMenuItem" android:title="@string/about" />
 </menu>

@@ -1,0 +1,88 @@
+<html>
+<head>
+    <title>OpenTrail - Freemap for Android</title>
+</head>
+<body>
+<div id='content'>
+    <h1>OpenTrail - Freemap for Android</h1>
+    <p>OpenTrail is an Android app showing OpenStreetMap-based walkers' maps of England and Wales,
+        highlighting the rights of way and showing contours.
+        It provides many of the features of a
+        typical OSM mobile app, but with a few specific features, in particular the
+        ability to record walking routes report path problems and add points of interest and path directions
+        in the field, as well as present these notes ive to you in the field. and "play back"
+        other users' walking routes, while you are out walking.</p>
+    <p>OpenTrail is closely associated with the <a href='http://www.free-map.org.uk'>Freemap</a>
+    website; it uses the same colour scheme, and map data, notes and walking routes are obtained
+    from, and uploaded to, the Freemap server.</p>
+    <h2> What can you do with OpenTrail?</h2>
+    <ul style="margin-left: 10px">
+        <li>View OpenStreetMap-derived
+            maps of England and Wales, showing public rights of way in the
+            same colour scheme as Freemap itself:
+                <ul>
+                    <li>green = public footpath;</li>
+                    <li>brown = public bridleway;</li>
+                    <li>red = byway or restricted byway</li>
+                </ul>
+            together with Ordnance Survey LandForm PANORAMA contours. The maps are
+            rendered using the <a href='https://github.com/mapsforge/mapsforge'>
+                Mapsforge</a> library. You will need an internet connection initially, as
+                the map data is downloaded from the Freemap server, but then the maps are
+            saved on the device so you will be able to use them without an internet
+            connection. <strong>A good approach is to download the maps of your chosen area before you go out
+            (using the search facility if needed) and then you'll be able to view them without an
+            internet connection.</strong></li>
+        <li>Locally saved map data can be cleared with the <strong>Clear map cache now</strong> option. In
+        that way, you can force OpenTrail to download new map data and keep up-to-date with the
+        latest OpenStreetMap maps. You can also set the cache to auto-clear every so many days
+        in the settings.</li>
+        <li>Add notes to the map in-the-field, which will be then visible to other users both
+            in OpenTrail and in Freemap. There are three categories of notes you can add:
+                <ul>
+                    <li>Footpath problems (e.g. blocked paths, muddy, mad cows etc);</li>
+                    <li>Path directions, at places where the path is unclear;</li>
+                    <li>General points of interest.</li>
+                    </ul>
+            These notes are added to Freemap's annotations database. It's my aim with Freemap and OpenTrail to produced a
+            crowd-sourced source of information for walkers throughout the country. Note that you
+            have to provide your Freemap login details in the settings (sign up
+            <a href='http://www.free-map.org.uk/fm/user.php?action=signup'>here</a>), otherwise
+            the notes will have to be authorised before going live.</li>
+        <li>Notes can be saved on the device for later upload, reducing the need
+            for network access in-the-field. This can be chosen via the settings; when
+        you return to an area with network access, you can then select
+        <strong>Upload saved notes</strong> to upload them to Freemap.</li>
+        <li>View notes in the field contributed by other
+            users. When you pass a point annotated with a note, an alert window will appear
+            presenting you with the details of that note.
+            So, if you find yourself in the middle of a large field with no
+            apparent way out, and someone else has contributed directions,
+            OpenTrail will tell you where to aim for!</li>
+        <li>Record walking routes and save them as GPX files. These can be
+        uploaded to Freemap and shared with other users. As well as recording the walking
+        route itself, you can add instructions; you do this by adding a note, as above, and
+        specifying that you want the note to be added to the walk route.</li>
+        <li>Download, find and <em>"play"</em>
+            existing walking routes from Freemap (contributed both via OpenTrail and via the
+            Freemap website itself). You need to download the walking routes first
+                with the <strong>"Download walk routes"</strong> option, then
+        select <strong>"Find downloaded walk routes"</strong> to find nearby routes.
+        Once you've selected a route, you can "play" it: as you progress through the walking
+        route, the notes associated with that route will pop up as you reach them!</li>
+        <li>Find nearby points of interest (but that's pretty standard for an
+            OSM mobile app). The POIs are obtained from the Freemap server. In the settings you
+        can choose whether POIs will be automatically downloaded; if not, you'll have to
+        download them manually with the <strong>Download POIs</strong> option before you
+        can find them.</li>
+    </ul>
+
+    <h2>Missing features?</h2>
+    <p>
+        If there are any things you would like to see added, or have ideas
+        for features that could make it to the next release, please
+        <a href="mailto:nickw4426@gmail.com">email me</a> (Nick Whitelegg, nickw on
+        OSM)</p>
+    </div>
+</body>
+</html>
