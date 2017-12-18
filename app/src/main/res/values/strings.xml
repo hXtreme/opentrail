@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OpenTrail 0.3</string>
+    <string name="app_name">OpenTrail 0.3.1</string>
     <string name="input_annotation_name">Add note..</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
@@ -21,4 +21,5 @@
     <string name="annotationTypePrompt">Please select note type</string>
     <string name="annotationType">Note type:</string>
     <string name="userguide">User guide</string>
+    <string name="search">Search</string>
 </resources>

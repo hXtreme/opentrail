@@ -2,8 +2,10 @@
 <rendertheme xmlns="http://mapsforge.org/renderTheme"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://mapsforge.org/renderTheme renderTheme.xsd"
-version="4" map-background="#add8e6">
-
+version="4" map-background="#f2efe9">
+<!-- 181217 flooding issue unresolved, probably a server-side issue, better to just not show sea for now-->
+<!--add8e6-->
+    <!-- 181217 now using darker green for footpaths to contrast with woods better -->
 <rule e="way" k="natural" v="nosea" zoom-min="1">
 <area fill="#f2efe9" stroke="#f2efe9"/>
 </rule>
@@ -114,7 +116,7 @@ zoom-max="15">
 </rule>
 
 <rule e="way" k="designation" v="public_footpath" zoom-min="14">
-<line stroke="#00ff00" stroke-width="1" />
+<line stroke="#008000" stroke-width="1" />
 </rule>
 
 <rule e="way" k="designation" v="public_bridleway" zoom-min="14">
