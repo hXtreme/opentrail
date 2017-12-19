@@ -106,11 +106,11 @@
     <orderEntry type="library" exported="" name="design-23.4.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.4.0" level="project" />
     <orderEntry type="library" exported="" name="mapsforgegeojson-0.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-map-0.8.0" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-map-reader-0.8.0" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-map-reader-0.9.0" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-map-0.9.0" level="project" />
     <orderEntry type="library" exported="" name="javaproj-1.0.6-noawt" level="project" />
     <orderEntry type="library" exported="" name="jcoord-1.0" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-map-android-0.8.0" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-map-android-0.9.0" level="project" />
     <orderEntry type="library" exported="" name="kxml2-2.3.0" level="project" />
     <orderEntry type="library" exported="" name="andromaps-unspecified" level="project" />
     <orderEntry type="library" exported="" name="freemaplib-20170509" level="project" />
@@ -118,8 +118,8 @@
     <orderEntry type="library" exported="" name="support-v4-23.4.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-23.4.0" level="project" />
     <orderEntry type="library" exported="" name="freemaplibProj-20131013" level="project" />
-    <orderEntry type="library" exported="" name="mapsforge-core-0.8.0" level="project" />
     <orderEntry type="library" exported="" name="support-vector-drawable-23.4.0" level="project" />
+    <orderEntry type="library" exported="" name="mapsforge-core-0.9.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.4.0" level="project" />
     <orderEntry type="library" exported="" name="org.apache.http.legacy-android-23" level="project" />
   </component>

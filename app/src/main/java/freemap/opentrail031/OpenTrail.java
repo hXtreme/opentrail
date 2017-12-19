@@ -42,6 +42,7 @@ import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 import freemap.andromaps.ConfigChangeSafeTask;
@@ -109,6 +110,7 @@ public class OpenTrail extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Parameters.FRAME_BUFFER_HA2 = true;
 
         AndroidGraphicFactory.createInstance(this.getApplication());
         setContentView(R.layout.activity_main);
