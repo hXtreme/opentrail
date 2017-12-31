@@ -35,7 +35,7 @@ public class DownloadWalkroutesTask extends DataCallbackTask<Void,Void> {
         try
         {
 
-            String url = "http://www.free-map.org.uk/fm/ws/wr.php?action=getByRadius&format=gpx&radius=20&lat="
+            String url = "http://www.free-map.org.uk/fm/ws/wr.php?action=getByRadius&format=gpx&radius=100&lat="
                     + location.getLatitude()
                     + "&lon="
                     + location.getLongitude();

@@ -247,7 +247,7 @@ public class OverlayManager  implements
         Point unproj = unproject ? proj.unproject(ann.getPoint()) : ann.getPoint();
         int type = ann.getType().equals("") ? DEFAULT_SYMBOL_TYPE:  Integer.parseInt(ann.getType());
         MarkerItem item = new MarkerItem(ann.getType(), ann.getDescription(), new GeoPoint(unproj.y, unproj.x));
-        item.setMarker(annotationSymbols[type]);
+        item.setMarker(annotationSymbols[type-1]);
         indexedAnnotations.put(ann.getId(), item);
         annotationLayer.addItem(item);
     }

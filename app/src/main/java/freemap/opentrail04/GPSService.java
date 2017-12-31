@@ -212,7 +212,7 @@ public class GPSService extends Service implements LocationListener {
             receiver=null;
         }
     }
-    
+
     public void clearRecordingWalkroute()
     {
         recordingWalkroute.clear();

@@ -427,7 +427,6 @@ public class OpenTrail extends AppCompatActivity {
         editor.putLong("lastCacheClearTime", lastCacheClearTime);
         editor.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
         editor.commit();
-
     }
 
     // according to the docs, if it's a single top activity and the activity is already on the
