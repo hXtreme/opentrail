@@ -1,4 +1,4 @@
-package freemap.opentrail031;
+package freemap.opentrail04;
 
 import freemap.data.WalkrouteSummary;
 import freemap.datasource.FreemapDataset;

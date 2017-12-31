@@ -1,4 +1,4 @@
-package freemap.opentrail031;
+package freemap.opentrail04;
 
 import java.util.Map;
 import java.util.Set;
@@ -7,9 +7,12 @@ import freemap.data.Point;
 import freemap.datasource.FreemapDataset;
 import freemap.datasource.TiledData;
 import android.content.Context;
+
+import org.oscim.core.GeoPoint;
+
 import freemap.datasource.CachedTileDeliverer;
 import freemap.andromaps.DataCallbackTask;
-import org.mapsforge.core.model.LatLong;
+
 
 
 public class DownloadPOIsTask extends DataCallbackTask<Void,Void>  {
@@ -19,10 +22,10 @@ public class DownloadPOIsTask extends DataCallbackTask<Void,Void>  {
 
     CachedTileDeliverer td;
     boolean forceWebDownload;
-    LatLong location;
+    GeoPoint location;
 
     public DownloadPOIsTask(Context ctx, CachedTileDeliverer td, DataReceiver receiver, boolean showDialog,
-                            boolean forceWebDownload, LatLong location)
+                            boolean forceWebDownload, GeoPoint location)
     {
         super(ctx,receiver);
         setShowProgressDialog(showDialog);
@@ -43,7 +46,7 @@ public class DownloadPOIsTask extends DataCallbackTask<Void,Void>  {
 
             td.setForceReload(forceWebDownload);
 
-            Point p = new Point(location.longitude,location.latitude);
+            Point p = new Point(location.getLongitude(),location.getLatitude());
     //        Log.d("OpenTrail","Updating data with point: " + p);
      //       Log.d("OpenTrail","getSurroundingTiles()retuend:" +td.updateSurroundingTiles(p));
             td.updateSurroundingTiles(p);

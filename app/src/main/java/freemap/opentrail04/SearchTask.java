@@ -1,4 +1,4 @@
-package freemap.opentrail031;
+package freemap.opentrail04;
 
 import android.content.Context;
 import android.util.Log;
@@ -84,7 +84,7 @@ public class SearchTask extends DataCallbackTask<String,Void>  {
         }
     }
 
-    protected void onPostExecute(String result) {
+    public void onPostExecute(String result) {
         super.onPostExecute(result);
         // show dialog only if there was an error (in which case data will be null)
         if(data==null) {

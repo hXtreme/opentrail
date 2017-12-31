@@ -1,9 +1,19 @@
 
-package freemap.opentrail031;
+package freemap.opentrail04;
 
 import android.graphics.drawable.Drawable;
 import android.content.Context;
 import android.util.Log;
+
+import org.oscim.android.MapView;
+import org.oscim.android.canvas.AndroidGraphics;
+import org.oscim.backend.canvas.Bitmap;
+import org.oscim.backend.canvas.Color;
+import org.oscim.core.GeoPoint;
+import org.oscim.layers.PathLayer;
+import org.oscim.layers.marker.ItemizedLayer;
+import org.oscim.layers.marker.MarkerItem;
+import org.oscim.layers.marker.MarkerSymbol;
 
 import freemap.data.Annotation;
 import freemap.data.Point;
@@ -12,16 +22,6 @@ import freemap.data.Walkroute;
 import freemap.data.Projection;
 
 import freemap.andromaps.MapLocationProcessor;
-
-
-import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.graphics.Style;
-import org.mapsforge.core.graphics.Color;
-import org.mapsforge.map.layer.overlay.Marker;
-import org.mapsforge.map.layer.overlay.Polyline;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.view.MapView;
 
 
 import java.util.HashMap;
@@ -38,6 +38,8 @@ import java.util.Set;
 
 // 270517 remove addAllOverlays() as we now add items straight away after creating them
 
+// 311217 convert to VTM
+
 public class OverlayManager  implements
         freemap.datasource.FreemapDataset.AnnotationVisitor,
         MapLocationProcessor.LocationDisplayer {
@@ -45,28 +47,31 @@ public class OverlayManager  implements
 
     protected Context ctx;
     protected Drawable locationIcon;
-    protected Marker myLocOverlayItem;
+    protected MarkerItem myLocOverlayItem;
     protected MapView mv;
     protected boolean markerShowing; // to prevent exceptions when marker added twice
 
-    Paint outline;
     Drawable markerIcon;
     Drawable[] annotationIcons;
 
-    HashMap<Integer,Marker> indexedAnnotations;
+    HashMap<Integer,MarkerItem> indexedAnnotations;
     Projection proj;
-    Polyline renderedWalkroute;
-    ArrayList<Marker> walkrouteStages;
+
+    ArrayList<MarkerItem> walkrouteStages;
+
+    ItemizedLayer<MarkerItem> myLocLayer, annotationLayer, walkrouteStageLayer;
+    PathLayer walkrouteLayer;
 
 
+    MarkerSymbol[] annotationSymbols;
 
 
     boolean annotationsShowing;
 
+    static final int DEFAULT_SYMBOL_TYPE = 2;
 
     public OverlayManager(Context ctx, MapView mapView, Drawable locationIcon,  Drawable markerIcon, Drawable[] annotationIcons,
                           Projection proj) {
-
 
 
         this.mv = mapView;
@@ -77,37 +82,53 @@ public class OverlayManager  implements
         this.annotationIcons = annotationIcons;
         this.proj = proj;
 
-        outline = MapsforgeUtil.makePaint(Color.BLUE, 5, Style.STROKE); // also alpha 128
-
         walkrouteStages = new ArrayList<>();
         indexedAnnotations = new HashMap<>();
+
+        MarkerSymbol locationSymbol = makeMarkerSymbol(locationIcon),
+                walkrouteStageSymbol = makeMarkerSymbol(markerIcon);
+        annotationSymbols = new MarkerSymbol[annotationIcons.length];
+        for (int i = 0; i < annotationSymbols.length; i++) {
+            annotationSymbols[i] = makeMarkerSymbol(annotationIcons[i]);
+        }
+
+        myLocLayer = new ItemizedLayer<MarkerItem>(mv.map(), new ArrayList<MarkerItem>(), locationSymbol, null);
+        annotationLayer = new ItemizedLayer<MarkerItem>(mv.map(), new ArrayList<MarkerItem>(),
+                annotationSymbols[DEFAULT_SYMBOL_TYPE], null);
+
+        walkrouteStageLayer = new ItemizedLayer<MarkerItem>(mv.map(), new ArrayList<MarkerItem>(), walkrouteStageSymbol, null);
+
+        walkrouteLayer = new PathLayer(mv.map(), Color.BLUE,5);
+        mv.map().layers().add(myLocLayer);
+        mv.map().layers().add(annotationLayer);
+        mv.map().layers().add(walkrouteStageLayer);
+        mv.map().layers().add(walkrouteLayer);
     }
 
 
-
     public void addLocationMarker(Point p) {
-        myLocOverlayItem = MapsforgeUtil.makeMarker(locationIcon, new LatLong(p.y, p.x));
+        myLocOverlayItem = new MarkerItem("My location", "My location", new GeoPoint(p.y, p.x));
         showLocationMarker();
     }
 
     public void showLocationMarker() {
-        if(mv!=null && myLocOverlayItem!=null && !markerShowing)
-        {
-            mv.addLayer(myLocOverlayItem);
+        if(mv!=null && myLocOverlayItem!=null && !markerShowing) {
+            myLocLayer.addItem(myLocOverlayItem);
             markerShowing=true;
         }
     }
 
     public void hideLocationMarker() {
         if(mv!=null && myLocOverlayItem!=null && markerShowing) {
-            mv.getLayerManager().getLayers().remove(myLocOverlayItem);
+            myLocLayer.removeItem(myLocOverlayItem);
             markerShowing=false;
         }
     }
 
     public void moveLocationMarker(Point p) {
-        if(myLocOverlayItem!=null)
-            myLocOverlayItem.setLatLong(new LatLong(p.y, p.x));
+        // doesn't look like it's possible to alter the position of a MarkerItem
+        removeLocationMarker();
+        addLocationMarker(p);
     }
 
     public void removeLocationMarker() {
@@ -128,27 +149,20 @@ public class OverlayManager  implements
                 " length=" + walkroute.getPoints().size());
         // remove any existing walk route
         removeWalkroute(true);
-        renderedWalkroute = new Polyline (MapsforgeUtil.makePaint(Color.BLUE, 5, Style.STROKE), AndroidGraphicFactory.INSTANCE);
+
 
         if(doCentreMap) {
             Point p = walkroute.getStart();
             if(p!=null) {
-                LatLong gp = new LatLong(p.y, p.x);
-                mv.setCenter(gp);
+                mv.map().setMapPosition(p.y, p.x, mv.map().getMapPosition().getScale());
             }
         }
+
         ArrayList<TrackPoint> points = walkroute.getPoints();
-        LatLong p[] = new LatLong[points.size()];
-        for(int i=0; i<points.size(); i++)
-            p[i] = new LatLong(points.get(i).y, points.get(i).x);
+        for(int i=0; i<points.size(); i++) {
+            walkrouteLayer.addPoint(new GeoPoint(points.get(i).y, points.get(i).x));
+        }
 
-
-        for(int i=0; i<points.size(); i++)
-            renderedWalkroute.getLatLongs().add(new LatLong(points.get(i).y, points.get(i).x));
-
-
-
-        showWalkroute();
 
         ArrayList<Walkroute.Stage> stages = walkroute.getStages();
 
@@ -160,50 +174,33 @@ public class OverlayManager  implements
 
     // 120316 do this to avoid having to redraw the *whole* walkroute every time we add a point...
     public void addPointToWalkroute(Point p) {
-        renderedWalkroute.getLatLongs().add(new LatLong(p.y, p.x));
-        renderedWalkroute.requestRedraw();
+        walkrouteLayer.addPoint(new GeoPoint(p.y, p.x));
     }
 
     public void addStageToWalkroute(Walkroute.Stage s) {
-        LatLong curStagePoint = new LatLong(s.start.y, s.start.x);
-        Marker item = MapsforgeUtil.makeTappableMarker(ctx, markerIcon, curStagePoint, s.description);
+        GeoPoint curStagePoint = new GeoPoint(s.start.y, s.start.x);
+        MarkerItem item = new MarkerItem("Stage " + (s.id+1), s.description, curStagePoint);
         walkrouteStages.add(item);
-        mv.getLayerManager().getLayers().add(item);
     }
 
     public boolean hasRenderedWalkroute() {
-        return renderedWalkroute != null && renderedWalkroute.getLatLongs().size() > 0;
+        return walkrouteLayer.getPoints().size() > 0;
     }
 
-    private void showWalkroute() {
-        if(renderedWalkroute==null) return;
-        Log.d("OpenTrail", "showWalkroute(): " +renderedWalkroute.getLatLongs().size() + " "+
-                walkrouteStages);
-        // only add the walkroute as a layer if not added already
-        if(hasRenderedWalkroute()) {
-            mv.getLayerManager().getLayers().add(renderedWalkroute);
-        }
-    }
+
 
     public void removeWalkroute(boolean removeData) {
         Log.d("OpenTrail", "removeWalkroute(): removeData=" + removeData);
 
-        if(renderedWalkroute != null) {
-            Log.d("newmapsforge", "removeWalkroute(): removing rendered walkroute");
 
-            for(int i=0; i<walkrouteStages.size(); i++)
-                mv.getLayerManager().getLayers().remove(walkrouteStages.get(i));
-
-            mv.getLayerManager().getLayers().remove(renderedWalkroute);
-
-
-        }
-
+        walkrouteLayer.clearPath();
         if(removeData) {
-
-            while(walkrouteStages.size() > 0)
+            walkrouteStages.clear();
+            /* 311217 not sure why this was necessary?
+            while(walkrouteStages.size() > 0) {
                 walkrouteStages.remove(0);
-            renderedWalkroute = null;
+            }
+           */
         }
     }
 
@@ -216,11 +213,7 @@ public class OverlayManager  implements
     }
 
     private void removeAnnotations() {
-
-        for (HashMap.Entry<Integer, Marker> entry : indexedAnnotations.entrySet()) {
-            mv.getLayerManager().getLayers().remove(entry.getValue());
-        }
-        annotationsShowing = false;
+        annotationLayer.removeAllItems();
     }
 
 
@@ -229,15 +222,21 @@ public class OverlayManager  implements
         Log.d("OpenTrail", "showAnnotations(): annotationsShowing=" + annotationsShowing +
             " indexedAnnotations=" + (indexedAnnotations!=null));
         if(indexedAnnotations!=null) {
-            Set<HashMap.Entry<Integer,Marker>> markersEntrySet = indexedAnnotations.entrySet();
-            for(HashMap.Entry<Integer,Marker> entry: markersEntrySet) {
+            Set<HashMap.Entry<Integer,MarkerItem>> markersEntrySet = indexedAnnotations.entrySet();
+            for(HashMap.Entry<Integer,MarkerItem> entry: markersEntrySet) {
 
                 Log.d("OpenTrail", "ADDING ANNOTATIONS (showAnnotations() loop - actually showing them)");
-                mv.getLayerManager().getLayers().add(entry.getValue());
+                annotationLayer.addItem(entry.getValue());
             }
             annotationsShowing = true;
         }
 
+    }
+
+    protected static MarkerSymbol makeMarkerSymbol (Drawable drawable) {
+        Bitmap b = AndroidGraphics.drawableToBitmap(drawable);
+        MarkerSymbol marker = new MarkerSymbol (b, MarkerSymbol.HotspotPlace.BOTTOM_CENTER);
+        return marker;
     }
 
 
@@ -246,13 +245,11 @@ public class OverlayManager  implements
     // 270517 now always actually adds the overlay
     public void addAnnotation(Annotation ann, boolean unproject) {
         Point unproj = unproject ? proj.unproject(ann.getPoint()) : ann.getPoint();
-        int type = ann.getType().equals("") ? 2:  Integer.parseInt(ann.getType());
-        Marker item = MapsforgeUtil.makeTappableMarker(ctx, annotationIcons[type-1],
-                new LatLong(unproj.y,unproj.x), ann.getDescription());
-
+        int type = ann.getType().equals("") ? DEFAULT_SYMBOL_TYPE:  Integer.parseInt(ann.getType());
+        MarkerItem item = new MarkerItem(ann.getType(), ann.getDescription(), new GeoPoint(unproj.y, unproj.x));
+        item.setMarker(annotationSymbols[type]);
         indexedAnnotations.put(ann.getId(), item);
-
-        mv.getLayerManager().getLayers().add(item);
+        annotationLayer.addItem(item);
     }
 
     public void visit(Annotation ann) {
@@ -260,16 +257,4 @@ public class OverlayManager  implements
             addAnnotation(ann, true);
         }
     }
-
-
-    public void requestRedraw() {
-        if(renderedWalkroute!=null)
-            renderedWalkroute.requestRedraw();
-        for(int i=0; i<walkrouteStages.size(); i++)
-            walkrouteStages.get(i).requestRedraw();
-        for(HashMap.Entry<Integer,Marker> entry: indexedAnnotations.entrySet())
-            entry.getValue().requestRedraw();
-    }
-
-
 }

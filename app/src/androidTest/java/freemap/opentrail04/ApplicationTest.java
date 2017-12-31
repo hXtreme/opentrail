@@ -1,4 +1,4 @@
-package freemap.opentrail03;
+package freemap.opentrail04;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

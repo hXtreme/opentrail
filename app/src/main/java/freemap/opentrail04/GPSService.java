@@ -1,4 +1,4 @@
-package freemap.opentrail031;
+package freemap.opentrail04;
 
 
 import android.app.Service;
@@ -194,21 +194,25 @@ public class GPSService extends Service implements LocationListener {
     public void onDestroy()
     {
         super.onDestroy();
-        mgr.removeUpdates(this);
-        unregisterReceiver(receiver);
+        // 311217 if location hasn't been received yet receiver and mgr can both be null, so add check
 
+        if(receiver!=null) {
+            unregisterReceiver(receiver);
+            if(mgr!=null) {
+                mgr.removeUpdates(this);
+            }
+            /* 230514 surely this should be in as if the service is killed when recording and the activity was never killed, we need to make sure
+		    * we save to the preferences so the service will pick them up again next time?  so uncomment */
 
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putBoolean("gpsServiceIsLogging", isLogging);
+            ed.commit();
 
-		/* 230514 surely this should be in as if the service is killed when recording and the activity was never killed, we need to make sure
-		 * we save to the preferences so the service will pick them up again next time?  so uncomment */
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putBoolean("gpsServiceIsLogging", isLogging);
-        ed.commit();
-
-        receiver=null;
+            receiver=null;
+        }
     }
+    
     public void clearRecordingWalkroute()
     {
         recordingWalkroute.clear();

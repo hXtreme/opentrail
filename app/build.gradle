@@ -25,13 +25,32 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
     compile project (":andromaps")
+    /*
     compile 'org.mapsforge:mapsforge-core:0.9.0'
     compile 'org.mapsforge:mapsforge-map:0.9.0'
     compile 'org.mapsforge:mapsforge-map-reader:0.9.0'
     compile 'org.mapsforge:mapsforge-map-android:0.9.0'
+    */
+    compile  'org.mapsforge:vtm:0.9.0'
+    compile  'org.mapsforge:vtm-themes:0.9.0'
+    compile  'org.slf4j:slf4j-api:1.7.25'
+
+    compile  'org.mapsforge:vtm-android:0.9.0'
+    compile  'org.mapsforge:vtm-json:0.9.0'
+    compile  'org.mapsforge:vtm-http:0.9.0'
+
+    compile  'org.mapsforge:vtm-android:0.9.0:natives-arm64-v8a'
+    compile  'org.mapsforge:vtm-android:0.9.0:natives-armeabi'
+    compile  'org.mapsforge:vtm-android:0.9.0:natives-armeabi-v7a'
+    compile  'org.mapsforge:vtm-android:0.9.0:natives-mips'
+    compile  'org.mapsforge:vtm-android:0.9.0:natives-mips64'
+    compile  'org.mapsforge:vtm-android:0.9.0:natives-x86'
+    compile  'org.mapsforge:vtm-android:0.9.0:natives-x86_64'
+    compile  'com.caverock:androidsvg:1.2.2-beta-1'
+
     compile 'freemap:freemaplib:20170509'
     compile 'freemap:freemaplibProj:20131013'
-    compile 'freemap:mapsforgegeojson:0.1-SNAPSHOT'
+  //  compile 'freemap:mapsforgegeojson:0.1-SNAPSHOT'
     compile 'uk.me.jstott:jcoord:1.0'
     compile 'com.jhlabs:javaproj:1.0.6-noawt'
 

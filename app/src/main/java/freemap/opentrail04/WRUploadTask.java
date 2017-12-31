@@ -1,4 +1,4 @@
-package freemap.opentrail031;
+package freemap.opentrail04;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+
 import freemap.andromaps.HTTPUploadTask;
 import freemap.data.Walkroute;
 
@@ -28,8 +29,7 @@ public class WRUploadTask extends HTTPUploadTask {
         this.dpDist=dpDist;
     }
 
-    public String doInBackground (Void... unused)
-    {
+    public String doInBackground (Void... unused) {
 
         Walkroute simplified = walkroute.simplifyDouglasPeucker(dpDist);
         String gpx = simplified.toXML();

@@ -1,4 +1,4 @@
-package freemap.opentrail031;
+package freemap.opentrail04;
 
 import java.util.ArrayList;
 
@@ -12,16 +12,16 @@ import android.util.Log;
 import android.content.Context;
 
 import freemap.andromaps.DataCallbackTask;
-import org.mapsforge.core.model.LatLong;
+import org.oscim.core.GeoPoint;
 
 
 public class DownloadWalkroutesTask extends DataCallbackTask<Void,Void> {
 
 
-    LatLong location;
+    GeoPoint location;
 
 
-    public DownloadWalkroutesTask(Context ctx, DataReceiver receiver, LatLong location)
+    public DownloadWalkroutesTask(Context ctx, DataReceiver receiver, GeoPoint location)
     {
         super(ctx,receiver);
         setDialogDetails("Downloading...","Downloading walk routes...");
@@ -36,9 +36,9 @@ public class DownloadWalkroutesTask extends DataCallbackTask<Void,Void> {
         {
 
             String url = "http://www.free-map.org.uk/fm/ws/wr.php?action=getByRadius&format=gpx&radius=20&lat="
-                    + location.latitude
+                    + location.getLatitude()
                     + "&lon="
-                    + location.longitude;
+                    + location.getLongitude();
             Log.d("OpenTrail","URL=" + url);
             WebXMLSource xmlsource = new WebXMLSource(url,new WalkroutesHandler());
             setData((ArrayList<WalkrouteSummary>) xmlsource.getData());

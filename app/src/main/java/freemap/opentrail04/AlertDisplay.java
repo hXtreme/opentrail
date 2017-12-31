@@ -1,4 +1,4 @@
-package freemap.opentrail031;
+package freemap.opentrail04;
 
 public interface AlertDisplay {
     public static final int ANNOTATION = 0, WALKROUTE_STAGE = 1;
