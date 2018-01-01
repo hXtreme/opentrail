@@ -4,6 +4,7 @@ package freemap.opentrail04;
 import android.graphics.drawable.Drawable;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.oscim.android.MapView;
 import org.oscim.android.canvas.AndroidGraphics;
@@ -14,6 +15,7 @@ import org.oscim.layers.PathLayer;
 import org.oscim.layers.marker.ItemizedLayer;
 import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.marker.MarkerSymbol;
+import org.oscim.map.Map;
 
 import freemap.data.Annotation;
 import freemap.data.Point;
@@ -49,6 +51,7 @@ public class OverlayManager  implements
     protected Drawable locationIcon;
     protected MarkerItem myLocOverlayItem;
     protected MapView mv;
+    protected Map map;
     protected boolean markerShowing; // to prevent exceptions when marker added twice
 
     Drawable markerIcon;
@@ -70,11 +73,24 @@ public class OverlayManager  implements
 
     static final int DEFAULT_SYMBOL_TYPE = 2;
 
+    class GestureListener implements ItemizedLayer.OnItemGestureListener<MarkerItem> {
+        public boolean onItemLongPress (int index, MarkerItem item) {
+            onItemSingleTapUp(index, item);
+            return true;
+        }
+
+        public boolean onItemSingleTapUp (int index, MarkerItem item) {
+            Toast.makeText(ctx, item.getSnippet(), Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    }
+
     public OverlayManager(Context ctx, MapView mapView, Drawable locationIcon,  Drawable markerIcon, Drawable[] annotationIcons,
                           Projection proj) {
 
 
         this.mv = mapView;
+        this.map = mapView.map();
         this.ctx = ctx;
         this.locationIcon = locationIcon;
 
@@ -92,17 +108,19 @@ public class OverlayManager  implements
             annotationSymbols[i] = makeMarkerSymbol(annotationIcons[i]);
         }
 
-        myLocLayer = new ItemizedLayer<MarkerItem>(mv.map(), new ArrayList<MarkerItem>(), locationSymbol, null);
-        annotationLayer = new ItemizedLayer<MarkerItem>(mv.map(), new ArrayList<MarkerItem>(),
-                annotationSymbols[DEFAULT_SYMBOL_TYPE], null);
+        GestureListener listener = new GestureListener();
 
-        walkrouteStageLayer = new ItemizedLayer<MarkerItem>(mv.map(), new ArrayList<MarkerItem>(), walkrouteStageSymbol, null);
+        myLocLayer = new ItemizedLayer<MarkerItem>(map, new ArrayList<MarkerItem>(), locationSymbol, null);
+        annotationLayer = new ItemizedLayer<MarkerItem>(map, new ArrayList<MarkerItem>(),
+                annotationSymbols[DEFAULT_SYMBOL_TYPE], listener);
 
-        walkrouteLayer = new PathLayer(mv.map(), Color.BLUE,5);
-        mv.map().layers().add(myLocLayer);
-        mv.map().layers().add(annotationLayer);
-        mv.map().layers().add(walkrouteStageLayer);
-        mv.map().layers().add(walkrouteLayer);
+        walkrouteStageLayer = new ItemizedLayer<MarkerItem>(map, new ArrayList<MarkerItem>(), walkrouteStageSymbol, listener);
+
+        walkrouteLayer = new PathLayer(map, Color.BLUE,5);
+        map.layers().add(myLocLayer);
+        map.layers().add(annotationLayer);
+        map.layers().add(walkrouteStageLayer);
+        map.layers().add(walkrouteLayer);
     }
 
 
@@ -154,7 +172,7 @@ public class OverlayManager  implements
         if(doCentreMap) {
             Point p = walkroute.getStart();
             if(p!=null) {
-                mv.map().setMapPosition(p.y, p.x, mv.map().getMapPosition().getScale());
+                map.setMapPosition(p.y, p.x, map.getMapPosition().getScale());
             }
         }
 
@@ -180,6 +198,7 @@ public class OverlayManager  implements
     public void addStageToWalkroute(Walkroute.Stage s) {
         GeoPoint curStagePoint = new GeoPoint(s.start.y, s.start.x);
         MarkerItem item = new MarkerItem("Stage " + (s.id+1), s.description, curStagePoint);
+        walkrouteStageLayer.addItem(item);
         walkrouteStages.add(item);
     }
 
@@ -194,6 +213,7 @@ public class OverlayManager  implements
 
 
         walkrouteLayer.clearPath();
+        walkrouteStageLayer.removeAllItems();
         if(removeData) {
             walkrouteStages.clear();
             /* 311217 not sure why this was necessary?
