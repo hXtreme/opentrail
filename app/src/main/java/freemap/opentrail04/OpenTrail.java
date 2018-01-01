@@ -173,8 +173,7 @@ public class OpenTrail extends AppCompatActivity {
                         Toast.makeText(OpenTrail.this, "Loading data from cache", Toast.LENGTH_SHORT).show();
                     else
                         Toast.makeText(OpenTrail.this, "Loading data from web", Toast.LENGTH_SHORT).show();
-                    startPOIDownload(false, false, OpenTrail.this.location);
-
+                    downloadPOIsAtGPSLocation();
                 }
                 if (prefGPSTracking) {
                     gotoMyLocation();
@@ -206,6 +205,7 @@ public class OpenTrail extends AppCompatActivity {
             isRecordingWalkroute = prefs.getBoolean("isRecordingWalkroute", false);
             waitingForNewPOIData = prefs.getBoolean("waitingForNewPOIData", false);
             lastCacheClearTime = prefs.getLong("lastCacheClearTime", System.currentTimeMillis());
+            prefAutoDownload = prefs.getBoolean("prefAutoDownload", false);
             cacheClearFreq = Integer.parseInt(prefs.getString("prefCacheClearFreq", "0"));
             boolean prefGPSTrackingTest = prefs.getBoolean("prefGPSTracking", false);
             if (prefGPSTrackingTest) {
@@ -732,6 +732,10 @@ public class OpenTrail extends AppCompatActivity {
                 overlayManager.addWalkroute(recordingWalkroute, false);
             }
         }
+
+        if(prefAutoDownload) {
+            downloadPOIsAtMapLocation();
+        }
     }
 
     public void launchInputAnnotationActivity(double lat, double lon) {
@@ -743,6 +747,16 @@ public class OpenTrail extends AppCompatActivity {
         extras.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
         intent.putExtras(extras);
         startActivityForResult(intent, 0);
+    }
+
+    private void downloadPOIsAtGPSLocation() {
+        if(location!=null) {
+            startPOIDownload(false, false, location);
+        }
+    }
+
+    private void downloadPOIsAtMapLocation() {
+        startPOIDownload(false, false, map.getMapPosition().getGeoPoint());
     }
 
     private void startPOIDownload(boolean showDialog, boolean forceWebDownload, GeoPoint loc)

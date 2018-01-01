@@ -246,6 +246,8 @@ public class OverlayManager  implements
     public void addAnnotation(Annotation ann, boolean unproject) {
         Point unproj = unproject ? proj.unproject(ann.getPoint()) : ann.getPoint();
         int type = ann.getType().equals("") ? DEFAULT_SYMBOL_TYPE:  Integer.parseInt(ann.getType());
+        Log.d("opentrail", "Adding annotation: description=" + ann.getDescription() +
+            " lat/lon=" + unproj.y+" " +unproj.x);
         MarkerItem item = new MarkerItem(ann.getType(), ann.getDescription(), new GeoPoint(unproj.y, unproj.x));
         item.setMarker(annotationSymbols[type-1]);
         indexedAnnotations.put(ann.getId(), item);
