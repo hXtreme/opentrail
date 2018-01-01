@@ -3,6 +3,7 @@ package freemap.opentrail04;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.view.View;
 import android.content.Intent;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 
-public class WalkrouteDetailsActivity extends Activity implements View.OnClickListener {
+public class WalkrouteDetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button ok, cancel;
 

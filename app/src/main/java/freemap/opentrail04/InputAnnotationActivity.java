@@ -14,6 +14,7 @@ import org.apache.http.NameValuePair;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
@@ -41,7 +42,7 @@ import android.widget.Spinner;
 // TODO really need to deal with saving the AsyncTask so it can be restored on orientation change:
 // as a quickfix have locked this activity to portrait.
 
-public class InputAnnotationActivity extends Activity implements InputAnnotationTask.Receiver
+public class InputAnnotationActivity extends AppCompatActivity implements InputAnnotationTask.Receiver
 {
 
     double lat, lon;
