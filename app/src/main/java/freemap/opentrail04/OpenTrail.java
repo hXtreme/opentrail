@@ -75,7 +75,6 @@ public class OpenTrail extends AppCompatActivity {
     Map map;
 
     String opentrailDir;
-    boolean loadedRenderTheme;
 
     MapLocationProcessorBR mapLocationProcessor;
 
@@ -381,10 +380,7 @@ public class OpenTrail extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         mv.onResume();
-        if(loadedRenderTheme) {
-
-            startGPS();
-        }
+        startGPS();
         mv.requestFocus();
     }
 
