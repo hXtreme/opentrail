@@ -26,6 +26,8 @@ import freemap.data.Projection;
 import freemap.andromaps.MapLocationProcessor;
 
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
@@ -196,10 +198,14 @@ public class OverlayManager  implements
     }
 
     public void addStageToWalkroute(Walkroute.Stage s) {
-        GeoPoint curStagePoint = new GeoPoint(s.start.y, s.start.x);
-        MarkerItem item = new MarkerItem("Stage " + (s.id+1), s.description, curStagePoint);
-        walkrouteStageLayer.addItem(item);
-        walkrouteStages.add(item);
+        try {
+            GeoPoint curStagePoint = new GeoPoint(s.start.y, s.start.x);
+            MarkerItem item = new MarkerItem("Stage " + (s.id + 1), URLDecoder.decode(s.description, "UTF-8"), curStagePoint);
+            walkrouteStageLayer.addItem(item);
+            walkrouteStages.add(item);
+        }catch(UnsupportedEncodingException e) {
+            // do nothing, UTF-8 presumably always supported on Android
+        }
     }
 
     public boolean hasRenderedWalkroute() {
@@ -264,14 +270,18 @@ public class OverlayManager  implements
     // 290116 projection stuff - messy
     // 270517 now always actually adds the overlay
     public void addAnnotation(Annotation ann, boolean unproject) {
-        Point unproj = unproject ? proj.unproject(ann.getPoint()) : ann.getPoint();
-        int type = ann.getType().equals("") ? DEFAULT_SYMBOL_TYPE:  Integer.parseInt(ann.getType());
-        Log.d("opentrail", "Adding annotation: description=" + ann.getDescription() +
-            " lat/lon=" + unproj.y+" " +unproj.x);
-        MarkerItem item = new MarkerItem(ann.getType(), ann.getDescription(), new GeoPoint(unproj.y, unproj.x));
-        item.setMarker(annotationSymbols[type-1]);
-        indexedAnnotations.put(ann.getId(), item);
-        annotationLayer.addItem(item);
+        try {
+            Point unproj = unproject ? proj.unproject(ann.getPoint()) : ann.getPoint();
+            int type = ann.getType().equals("") ? DEFAULT_SYMBOL_TYPE : Integer.parseInt(ann.getType());
+            Log.d("opentrail", "Adding annotation: description=" + ann.getDescription() +
+                    " lat/lon=" + unproj.y + " " + unproj.x);
+            MarkerItem item = new MarkerItem("Annotation #" + ann.getId(), URLDecoder.decode(ann.getDescription(), "UTF-8"), new GeoPoint(unproj.y, unproj.x));
+            item.setMarker(annotationSymbols[type - 1]);
+            indexedAnnotations.put(ann.getId(), item);
+            annotationLayer.addItem(item);
+        }catch(UnsupportedEncodingException e) {
+            // do nothing; UTF-8 will presumably always be supported on Android
+        }
     }
 
     public void visit(Annotation ann) {
