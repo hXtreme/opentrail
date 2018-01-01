@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
@@ -115,10 +116,16 @@ public class OpenTrail extends AppCompatActivity {
 
         opentrailDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/opentrail/";
 
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        String renderThemeFile = metrics.densityDpi>=DisplayMetrics.DENSITY_XXHIGH ?
+                "freemap_v4_xxhdpi.xml" :
+                (metrics.densityDpi>= DisplayMetrics.DENSITY_XHIGH ? "freemap_v4_xhdpi.xml" :
+                        (metrics.densityDpi>=DisplayMetrics.DENSITY_HIGH ? "freemap_v4_hdpi.xml":"freemap_v4_mdpi.xml"));
         UrlTileSource source = new FreemapGeojsonTileSource();
         source.setHttpEngine(new OkHttpEngine.OkHttpFactory());
         VectorTileLayer l = map.setBaseMap(source);
-        map.setTheme(new AssetsRenderTheme(getAssets(), "", "freemap_v4.xml"));
+        map.setTheme(new AssetsRenderTheme(getAssets(), "", renderThemeFile));
         map.layers().add(new BuildingLayer(map, l));
         map.layers().add(new LabelLayer(map, l));
 

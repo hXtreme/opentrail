@@ -2,10 +2,14 @@
 <rendertheme xmlns="http://mapsforge.org/renderTheme"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://mapsforge.org/renderTheme renderTheme.xsd"
-version="4" map-background="#f2efe9">
+version="4" map-background="#add8e6">
 <!-- 181217 flooding issue unresolved, probably a server-side issue, better to just not show sea for now-->
 <!--add8e6-->
     <!-- 181217 now using darker green for footpaths to contrast with woods better -->
+
+    <!-- note that the symbols look best on xhdpi devices, a little small on xxhdpi
+         and way too big on mdpi -->
+
 <rule e="way" k="natural" v="nosea" zoom-min="1">
 <area fill="#f2efe9" stroke="#f2efe9"/>
 </rule>
@@ -191,127 +195,125 @@ zoom-max="15">
 </rule>
 
 
-<rule e="node" k="place" v="hamlet|suburb" zoom-min="14" zoom-max="18">
-<caption k="name" font-size="16" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="hamlet|suburb" zoom-min="14" zoom-max="18">
+        <caption k="name" font-size="16" font-style="bold" priority="10"/>
+    </rule>
 
-<rule e="node" k="place" v="village" zoom-min="14" zoom-max="18">
-<caption k="name" font-size="18" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="village" zoom-min="14" zoom-max="18">
+        <caption k="name" font-size="18" font-style="bold" priority="11" />
+    </rule>
 
-<rule e="node" k="place" v="town" zoom-min="14" zoom-max="18">
-<caption k="name" font-size="20" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="town" zoom-min="14" zoom-max="18">
+        <caption k="name" font-size="20" font-style="bold" priority="12"/>
+    </rule>
 
-<rule e="node" k="place" v="city" zoom-min="14" zoom-max="18">
-<caption k="name" font-size="24" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="city" zoom-min="14" zoom-max="18">
+        <caption k="name" font-size="24" font-style="bold" priority="13" />
+    </rule>
 
 
-<rule e="node" k="place" v="village" zoom-min="12" zoom-max="13">
-<caption k="name" 
-    font-size="16" fill="#000000" position="below_right" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="village" zoom-min="12" zoom-max="13">
+        <caption k="name"
+            font-size="16" fill="#000000" position="below_right" font-style="bold" priority="11"/>
+    </rule>
 
-<rule e="node" k="place" v="town" zoom-min="12" zoom-max="13">
-<caption k="name" font-size="18" font-style="bold" />
-<caption k="name" 
-    font-size="16" fill="#000000" position="below_right" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="town" zoom-min="12" zoom-max="13">
+        <caption k="name" font-size="18" font-style="bold" />
+        <caption k="name"
+            font-size="16" fill="#000000" position="below_right" font-style="bold" priority="12"/>
+    </rule>
 
-<rule e="node" k="place" v="city" zoom-min="12" zoom-max="13">
-<caption k="name" font-size="20" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="city" zoom-min="12" zoom-max="13">
+        <caption k="name" font-size="20" font-style="bold" priority="13" />
+    </rule>
 
-<rule e="node" k="place" v="town" zoom-min="10" zoom-max="11">
-<caption k="name" font-size="16" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="town" zoom-min="10" zoom-max="11">
+        <caption k="name" font-size="16" font-style="bold" priority="12"/>
+    </rule>
 
-<rule e="node" k="place" v="city" zoom-min="10" zoom-max="11">
-<caption k="name" font-size="18" font-style="bold" />
-</rule>
+    <rule e="node" k="place" v="city" zoom-min="10" zoom-max="11">
+        <caption k="name" font-size="18" font-style="bold" priority="13"/>
+    </rule>
 
 <rule e="node" k="natural" v="peak" zoom-min="13">
-<symbol id="peak" src="assets:symbols/peak.png" display="always" />
+<symbol id="peak" src="assets:symbols/peak.xsmall.png" display="always" position="right" />
 <caption k="name" symbol-id="peak" font-size="10" fill="#000000"/>
 </rule>
 
 <rule e="node" k="amenity" v="pub" zoom-min="14" zoom-max="14">
-<symbol id="pub" src="assets:symbols/pub.png" />
+<symbol id="pub" src="assets:symbols/pub.small.png" position="right" />
 <caption k="name" symbol-id="pub" font-size="10" fill="#000000" />
 </rule>
 
     <rule e="node" k="amenity" v="pub" zoom-min="15" >
-        <symbol id="pub_large" src="assets:symbols/pub.large.png" />
+        <symbol id="pub_large" src="assets:symbols/pub.png" position="right" />
         <caption k="name" symbol-id="pub_large" font-size="12" fill="#000000" />
     </rule>
 
 <rule e="node" k="amenity" v="restaurant" zoom-min="14" zoom-max="14">
-<symbol id="restaurant" src="assets:symbols/restaurant.png" />
-<caption k="name" symbol-id="restaurant" font-size="10" fill="#000000" />
+<symbol id="restaurant" src="assets:symbols/restaurant.small.png" />
 </rule>
 
     <rule e="node" k="amenity" v="restaurant" zoom-min="15">
-        <symbol id="restaurant_large" src="assets:symbols/restaurant.large.png" />
-        <caption k="name" symbol-id="restaurant_large" font-size="12" fill="#000000" />
+        <symbol id="restaurant_large" src="assets:symbols/restaurant.png" />
     </rule>
 
 
 <rule e="node" k="amenity" v="cafe" zoom-min="14" zoom-max="14">
-<symbol id="cafe" src="assets:symbols/cafe.png" />
-<caption k="name" symbol-id="cafe" font-size="10" fill="#000000" />
+<symbol id="cafe" src="assets:symbols/cafe.small.png" />
+<caption k="name" symbol-id="cafe" font-size="10" fill="#000000" position="right" />
 </rule>
 
     <rule e="node" k="amenity" v="cafe" zoom-min="15">
-        <symbol id="cafe_large" src="assets:symbols/cafe.large.png" />
-        <caption k="name" symbol-id="cafe_large" font-size="12" fill="#000000" />
+        <symbol id="cafe_large" src="assets:symbols/cafe.png" />
+        <caption k="name" symbol-id="cafe_large" font-size="12" fill="#000000" position="right"/>
     </rule>
 
 <rule e="node" k="railway" v="station" zoom-min="13" zoom-max="14">
-<symbol id="station" src="assets:symbols/rsmall.png" display="always" />
-<caption k="name" symbol-id="station" font-size="10" fill="#ff0000"/>
+<symbol id="station" src="assets:symbols/rsmall.small.png" display="always"/>
+<caption k="name" symbol-id="station" font-size="10" fill="#ff0000" position="right"/>
 </rule>
 
     <rule e="node" k="railway" v="station" zoom-min="15">
-        <symbol id="station_large" src="assets:symbols/rsmall.png" display="always" />
-        <caption k="name" symbol-id="station_large" font-size="12" fill="#ff0000"/>
+        <symbol id="station_large" src="assets:symbols/rsmall.small.png" display="always" />
+        <caption k="name" symbol-id="station_large" font-size="12" fill="#ff0000" position="right"/>
     </rule>
 
 <rule e="node" k="man_made" v="mast|communications_tower" zoom-min="13" zoom-max="14">
-<symbol id="mast" src="assets:symbols/mast.png" />
+<symbol id="mast" src="assets:symbols/mast.small.png" />
 </rule>
 
     <rule e="node" k="man_made" v="mast|communications_tower" zoom-min="15">
-        <symbol id="mast_large" src="assets:symbols/mast.large.png" />
+        <symbol id="mast_large" src="assets:symbols/mast.png" />
     </rule>
 
 
     <rule e="node" k="power" v="tower" zoom-min="14" zoom-max="14">
-<symbol id="powertower" src="assets:symbols/powertower.png" />
+<symbol id="powertower" src="assets:symbols/powertower.small.png" />
 </rule>
 
     <rule e="node" k="power" v="tower" zoom-min="15">
-        <symbol id="powertower_large" src="assets:symbols/powertower.large.png" />
+        <symbol id="powertower_large" src="assets:symbols/powertower.png" />
     </rule>
 
 <rule e="node" k="barrier" v="gate" zoom-min="15">
-<symbol id="gate" src="assets:symbols/gate.png" />
+<symbol id="gate" src="assets:symbols/gate.small.png" />
 </rule>
 
 <rule e="node" k="barrier" v="stile" zoom-min="15">
-<symbol id="stile" src="assets:symbols/stile.large.png" />
+<symbol id="stile" src="assets:symbols/stile.png" />
 </rule>
 
 <rule e="node" k="tourism" v="viewpoint" zoom-min="14" zoom-max="14">
-<symbol id="viewpoint" src="assets:symbols/viewpoint.png" />
+<symbol id="viewpoint" src="assets:symbols/viewpoint.small.png" />
 </rule>
 
     <rule e="node" k="tourism" v="viewpoint" zoom-min="15">
-        <symbol id="viewpoint_large" src="assets:symbols/viewpoint.large.png" />
+        <symbol id="viewpoint_large" src="assets:symbols/viewpoint.png" />
     </rule>
 
 <rule e="node" k="amenity" v="parking" zoom-min="15">
-<symbol id="parking" src="assets:symbols/carpark.png" />
+<symbol id="parking" src="assets:symbols/carpark.small.png" />
 </rule>
 
 </rendertheme>
