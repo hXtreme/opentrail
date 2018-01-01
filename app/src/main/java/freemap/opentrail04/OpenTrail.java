@@ -168,13 +168,8 @@ public class OpenTrail extends AppCompatActivity {
 
                 alertDisplayMgr.update(pt);
 
-                if (prefAutoDownload && poiDeliverer.needNewData(pt)) {
-                    if (poiDeliverer.isCache(pt))
-                        Toast.makeText(OpenTrail.this, "Loading data from cache", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(OpenTrail.this, "Loading data from web", Toast.LENGTH_SHORT).show();
-                    downloadPOIsAtGPSLocation();
-                }
+                downloadNewPOIs(location);
+
                 if (prefGPSTracking) {
                     gotoMyLocation();
                //     overlayManager.requestRedraw();
@@ -374,7 +369,7 @@ public class OpenTrail extends AppCompatActivity {
         prefNoUpload = prefs.getBoolean("prefNoUpload", false);
         overlayManager.setAnnotationsShowing(prefAnnotations);
        // overlayManager.requestRedraw();
-
+        downloadNewPOIs(map.getMapPosition().getGeoPoint());
     }
 
     public void onResume() {
@@ -424,12 +419,6 @@ public class OpenTrail extends AppCompatActivity {
         editor.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
         editor.commit();
     }
-
-    // according to the docs, if it's a single top activity and the activity is already on the
-    // top of the stack, this gets called if a new intent is received, not onCreate()
-    // so we can use this to handle a search intent
-    // https://developer.android.com/guide/topics/manifest/activity-element.html
-    // https://developer.android.com/reference/android/app/Activity.html#onNewIntent(android.content.Intent)
 
     private void doSearch(Intent launchSearchResultsIntent, String query) {
         if (location != null) {
@@ -733,9 +722,7 @@ public class OpenTrail extends AppCompatActivity {
             }
         }
 
-        if(prefAutoDownload) {
-            downloadPOIsAtMapLocation();
-        }
+
     }
 
     public void launchInputAnnotationActivity(double lat, double lon) {
@@ -749,14 +736,19 @@ public class OpenTrail extends AppCompatActivity {
         startActivityForResult(intent, 0);
     }
 
-    private void downloadPOIsAtGPSLocation() {
-        if(location!=null) {
-            startPOIDownload(false, false, location);
-        }
-    }
 
-    private void downloadPOIsAtMapLocation() {
-        startPOIDownload(false, false, map.getMapPosition().getGeoPoint());
+
+    private void downloadNewPOIs(GeoPoint gp) {
+
+        Point pt = new Point(gp.getLongitude(), gp.getLatitude());
+        if (prefAutoDownload && poiDeliverer.needNewData(pt)) {
+            if (poiDeliverer.isCache(pt)) {
+                Toast.makeText(OpenTrail.this, "Loading data from cache", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(OpenTrail.this, "Loading data from web", Toast.LENGTH_SHORT).show();
+            }
+        }
+        startPOIDownload(false, false, gp);
     }
 
     private void startPOIDownload(boolean showDialog, boolean forceWebDownload, GeoPoint loc)
