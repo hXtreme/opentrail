@@ -26,15 +26,16 @@ OpenTrail will build.
 freemaplib: general geo-oriented Java library
 https://github.com/nickw1/freemaplib.git
 
-freemaplibProj: wrapper round Proj4Java and JCoord libraries (see below)
-https://github.com/nickw1/freemaplibProj.git
-
 javaproj: fork of the Proj4Java project, with AWT references removed
 https://github.com/nickw1/javaproj.git
 
 JCoord: Jonathan Stott's jcoord library for conversion between lat/lon and
 other projections, notably OSGB, converted to a Maven project
 https://github.com/nickw1/JCoord.git
+
+freemaplibProj: wrapper round Proj4Java and JCoord libraries (see above)
+https://github.com/nickw1/freemaplibProj.git
+
 
 andromaps: general purpose Android mapping stuff (Android library project)
 https://github.com/nickw1/andromaps.git
