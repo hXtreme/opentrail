@@ -1,3 +1,6 @@
+/* OpenTrail is licensed under the GNU General Public License v2.
+(c) Nick Whitelegg, 2012-18 */
+
 package freemap.opentrail04;
 
 import android.os.Bundle;
