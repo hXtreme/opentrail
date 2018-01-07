@@ -5,7 +5,7 @@ android {
     buildToolsVersion '27.0.3'
 
     defaultConfig {
-        applicationId "freemap.opentrail031"
+        applicationId "freemap.opentrail04"
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
@@ -24,7 +24,6 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
-    compile project (":andromaps")
     /*
     compile 'org.mapsforge:mapsforge-core:0.9.0'
     compile 'org.mapsforge:mapsforge-map:0.9.0'
@@ -50,6 +49,9 @@ dependencies {
 
     compile 'freemap:freemaplib:20170509'
     compile 'freemap:freemaplibProj:20131013'
+
+    compile project(":andromaps")
+
   //  compile 'freemap:mapsforgegeojson:0.1-SNAPSHOT'
   //  compile 'uk.me.jstott:jcoord:1.0'
   //  compile 'com.jhlabs:javaproj:1.0.6-noawt-r2'

@@ -64,6 +64,7 @@ import freemap.datasource.XMLDataInterpreter;
 
 import freemap.andromaps.DialogUtils;
 import freemap.andromaps.MapLocationProcessor;
+
 import freemap.datasource.AnnotationCacheManager;
 import freemap.proj.OSGBProjection;
 
