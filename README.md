@@ -36,8 +36,12 @@ https://github.com/xni06/JCoord.git
 freemaplibProj: wrapper round Proj4Java and JCoord libraries (see above)
 https://github.com/nickw1/freemaplibProj.git
 
-
 andromaps: general purpose Android mapping stuff (Android library project)
 https://github.com/nickw1/andromaps.git
+
+*PLEASE NOTE* also that if you want to build 0.3 from source, you must remove
+the JCoord and javaproj dependencies from the app's build.gradle, these
+are only usable on my local setup. They are imported via freemaplibProj
+anyway.
 
 New app icon by Jason Butwell, www.jasonbutwell.com
