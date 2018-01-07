@@ -31,7 +31,7 @@ https://github.com/nickw1/javaproj.git
 
 JCoord: Jonathan Stott's jcoord library for conversion between lat/lon and
 other projections, notably OSGB, converted to a Maven project
-https://github.com/nickw1/JCoord.git
+https://github.com/xni06/JCoord.git
 
 freemaplibProj: wrapper round Proj4Java and JCoord libraries (see above)
 https://github.com/nickw1/freemaplibProj.git
