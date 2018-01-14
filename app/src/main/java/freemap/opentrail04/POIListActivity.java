@@ -10,9 +10,6 @@ import freemap.data.POI;
 import java.util.ArrayList;
 
 public class POIListActivity extends AbstractPOIListActivity {
-
-    String[] names,types;
-    double projectedX, projectedY;
     String[] keyval;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -22,7 +19,9 @@ public class POIListActivity extends AbstractPOIListActivity {
         populateList();
     }
 
-    public ArrayList<POI> getPOIs() {
+
+    public ArrayList<POI> getDatasourcePOIs() {
         return Shared.pois.getPOIsByType(keyval[0],keyval[1]);
     }
+
 }

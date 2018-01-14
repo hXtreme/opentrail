@@ -4,32 +4,33 @@
 package freemap.opentrail04;
 
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import java.io.File;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.ArrayAdapter;
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.os.Environment;
 
-public class RecordedWalkroutesListActivity extends ListActivity {
+public class RecordedWalkroutesListActivity extends RecyclerViewActivity implements ListAdapter.ListClickListener{
 
     String[] gpxfiles;
-
+    RecyclerView view;
 
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         String sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
         gpxfiles = new File(sdcard+"/opentrail/walkroutes/rec").list();
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String> (this,android.R.layout.simple_list_item_1, gpxfiles);
-        setListAdapter(adapter);
+
+    }
+
+    public RecyclerView.Adapter getAdapter() {
+        return new BasicListAdapter (this, gpxfiles, this);
     }
 
 
-    public void onListItemClick(ListView listView, View view, int index, long id)
+    public void onListItemClick(int index)
     {
         Intent intent = new Intent();
         Bundle extras = new Bundle();

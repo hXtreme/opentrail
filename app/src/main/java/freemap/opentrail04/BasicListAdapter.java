@@ -12,32 +12,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class AnnotatedListAdapter extends ListAdapter {
+public class BasicListAdapter extends ListAdapter {
 
-    String[] annotations;
 
     class CustomViewHolder extends RecyclerView.ViewHolder {
-        TextView titlesView, detailsView;
+        TextView titlesView;
 
         public CustomViewHolder(View v) {
             super(v);
-            titlesView =  v.findViewById(R.id.annotatedListName);
-            detailsView =  v.findViewById(R.id.annotatedListDetails);
+            titlesView =  v.findViewById(android.R.id.text1);
         }
-
     }
 
 
-    public AnnotatedListAdapter(Context ctx, String[] t,String[] a, ListClickListener listener) {
 
+    public BasicListAdapter(Context ctx, String[] t,  ListClickListener listener) {
         super(ctx, t, listener);
-        this.annotations=a;
     }
 
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType)  {
         LayoutInflater inflater = (LayoutInflater)
                 ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.annotatedlistitem, parent, false);
+        View rowView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
         Log.d("opentrail", "Created a view holder");
         return new CustomViewHolder(rowView);
     }
@@ -46,7 +42,6 @@ public class AnnotatedListAdapter extends ListAdapter {
         CustomViewHolder holder = (CustomViewHolder)h;
         holder.itemView.setOnClickListener (new ItemViewClickListener(position));
         holder.titlesView.setText(titles[position]);
-        holder.detailsView.setText(annotations[position]);
-        Log.d("OpenTrail","Index = "+ position + " Name="+titles[position]+" Type="+annotations[position]);
+        Log.d("OpenTrail","Name="+titles[position]);
     }
 }

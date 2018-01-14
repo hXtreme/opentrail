@@ -161,7 +161,7 @@ public class OpenTrail extends AppCompatActivity {
                 OpenTrail.this.location = new GeoPoint(lat, lon);
                 Point pt = new Point(lon, lat);
 
-
+                Log.d("opentrail", "Lon/lat=" + lon +" " + lat);
                 try {
                     Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
 

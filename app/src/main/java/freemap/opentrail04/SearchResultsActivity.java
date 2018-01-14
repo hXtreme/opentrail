@@ -16,7 +16,6 @@ import freemap.data.POI;
 
 public class SearchResultsActivity extends AbstractPOIListActivity implements SearchTask.Receiver {
 
-    ArrayList<POI> foundPOIs;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,11 +25,11 @@ public class SearchResultsActivity extends AbstractPOIListActivity implements Se
     }
 
     public void receivePOIs(ArrayList<POI> pois) {
-        foundPOIs = pois;
+        viewMatchingPOIs = pois;
         populateList();
     }
 
-    public ArrayList<POI> getPOIs() {
-        return foundPOIs;
+    public ArrayList<POI> getDatasourcePOIs() {
+        return viewMatchingPOIs;
     }
 }

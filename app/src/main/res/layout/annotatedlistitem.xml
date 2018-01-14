@@ -6,10 +6,10 @@
   android:orientation="vertical">
  <TextView android:layout_width="fill_parent"
  android:layout_height="wrap_content"
- android:textSize="10pt" android:id="@+id/poiListPOIName"
+ android:textSize="10pt" android:id="@+id/annotatedListName"
   android:text="Test"/>
  <TextView android:layout_width="fill_parent"
  android:layout_height="wrap_content"
- android:textSize="6pt" android:id="@+id/poiListPOIDetails"
+ android:textSize="6pt" android:id="@+id/annotatedListDetails"
  android:text="Test2"/>
 </LinearLayout>
