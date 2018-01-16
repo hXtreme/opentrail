@@ -48,6 +48,7 @@ import org.oscim.map.Map;
 import org.oscim.tiling.source.OkHttpEngine;
 import org.oscim.tiling.source.UrlTileSource;
 
+import freemap.andromaps.ConfigChangeSafeTask;
 import freemap.andromaps.HTTPCommunicationTask;
 import freemap.andromaps.HTTPUploadTask;
 import freemap.data.Annotation;
@@ -60,6 +61,7 @@ import freemap.datasource.FreemapDataset;
 import freemap.datasource.FreemapFileFormatter;
 import freemap.datasource.WebDataSource;
 import freemap.datasource.WalkrouteCacheManager;
+
 import freemap.datasource.XMLDataInterpreter;
 
 import freemap.andromaps.DialogUtils;
@@ -96,6 +98,8 @@ public class OpenTrail extends AppCompatActivity {
     ServiceConnection gpsServiceConn;
     GPSService gpsService;
     Walkroute curDownloadedWalkroute;
+    TileCache tileCache;
+
 
     long lastCacheClearTime;
 
@@ -109,7 +113,6 @@ public class OpenTrail extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         setContentView(R.layout.activity_main);
 
@@ -128,6 +131,9 @@ public class OpenTrail extends AppCompatActivity {
                         (metrics.densityDpi>=DisplayMetrics.DENSITY_HIGH ? "freemap_v4_hdpi.xml":"freemap_v4_mdpi.xml"));
         UrlTileSource source = new FreemapGeojsonTileSource();
         source.setHttpEngine(new OkHttpEngine.OkHttpFactory());
+        tileCache = new TileCache (this, null, "opentrail_tiles.db");
+        tileCache.setCacheSize (512 * (1<<10));
+        source.setCache(tileCache);
         VectorTileLayer l = map.setBaseMap(source);
         map.setTheme(new AssetsRenderTheme(getAssets(), "", renderThemeFile));
         map.layers().add(new BuildingLayer(map, l));
@@ -873,7 +879,15 @@ public class OpenTrail extends AppCompatActivity {
     }
 
     private void clearCache() {
-        // TODO
+        ConfigChangeSafeTask<Void, Void> clearCacheTask = new ConfigChangeSafeTask<Void, Void>(this) {
+            @Override
+            protected String doInBackground(Void... voids) {
+                tileCache.deleteTiles();
+                return "Cache cleared successfully";
+            }
+        };
+        clearCacheTask.setDialogDetails("Clearing", "Clearing cache...");
+        clearCacheTask.execute();
     }
 
     private String makeCacheDir(String projID) {
