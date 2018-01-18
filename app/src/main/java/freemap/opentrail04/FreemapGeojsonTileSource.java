@@ -4,6 +4,8 @@
 package freemap.opentrail04;
 
 
+import android.util.Log;
+
 import org.oscim.tiling.source.geojson.GeojsonTileSource;
 
 /**
@@ -30,7 +32,9 @@ public class FreemapGeojsonTileSource extends GeojsonTileSource {
 
     @Override
     public void decodeTags(MapElement mapElement, Map<String, Object> properties) {
+        
 
+        Log.d("opentrail", "layer:" + mapElement.layer);
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             mapElement.tags.add(new Tag (entry.getKey(), ""+entry.getValue()));
         }

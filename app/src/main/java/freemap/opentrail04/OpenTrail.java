@@ -3,6 +3,8 @@
 
 package freemap.opentrail04;
 
+
+import android.os.NetworkOnMainThreadException;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -367,8 +369,7 @@ public class OpenTrail extends AppCompatActivity {
         FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                GeoPoint loc = OpenTrail.this.location != null ? OpenTrail.this.location :
-                        map.getMapPosition().getGeoPoint();
+                GeoPoint loc = OpenTrail.this.getGPSPositionOrMapCentre();
                 launchInputAnnotationActivity(loc.getLatitude(), loc.getLongitude());
             }
         });
@@ -407,8 +408,13 @@ public class OpenTrail extends AppCompatActivity {
 
     protected void onDestroy() {
 
-        mv.onDestroy();
-
+        try {
+            mv.onDestroy();
+        }catch(NetworkOnMainThreadException e) {
+            // silently catch this exception - issue in OkHttp in which data might be being
+            // fetched on main thread. Seeing as the rest of onDestroy() does not depend on
+            // new data being fetched, there is no harm in 'squashing' this one.
+        }
         // this was in onStop() in former version of opentrail
         // 300517 now in onDestroy() as we want the service to continue going if the activity
         // is running but not visible (i.e to show notifications of directions etc)
@@ -427,10 +433,12 @@ public class OpenTrail extends AppCompatActivity {
         Shared.savedData.disconnect();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = prefs.edit();
-        if (location != null) {
-            editor.putFloat("lat", (float) location.getLatitude());
-            editor.putFloat("lon", (float) location.getLongitude());
-        }
+
+        GeoPoint loc = this.getGPSPositionOrMapCentre();
+
+        editor.putFloat("lat", (float)loc.getLatitude());
+        editor.putFloat("lon", (float)loc.getLongitude());
+
         editor.putInt("zoom", map.getMapPosition().getZoomLevel());
         editor.putLong("lastCacheClearTime", lastCacheClearTime);
         editor.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
@@ -473,8 +481,7 @@ public class OpenTrail extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        GeoPoint loc = this.location != null ? this.location :
-            map.getMapPosition().getGeoPoint();
+        GeoPoint loc = this.getGPSPositionOrMapCentre();
 
         boolean retcode = true;
         if (item.getItemId() == R.id.aboutMenuItem) {
@@ -915,14 +922,18 @@ public class OpenTrail extends AppCompatActivity {
                 "OpenStreetMap viewpoint icon.");
     }
 
+    private GeoPoint getGPSPositionOrMapCentre() {
+        return this.location != null ? this.location :
+                map.getMapPosition().getGeoPoint();
+    }
+
     public void onSaveInstanceState(Bundle state)  {
         super.onSaveInstanceState(state);
-        if (this.location!=null) {
+        GeoPoint loc = this.getGPSPositionOrMapCentre();
 
-            state.putFloat("lat", (float)this.location.getLatitude());
-            state.putFloat("lon", (float)this.location.getLongitude());
+        state.putFloat("lat", (float)loc.getLatitude());
+        state.putFloat("lon", (float)loc.getLongitude());
 
-        }
         state.putInt("zoom", map.getMapPosition().getZoomLevel());
         state.putBoolean("isRecordingWalkroute", isRecordingWalkroute);
         state.putBoolean("waitingForNewPOIData",waitingForNewPOIData);

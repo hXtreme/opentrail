@@ -24,7 +24,16 @@ version="4" map-background="#add8e6">
 <area fill="#c0ffc0" />
 </rule>
 
-<rule e="way" k="contourtype" v="major" zoom-min="13">
+    <rule e="way" k="natural" v="heath" zoom-min="8">
+        <area fill="#ffffc0" />
+    </rule>
+
+    <rule e="way" k="natural" v="moor" zoom-min="8">
+        <area fill="#ffc0ff" />
+    </rule>
+
+
+    <rule e="way" k="contourtype" v="major" zoom-min="13">
 <line stroke="#fb9b67" stroke-width="0.5" />
    <pathText k="ele" font-size="10"  fill="#fb9b67"/>
 </rule>
@@ -42,13 +51,6 @@ version="4" map-background="#add8e6">
 <area fill="#add8e6" />
 </rule>
 
-<rule e="way" k="natural" v="heath" zoom-min="8">
-<area fill="#ffffc0" />
-</rule>
-
-<rule e="way" k="natural" v="moor" zoom-min="8">
-<area fill="#ffc0ff" />
-</rule>
 
 <rule e="way" k="natural" v="coastline" zoom-min="4">
 <line stroke="#add8e6" stroke-width="4" />
@@ -86,6 +88,16 @@ zoom-min="16">
 <line stroke="#000000" stroke-width="3" />
 </rule>
 
+    <rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="12" zoom-max="15">
+        <line stroke="#ffffff" stroke-width="1" />
+    </rule>
+
+    <rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="16">
+        <line stroke="#ffffff" stroke-width="2" />
+        <pathText k="name" font-size="16" />
+    </rule>
+
+
 <rule e="way" k="highway" v="unclassified|unclassified_link|tertiary|tertiary_link" zoom-min="10" zoom-max="15">
 <line stroke="#000000" stroke-width="3" />
 </rule>
@@ -93,6 +105,16 @@ zoom-min="16">
 <rule e="way" k="highway" v="unclassified|unclassified_link|tertiary|tertiary_link" zoom-min="16">
 <line stroke="#000000" stroke-width="4" />
 </rule>
+
+    <rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="10"
+        zoom-max="15">
+        <line stroke="#ffffff" stroke-width="2" />
+    </rule>
+
+    <rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="16">
+        <line stroke="#ffffff" stroke-width="3" />
+        <pathText k="name" font-size="16" />
+    </rule>
 
 <rule e="way" k="highway" v="secondary|secondary_link|primary|primary_link|trunk|trunk_link|motorway|motorway_link" zoom-min="8" zoom-max="15">
 <line stroke="#000000" stroke-width="4" />
@@ -102,24 +124,7 @@ zoom-min="16">
 <line stroke="#000000" stroke-width="6" />
 </rule>
 
-<rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="12" zoom-max="15">
-<line stroke="#ffffff" stroke-width="1" />
-</rule>
 
-<rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="16">
-<line stroke="#ffffff" stroke-width="2" />
-<pathText k="name" font-size="16" /> 
-</rule>
-
-<rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="10"
-zoom-max="15">
-<line stroke="#ffffff" stroke-width="2" />
-</rule>
-
-<rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="16">
-<line stroke="#ffffff" stroke-width="3" />
-<pathText k="name" font-size="16" /> 
-</rule>
 
 <rule e="way" k="designation" v="public_footpath" zoom-min="14">
 <line stroke="#008000" stroke-width="1" />
