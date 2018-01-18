@@ -298,12 +298,12 @@ zoom-max="15">
     </rule>
 
 <rule e="node" k="railway" v="station" zoom-min="13" zoom-max="14">
-<symbol id="station" src="assets:symbols/rsmall.png" display="always" />
+<symbol id="station" src="assets:symbols/rsmall.small.png" display="always" />
 <caption k="name" symbol-id="station" font-size="10" fill="#ff0000" position="right"/>
 </rule>
 
     <rule e="node" k="railway" v="station" zoom-min="15">
-        <symbol id="station_large" src="assets:symbols/rsmall.png" display="always" />
+        <symbol id="station_large" src="assets:symbols/rsmall.small.png" display="always" />
         <caption k="name" symbol-id="station_large" font-size="12" fill="#ff0000" position="right"/>
     </rule>
 
