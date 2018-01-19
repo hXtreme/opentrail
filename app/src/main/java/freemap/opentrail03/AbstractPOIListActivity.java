@@ -24,6 +24,7 @@ public abstract class AbstractPOIListActivity extends ListActivity {
     double projectedX, projectedY;
     boolean hasLocation;
 
+    ArrayList<POI> viewMatchingPOIs;
 
     public void onCreate(Bundle savedInstanceState) {
 
@@ -52,6 +53,7 @@ public abstract class AbstractPOIListActivity extends ListActivity {
                         p = new Point(projectedX, projectedY);
                         POI.sortByDistanceFrom(pois, p);
                     }
+                    viewMatchingPOIs = pois;
                     DecimalFormat df = new DecimalFormat("#.##");
 
                     // WARNING!!! Distance assumes OSGB projection or some other projection in which units are metres
@@ -80,14 +82,16 @@ public abstract class AbstractPOIListActivity extends ListActivity {
     }
 
     public void onListItemClick(ListView listView,View view,int index,long id) {
-        POI poi = getPOIs().get(index);
-        Intent intent = new Intent();
-        Bundle extras = new Bundle();
-        extras.putDouble("foundX", poi.getPoint().x);
-        extras.putDouble("foundY", poi.getPoint().y);
-        intent.putExtras(extras);
-        setResult(RESULT_OK,intent);
-        finish();
+        if(viewMatchingPOIs != null) {
+            POI poi = viewMatchingPOIs.get(index);
+            Intent intent = new Intent();
+            Bundle extras = new Bundle();
+            extras.putDouble("foundX", poi.getPoint().x);
+            extras.putDouble("foundY", poi.getPoint().y);
+            intent.putExtras(extras);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 
     public abstract ArrayList<POI> getPOIs();
