@@ -6,15 +6,7 @@ package freemap.opentrail04;
 
 
 
-import org.apache.http.message.BasicNameValuePair;
-import java.util.ArrayList;
-import org.apache.http.NameValuePair;
 
-
-
-
-
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -49,7 +41,7 @@ public class InputAnnotationActivity extends AppCompatActivity implements InputA
 
     double lat, lon;
     InputAnnotationTask iaTask;
-    ArrayList<NameValuePair> postData;
+    String postData;
     Intent resultIntent;
     boolean recordingWalkroute;
     Spinner spAnnotationType;
@@ -147,12 +139,9 @@ public class InputAnnotationActivity extends AppCompatActivity implements InputA
         EditText text=(EditText)findViewById(R.id.etAnnotation);
         String annText = Uri.encode(text.getText().toString());
 
-        postData = new ArrayList<>();
-        postData.add(new BasicNameValuePair("action","create"));
-        postData.add(new BasicNameValuePair("lon",String.valueOf(lon)));
-        postData.add(new BasicNameValuePair("lat",String.valueOf(lat)));
-        postData.add(new BasicNameValuePair("annotationType", annotationType));
-        postData.add(new BasicNameValuePair("text",annText));
+
+        postData = "action=create&lon="+lon+"&lat="+lat+"&annotationType="+annotationType
+                    +"&text="+annText;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         iaTask=new InputAnnotationTask(this, this);
         iaTask.setDialogDetails("Sending...", "Sending annotation");

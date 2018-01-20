@@ -19,6 +19,7 @@ import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.marker.MarkerSymbol;
 import org.oscim.map.Map;
 
+import freemap.andromaps.DialogUtils;
 import freemap.data.Annotation;
 import freemap.data.Point;
 import freemap.data.TrackPoint;
@@ -84,7 +85,7 @@ public class OverlayManager  implements
         }
 
         public boolean onItemSingleTapUp (int index, MarkerItem item) {
-            Toast.makeText(ctx, item.getSnippet(), Toast.LENGTH_SHORT).show();
+            DialogUtils.showDialog(ctx, item.getSnippet());
             return true;
         }
     }

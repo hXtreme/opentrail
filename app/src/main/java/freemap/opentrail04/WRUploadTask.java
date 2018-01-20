@@ -3,11 +3,6 @@
 
 package freemap.opentrail04;
 
-import java.util.ArrayList;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.content.Context;
 
 import freemap.andromaps.HTTPUploadTask;
@@ -36,10 +31,7 @@ public class WRUploadTask extends HTTPUploadTask {
 
         Walkroute simplified = walkroute.simplifyDouglasPeucker(dpDist);
         String gpx = simplified.toXML();
-        ArrayList<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("action","add"));
-        postData.add(new BasicNameValuePair("route", gpx));
-        postData.add(new BasicNameValuePair("format", "gpx"));
+        String postData="action=add&route="+gpx+"&format=gpx";
         setPostData(postData);
         String status = super.doInBackground(unused);
         Log.d("OpenTrail","HTTP task status=" + status);

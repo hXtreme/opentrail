@@ -38,8 +38,7 @@ import android.view.View;
 import android.widget.Toast;
 
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+
 import org.oscim.android.MapView;
 import org.oscim.android.theme.AssetsRenderTheme;
 import org.oscim.core.GeoPoint;
@@ -789,15 +788,12 @@ public class OpenTrail extends AppCompatActivity {
         } else {
             try {
                 String xml = annCacheMgr.getAllAnnotationsXML();
-                ArrayList<NameValuePair> postData = new ArrayList<NameValuePair>();
-                postData.add(new BasicNameValuePair("action","createMulti"));
-                postData.add(new BasicNameValuePair("inProj","4326"));
-                postData.add(new BasicNameValuePair("data",xml));
+                String postData = "action=createMulti&inProj=4326&data=" + xml;
                 Log.d("OpenTrail", "XML to send=" + xml);
 
                 HTTPUploadTask task  = new HTTPUploadTask
                         (this, "http://www.free-map.org.uk/fm/ws/annotation.php",
-                                postData,
+                               postData,
                                 "Upload annotations?", httpCallback, 2) {
                 };
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

@@ -7,8 +7,6 @@ package freemap.opentrail04;
 import android.content.Intent;
 import android.os.Bundle;
 import java.io.File;
-
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.os.Environment;
 
