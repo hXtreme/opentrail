@@ -39,7 +39,7 @@
             <!-- blog.dpdearing.com/2011/05/getting-android-to-call-onactivityresult-after-onsearchrequested-->
         </activity>
         <!-- why was this always portrait? = asynctask. again prevent resize recreate for now-->
-        <activity android:name="freemap.opentrail04.InputAnnotationActivity" android:label="Input annotation details"
+        <activity android:name="freemap.opentrail04.InputAnnotationActivity" android:label="Enter your note"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
         <activity android:name="freemap.opentrail04.POIListActivity" android:label="Choose a POI" />
         <activity android:name="freemap.opentrail04.POITypesListActivity" android:label="Choose a POI type" />
