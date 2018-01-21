@@ -13,13 +13,14 @@ import android.os.Environment;
 public class RecordedWalkroutesListActivity extends RecyclerViewActivity implements ListAdapter.ListClickListener{
 
     String[] gpxfiles;
-    RecyclerView view;
+
 
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         String sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
         gpxfiles = new File(sdcard+"/opentrail/walkroutes/rec").list();
+        view.setAdapter(getAdapter());
 
     }
 

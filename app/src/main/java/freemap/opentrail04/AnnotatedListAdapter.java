@@ -47,6 +47,6 @@ public class AnnotatedListAdapter extends ListAdapter {
         holder.itemView.setOnClickListener (new ItemViewClickListener(position));
         holder.titlesView.setText(titles[position]);
         holder.detailsView.setText(annotations[position]);
-        Log.d("OpenTrail","Index = "+ position + " Name="+titles[position]+" Type="+annotations[position]);
+        Log.d("opentrail","Index = "+ position + " Name="+titles[position]+" Type="+annotations[position]);
     }
 }

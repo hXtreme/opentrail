@@ -16,7 +16,6 @@ abstract public class RecyclerViewActivity extends AppCompatActivity implements 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.default_recycler_view);
         view = findViewById(R.id.recyclerView);
-        view.setAdapter(getAdapter());
     }
 
     abstract public RecyclerView.Adapter getAdapter();

@@ -6,6 +6,8 @@ package freemap.opentrail04;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.content.Intent;
+import android.util.Log;
+
 import java.text.DecimalFormat;
 
 public class WalkrouteListActivity extends RecyclerViewActivity  {
@@ -22,7 +24,10 @@ public class WalkrouteListActivity extends RecyclerViewActivity  {
                 DecimalFormat df = new DecimalFormat("#.##");
                 titles[i]=Shared.walkroutes.get(i).getTitle();
                 descriptions[i]=truncate(Shared.walkroutes.get(i).getDescription()) + " (" + df.format(Shared.walkroutes.get(i).getDistance()) + "km)";
+                Log.d("opentrail", "Found title=" + titles[i] + " description=" + descriptions[i]);
+
             }
+            view.setAdapter(getAdapter());
         }
     }
     public RecyclerView.Adapter getAdapter() {
