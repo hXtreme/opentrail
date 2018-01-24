@@ -11,6 +11,7 @@
         <item android:id="@+id/settingsMenuItem" android:title="@string/settings"
             android:icon="@drawable/ic_settings_white_24dp" app:showAsAction="ifRoom"/>
     <item android:id="@+id/clearCacheMenuItem" android:title="@string/clearCache" />
+    <item android:id="@+id/clearPOICacheMenuItem" android:title="@string/clearPOICache" />
     <item android:id="@+id/uploadAnnotationsMenuItem" android:title="@string/uploadsavedannotations" />
     <item android:id="@+id/poisMenuItem" android:title="@string/downloadpois" />
     <item android:id="@+id/findPoisMenuItem" android:title="@string/findnearbypois" />

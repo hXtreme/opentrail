@@ -4,7 +4,7 @@
 package freemap.opentrail04;
 
 
-import android.os.NetworkOnMainThreadException;
+
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.NetworkOnMainThreadException;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -508,7 +509,7 @@ public class OpenTrail extends AppCompatActivity {
 
                 case R.id.poisMenuItem:
                     SharedPreferences sprefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    startPOIDownload(true, sprefs.getBoolean("prefForcePOIDownload", false), loc);
+                    startPOIDownload(true, false, loc);
                     break;
 
                 case R.id.findPoisMenuItem:
@@ -574,6 +575,9 @@ public class OpenTrail extends AppCompatActivity {
                     clearCache();
                     break;
 
+                case R.id.clearPOICacheMenuItem:
+                    clearPOICache();
+                    break;
 
                 case R.id.userGuideMenuItem:
                     intent = new Intent(this, UserGuide.class);
@@ -761,6 +765,7 @@ public class OpenTrail extends AppCompatActivity {
 
 
 
+
     private void downloadNewPOIs(GeoPoint gp) {
 
         Point pt = new Point(gp.getLongitude(), gp.getLatitude());
@@ -884,13 +889,35 @@ public class OpenTrail extends AppCompatActivity {
     private void clearCache() {
         ConfigChangeSafeTask<Void, Void> clearCacheTask = new ConfigChangeSafeTask<Void, Void>(this) {
             @Override
-            protected String doInBackground(Void... voids) {
+            protected String doInBackground(Void... unused) {
                 tileCache.deleteTiles();
                 return "Cache cleared successfully";
             }
         };
         clearCacheTask.setDialogDetails("Clearing", "Clearing cache...");
         clearCacheTask.execute();
+    }
+
+    private void clearPOICache() {
+        ConfigChangeSafeTask<Void, Void> clearCacheTask = new ConfigChangeSafeTask<Void, Void>(this) {
+            @Override
+            protected String doInBackground(Void... unused) {
+                doDeletePOICache(new File(cachedir));
+                return "POI cache cleared successfully";
+            }
+        };
+        clearCacheTask.setDialogDetails("Clearing", "Clearing POI cache...");
+        clearCacheTask.execute();
+    }
+
+    private void doDeletePOICache(File dir) {
+
+        for (File f: dir.listFiles()) {
+            if(f.isDirectory()) {
+                doDeletePOICache(f);
+            }
+            f.delete();
+        }
     }
 
     private String makeCacheDir(String projID) {

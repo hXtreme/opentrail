@@ -16,11 +16,6 @@
         android:defaultValue="true"
         android:summary="Auto-download POIs and annotations as you move to a new area."
         android:key="prefAutoDownload" />
-    <CheckBoxPreference
-        android:title="Force download of POIs"
-        android:defaultValue="false"
-        android:summary="Force download of POIs from web, even if cached."
-        android:key="prefForcePOIDownload" />
     <EditTextPreference
         android:title="Username"
         android:defaultValue=""

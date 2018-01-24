@@ -21,6 +21,7 @@ public class POITypesListActivity extends RecyclerViewActivity implements ListAd
         Intent intent = getIntent();
         projectedX = intent.getExtras().getDouble("projectedX");
         projectedY = intent.getExtras().getDouble("projectedY");
+        view.setAdapter(getAdapter());
     }
 
     public RecyclerView.Adapter getAdapter() {
