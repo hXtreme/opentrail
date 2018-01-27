@@ -6,7 +6,6 @@ package freemap.opentrail04;
 import android.graphics.drawable.Drawable;
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.oscim.android.MapView;
 import org.oscim.android.canvas.AndroidGraphics;
@@ -59,7 +58,7 @@ public class OverlayManager  implements
     protected Map map;
     protected boolean markerShowing; // to prevent exceptions when marker added twice
 
-    Drawable markerIcon;
+    Drawable stageIcon, markerIcon;
     Drawable[] annotationIcons;
 
     HashMap<Integer,MarkerItem> indexedAnnotations;
@@ -67,8 +66,8 @@ public class OverlayManager  implements
 
     ArrayList<MarkerItem> walkrouteStages;
 
-    ItemizedLayer<MarkerItem> myLocLayer, annotationLayer, walkrouteStageLayer;
-    PathLayer walkrouteLayer;
+    ItemizedLayer<MarkerItem> myLocLayer, annotationLayer, recordingWalkrouteStageLayer, downloadedWalkrouteStageLayer, foundPOILayer;
+    PathLayer recordingWalkrouteLayer, downloadedWalkrouteLayer;
 
 
     MarkerSymbol[] annotationSymbols;
@@ -90,8 +89,8 @@ public class OverlayManager  implements
         }
     }
 
-    public OverlayManager(Context ctx, MapView mapView, Drawable locationIcon,  Drawable markerIcon, Drawable[] annotationIcons,
-                          Projection proj) {
+    public OverlayManager(Context ctx, MapView mapView, Drawable locationIcon,  Drawable stageIcon,
+                          Drawable markerIcon, Drawable[] annotationIcons, Projection proj) {
 
 
         this.mv = mapView;
@@ -99,6 +98,7 @@ public class OverlayManager  implements
         this.ctx = ctx;
         this.locationIcon = locationIcon;
 
+        this.stageIcon = stageIcon;
         this.markerIcon = markerIcon;
         this.annotationIcons = annotationIcons;
         this.proj = proj;
@@ -107,7 +107,8 @@ public class OverlayManager  implements
         indexedAnnotations = new HashMap<>();
 
         MarkerSymbol locationSymbol = makeMarkerSymbol(locationIcon),
-                walkrouteStageSymbol = makeMarkerSymbol(markerIcon);
+                walkrouteStageSymbol = makeMarkerSymbol(stageIcon),
+                markerSymbol = makeMarkerSymbol(markerIcon);
         annotationSymbols = new MarkerSymbol[annotationIcons.length];
         for (int i = 0; i < annotationSymbols.length; i++) {
             annotationSymbols[i] = makeMarkerSymbol(annotationIcons[i]);
@@ -119,13 +120,20 @@ public class OverlayManager  implements
         annotationLayer = new ItemizedLayer<MarkerItem>(map, new ArrayList<MarkerItem>(),
                 annotationSymbols[DEFAULT_SYMBOL_TYPE], listener);
 
-        walkrouteStageLayer = new ItemizedLayer<MarkerItem>(map, new ArrayList<MarkerItem>(), walkrouteStageSymbol, listener);
+        foundPOILayer = new ItemizedLayer<MarkerItem>(map, new ArrayList<MarkerItem>(), markerSymbol, listener);
 
-        walkrouteLayer = new PathLayer(map, Color.BLUE,5);
+        downloadedWalkrouteStageLayer = new ItemizedLayer<MarkerItem>(map, new ArrayList<MarkerItem>(), walkrouteStageSymbol, listener);
+        recordingWalkrouteStageLayer = new ItemizedLayer<MarkerItem>(map, new ArrayList<MarkerItem>(), walkrouteStageSymbol, listener);
+
+        recordingWalkrouteLayer = new PathLayer(map, Color.BLUE,5);
+        downloadedWalkrouteLayer = new PathLayer(map, Color.BLUE,5);
         map.layers().add(myLocLayer);
         map.layers().add(annotationLayer);
-        map.layers().add(walkrouteStageLayer);
-        map.layers().add(walkrouteLayer);
+        map.layers().add(foundPOILayer);
+        map.layers().add(downloadedWalkrouteStageLayer);
+        map.layers().add(downloadedWalkrouteLayer);
+        map.layers().add(recordingWalkrouteStageLayer);
+        map.layers().add(recordingWalkrouteLayer);
     }
 
 
@@ -163,15 +171,32 @@ public class OverlayManager  implements
         return myLocOverlayItem != null;
     }
 
-    public void addWalkroute(Walkroute walkroute) {
-        addWalkroute(walkroute,true);
+    public void addPOIMarker(GeoPoint latLon, String name) {
+        foundPOILayer.removeAllItems();
+        foundPOILayer.addItem(new MarkerItem(name, name, latLon));
     }
 
-    public void addWalkroute(Walkroute walkroute, boolean doCentreMap) {
+    public void addRecordingWalkroute(Walkroute walkroute) {
+        addWalkroute(walkroute,true, false);
+    }
+    public void addDownloadedWalkroute(Walkroute walkroute) {
+        addWalkroute(walkroute,true, true);
+    }
+
+    public void addRecordingWalkroute(Walkroute walkroute, boolean doCentreMap) {
+        addWalkroute(walkroute,doCentreMap, false);
+    }
+    public void addDownloadedWalkroute(Walkroute walkroute, boolean doCentreMap) {
+        addWalkroute(walkroute,doCentreMap, true);
+    }
+
+    private void addWalkroute(Walkroute walkroute, boolean doCentreMap, boolean isDownloaded) {
         Log.d("OpenTrail", "addWalkroute(): walkroute details: " + walkroute.getId() +
                 " length=" + walkroute.getPoints().size());
+
+        PathLayer walkrouteLayer = isDownloaded ? downloadedWalkrouteLayer : recordingWalkrouteLayer;
         // remove any existing walk route
-        removeWalkroute(true);
+        removeWalkroute(true, isDownloaded);
 
 
         if(doCentreMap) {
@@ -190,18 +215,19 @@ public class OverlayManager  implements
         ArrayList<Walkroute.Stage> stages = walkroute.getStages();
 
         for(int i=0; i<stages.size(); i++) {
-            addStageToWalkroute(stages.get(i));
+            addStageToWalkroute(stages.get(i), isDownloaded);
         }
 
     }
 
     // 120316 do this to avoid having to redraw the *whole* walkroute every time we add a point...
-    public void addPointToWalkroute(Point p) {
-        walkrouteLayer.addPoint(new GeoPoint(p.y, p.x));
+    public void addPointToRecordingWalkroute(Point p) {
+        recordingWalkrouteLayer.addPoint(new GeoPoint(p.y, p.x));
     }
 
-    public void addStageToWalkroute(Walkroute.Stage s) {
+    public void addStageToWalkroute(Walkroute.Stage s, boolean isDownloaded) {
         try {
+            ItemizedLayer<MarkerItem> walkrouteStageLayer = isDownloaded ? downloadedWalkrouteStageLayer: recordingWalkrouteStageLayer;
             GeoPoint curStagePoint = new GeoPoint(s.start.y, s.start.x);
             MarkerItem item = new MarkerItem("Stage " + (s.id + 1), URLDecoder.decode(s.description, "UTF-8"), curStagePoint);
             walkrouteStageLayer.addItem(item);
@@ -211,17 +237,28 @@ public class OverlayManager  implements
         }
     }
 
-    public boolean hasRenderedWalkroute() {
-        return walkrouteLayer.getPoints().size() > 0;
+    public boolean hasRenderedRecordingWalkroute() {
+        return recordingWalkrouteLayer.getPoints().size() > 0;
     }
 
 
+    public void removeRecordingWalkroute(boolean removeData) {
+        removeWalkroute (removeData, false);
+    }
 
-    public void removeWalkroute(boolean removeData) {
+    public void removeDownloadedWalkroute(boolean removeData) {
+        removeWalkroute (removeData, true);
+    }
+
+    private void removeWalkroute(boolean removeData, boolean isDownloaded) {
         Log.d("OpenTrail", "removeWalkroute(): removeData=" + removeData);
 
 
+        PathLayer walkrouteLayer = isDownloaded ? downloadedWalkrouteLayer : recordingWalkrouteLayer;
+
         walkrouteLayer.clearPath();
+        ItemizedLayer<MarkerItem> walkrouteStageLayer = isDownloaded ? downloadedWalkrouteStageLayer: recordingWalkrouteStageLayer;
+
         walkrouteStageLayer.removeAllItems();
         if(removeData) {
             walkrouteStages.clear();

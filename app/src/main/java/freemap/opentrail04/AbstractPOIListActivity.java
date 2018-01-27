@@ -94,6 +94,8 @@ public abstract class AbstractPOIListActivity extends RecyclerViewActivity {
             Log.d("opentrail","Found this poi: " + poi + " at index " + index);
             extras.putDouble("foundX", poi.getPoint().x);
             extras.putDouble("foundY", poi.getPoint().y);
+            String name = poi.getValue("name");
+            extras.putString("name", (name==null||name.equals("")) ? "unnamed" : name);
             intent.putExtras(extras);
             setResult(RESULT_OK,intent);
             finish();

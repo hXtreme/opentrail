@@ -14,7 +14,7 @@ public class POITypesListActivity extends RecyclerViewActivity implements ListAd
     String[] types={"Pubs","Restaurants","Hills","Populated places"},
             typeDetails = {"amenity=pub","amenity=restaurant","natural=peak","place=*"};
     double projectedX, projectedY;
-    RecyclerView view;
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

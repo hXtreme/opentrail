@@ -88,14 +88,6 @@ zoom-min="16">
 <line stroke="#000000" stroke-width="3" />
 </rule>
 
-    <rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="12" zoom-max="15">
-        <line stroke="#ffffff" stroke-width="1" />
-    </rule>
-
-    <rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="16">
-        <line stroke="#ffffff" stroke-width="2" />
-        <pathText k="name" font-size="16" />
-    </rule>
 
 
 <rule e="way" k="highway" v="unclassified|unclassified_link|tertiary|tertiary_link" zoom-min="10" zoom-max="15">
@@ -106,15 +98,8 @@ zoom-min="16">
 <line stroke="#000000" stroke-width="4" />
 </rule>
 
-    <rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="10"
-        zoom-max="15">
-        <line stroke="#ffffff" stroke-width="2" />
-    </rule>
 
-    <rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="16">
-        <line stroke="#ffffff" stroke-width="3" />
-        <pathText k="name" font-size="16" />
-    </rule>
+
 
 <rule e="way" k="highway" v="secondary|secondary_link|primary|primary_link|trunk|trunk_link|motorway|motorway_link" zoom-min="8" zoom-max="15">
 <line stroke="#000000" stroke-width="4" />
@@ -124,7 +109,24 @@ zoom-min="16">
 <line stroke="#000000" stroke-width="6" />
 </rule>
 
+    <rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="12" zoom-max="15">
+        <line stroke="#ffffff" stroke-width="1" />
+    </rule>
 
+    <rule e="way" k="highway" v="residential|residential_link|service|service_link" zoom-min="16">
+        <line stroke="#ffffff" stroke-width="2" />
+        <pathText k="name" font-size="16" />
+    </rule>
+
+    <rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="10"
+        zoom-max="15">
+        <line stroke="#ffffff" stroke-width="2" />
+    </rule>
+
+    <rule e="way" k="highway" v="unclassified|unclassified_link" zoom-min="16">
+        <line stroke="#ffffff" stroke-width="3" />
+        <pathText k="name" font-size="16" />
+    </rule>
 
 <rule e="way" k="designation" v="public_footpath" zoom-min="14">
 <line stroke="#008000" stroke-width="1" />

@@ -155,6 +155,7 @@ public class OpenTrail extends AppCompatActivity {
 
         overlayManager = new OverlayManager(this, mv, getResources().getDrawable(R.mipmap.person),
                 getResources().getDrawable(R.mipmap.flag),
+                getResources().getDrawable(R.mipmap.marker),
                 new Drawable[] {getResources().getDrawable(R.mipmap.caution),
                         getResources().getDrawable(R.mipmap.directions),
                         getResources().getDrawable(R.mipmap.interest)},
@@ -175,10 +176,10 @@ public class OpenTrail extends AppCompatActivity {
 
                     if (recordingWalkroute != null && recordingWalkroute.getPoints().size() != 0) {
 
-                        if (overlayManager.hasRenderedWalkroute()) {
-                            overlayManager.addPointToWalkroute(pt);
+                        if (overlayManager.hasRenderedRecordingWalkroute()) {
+                            overlayManager.addPointToRecordingWalkroute(pt);
                         } else {
-                            overlayManager.addWalkroute(recordingWalkroute, false);
+                            overlayManager.addRecordingWalkroute(recordingWalkroute, false);
                         }
                     }
                 } catch (Exception e) {
@@ -301,7 +302,7 @@ public class OpenTrail extends AppCompatActivity {
         if (curDownloadedWalkroute != null && curDownloadedWalkroute.getPoints().size() > 0) {
 
             alertDisplayMgr.setWalkroute(curDownloadedWalkroute);
-            overlayManager.addWalkroute(curDownloadedWalkroute);
+            overlayManager.addDownloadedWalkroute(curDownloadedWalkroute);
         }
 
 
@@ -459,7 +460,7 @@ public class OpenTrail extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem item  = menu.findItem(R.id.action_search);
-        SearchView sv = (SearchView) MenuItemCompat.getActionView(item);
+        SearchView sv = (SearchView) item.getActionView();
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             public boolean onQueryTextChange(String txt) {
                 return true;
@@ -550,7 +551,7 @@ public class OpenTrail extends AppCompatActivity {
                     item.setTitle(isRecordingWalkroute ? "Stop recording" : "Record walk route");
 
 
-                    overlayManager.removeWalkroute(true);
+                    overlayManager.removeRecordingWalkroute(true);
 
                     if (isRecordingWalkroute) {
 
@@ -621,7 +622,7 @@ public class OpenTrail extends AppCompatActivity {
                         if (isWalkrouteAnnotation && isRecordingWalkroute && recordingWalkroute != null) {
                             recordingWalkroute.addStage(p, description);
                             ArrayList<Walkroute.Stage> stages = recordingWalkroute.getStages();
-                            overlayManager.addStageToWalkroute(stages.get(stages.size()-1));
+                            overlayManager.addStageToWalkroute(stages.get(stages.size()-1), false);
                         //    overlayManager.requestRedraw();
                   //      } else if (idInt < 0) { // 240516 why???
                         } else {
@@ -659,6 +660,8 @@ public class OpenTrail extends AppCompatActivity {
                         if (extras.containsKey("foundX") && extras.containsKey("foundY")) {
                             Point llPoint = this.proj.unproject(new Point(extras.getDouble("foundX"), extras.getDouble("foundY")));
                             map.setMapPosition(llPoint.y, llPoint.x, map.getMapPosition().getScale());
+                            overlayManager.addPOIMarker(new GeoPoint(llPoint.y, llPoint.x),
+                                    extras.containsKey("name") ? extras.getString("name") : "");
                         }
                     }
                     break;
@@ -745,7 +748,7 @@ public class OpenTrail extends AppCompatActivity {
         if(gpsService!=null) {
             Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
             if(recordingWalkroute!=null && recordingWalkroute.getPoints().size()>0) {
-                overlayManager.addWalkroute(recordingWalkroute, false);
+                overlayManager.addRecordingWalkroute(recordingWalkroute, false);
             }
         }
 
@@ -799,8 +802,8 @@ public class OpenTrail extends AppCompatActivity {
                 HTTPUploadTask task  = new HTTPUploadTask
                         (this, "http://www.free-map.org.uk/fm/ws/annotation.php",
                                postData,
-                                "Upload annotations?", httpCallback, 2) {
-                };
+                                "Upload annotations?", httpCallback, 2);
+
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 String username=prefs.getString("prefUsername",""), password=prefs.getString("prefPassword","");
                 task.setLoginDetails(username, password);
@@ -879,7 +882,7 @@ public class OpenTrail extends AppCompatActivity {
         // others are stored as WalkrouteSummary objects as we need only store the summary
         curDownloadedWalkroute = walkroute;
         alertDisplayMgr.setWalkroute(walkroute);
-        overlayManager.addWalkroute(walkroute);
+        overlayManager.addDownloadedWalkroute(walkroute);
     }
 
     public void gotoMyLocation() {
@@ -1034,7 +1037,7 @@ public class OpenTrail extends AppCompatActivity {
                 if (!result) {
                     DialogUtils.showDialog(activity, "Unable to save walk route: error=" + errMsg);
                 } else {
-                    activity.overlayManager.removeWalkroute(true);
+                    activity.overlayManager.removeRecordingWalkroute(true);
 
                     DialogUtils.showDialog(activity, "Successfully saved walk route.");
                 }
