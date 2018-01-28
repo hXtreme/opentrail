@@ -7,6 +7,7 @@ package freemap.opentrail04;
 
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -205,4 +206,10 @@ public class InputAnnotationActivity extends AppCompatActivity implements InputA
         //finish();
     }
 
+    public void onDestroy() {
+        super.onDestroy();
+        if(iaTask != null && iaTask.getStatus() == AsyncTask.Status.RUNNING) {
+            iaTask.disconnect();
+        }
+    }
 }

@@ -6,7 +6,6 @@ package freemap.opentrail04;
 
 
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -50,7 +49,7 @@ import org.oscim.map.Map;
 import org.oscim.tiling.source.OkHttpEngine;
 import org.oscim.tiling.source.UrlTileSource;
 
-import freemap.andromaps.ConfigChangeSafeTask;
+
 import freemap.andromaps.HTTPCommunicationTask;
 import freemap.andromaps.HTTPUploadTask;
 import freemap.data.Annotation;
@@ -111,6 +110,8 @@ public class OpenTrail extends AppCompatActivity {
     boolean isRecordingWalkroute, waitingForNewPOIData;
     boolean prefGPSTracking, prefAutoDownload, prefAnnotations, prefNoUpload;
     String cachedir;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -192,7 +193,6 @@ public class OpenTrail extends AppCompatActivity {
 
                 if (prefGPSTracking) {
                     gotoMyLocation();
-               //     overlayManager.requestRedraw();
                 }
             }
         }, this, overlayManager);
@@ -423,8 +423,6 @@ public class OpenTrail extends AppCompatActivity {
 
         Intent stopIfNotLoggingBroadcast = new Intent("freemap.opentrail.stopifnotlogging");
         sendBroadcast(stopIfNotLoggingBroadcast);
-
-        // from minimal Mapsforge example - this should (hopefully...) destroy everything
 
         super.onDestroy();
 
@@ -703,7 +701,7 @@ public class OpenTrail extends AppCompatActivity {
                         recordingWalkroute.setTitle(title);
                         recordingWalkroute.setDescription(description);
 
-                        AddToCacheTask addToCacheTask = new AddToCacheTask (this, recordingWalkroute);
+                        AddToWalkrouteCacheTask addToCacheTask = new AddToWalkrouteCacheTask (this, recordingWalkroute);
                         addToCacheTask.execute(fname);
 
                     } else {
@@ -774,9 +772,9 @@ public class OpenTrail extends AppCompatActivity {
         Point pt = new Point(gp.getLongitude(), gp.getLatitude());
         if (prefAutoDownload && poiDeliverer.needNewData(pt)) {
             if (poiDeliverer.isCache(pt)) {
-                Toast.makeText(OpenTrail.this, "Loading data from cache", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OpenTrail.this, "Loading POI data from cache", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(OpenTrail.this, "Loading data from web", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OpenTrail.this, "Loading POI data from web", Toast.LENGTH_SHORT).show();
             }
         }
         startPOIDownload(false, false, gp);
@@ -890,26 +888,14 @@ public class OpenTrail extends AppCompatActivity {
     }
 
     private void clearCache() {
-        ConfigChangeSafeTask<Void, Void> clearCacheTask = new ConfigChangeSafeTask<Void, Void>(this) {
-            @Override
-            protected String doInBackground(Void... unused) {
-                tileCache.deleteTiles();
-                return "Cache cleared successfully";
-            }
-        };
-        clearCacheTask.setDialogDetails("Clearing", "Clearing cache...");
-        clearCacheTask.execute();
+
+        ClearTileCacheTask task = new ClearTileCacheTask(this);
+        task.execute();
     }
 
     private void clearPOICache() {
-        ConfigChangeSafeTask<Void, Void> clearCacheTask = new ConfigChangeSafeTask<Void, Void>(this) {
-            @Override
-            protected String doInBackground(Void... unused) {
-                doDeletePOICache(new File(cachedir));
-                return "POI cache cleared successfully";
-            }
-        };
-        clearCacheTask.setDialogDetails("Clearing", "Clearing POI cache...");
+
+        ClearPOICacheTask clearCacheTask = new ClearPOICacheTask(this);
         clearCacheTask.execute();
     }
 
@@ -934,14 +920,12 @@ public class OpenTrail extends AppCompatActivity {
     public void loadAnnotationOverlay() {
         if (overlayManager!=null) {
             Shared.pois.operateOnAnnotations(overlayManager);
-        //    overlayManager.showAnnotations(); // no need now - above call does this
-          //  overlayManager.requestRedraw();
         }
     }
 
     public void about() {
 
-        DialogUtils.showDialog(this, "OpenTrail 0.4 (beta), using Mapsforge. Uses OpenStreetMap data, copyright 2004-17 " +
+        DialogUtils.showDialog(this, "OpenTrail 0.4 (beta), using VTM. Uses OpenStreetMap data, copyright 2004-17 " +
                 "OpenStreetMap contributors, Open Database Licence. Uses " +
                 "Ordnance Survey OpenData LandForm Panorama contours, Crown Copyright." +
                 "Person icon taken from the osmdroid project. Annotation icon based on " +
@@ -1002,13 +986,13 @@ public class OpenTrail extends AppCompatActivity {
         }
     }
 
-    static class AddToCacheTask extends AsyncTask<String, Void, Boolean> {
+    static class AddToWalkrouteCacheTask extends AsyncTask<String, Void, Boolean> {
 
         Walkroute recWR;
         String errMsg;
         WeakReference<OpenTrail> activityRef;
 
-        public AddToCacheTask (OpenTrail activity, Walkroute recWR) {
+        public AddToWalkrouteCacheTask (OpenTrail activity, Walkroute recWR) {
             this.activityRef = new WeakReference<OpenTrail>(activity);
             this.recWR = recWR;
         }
@@ -1045,4 +1029,57 @@ public class OpenTrail extends AppCompatActivity {
         }
     }
 
+    abstract static class WeakRefTask extends AsyncTask<Void, Void, String> {
+
+        WeakReference<OpenTrail> activityRef;
+
+        public WeakRefTask(OpenTrail activity) {
+            activityRef = new WeakReference<OpenTrail>(activity);
+        }
+
+        protected String doInBackground(Void... unused) {
+            OpenTrail activity = activityRef.get();
+            if(activity!=null) {
+                return doBackgroundTask(activity);
+            }
+            return "";
+        }
+
+        public void onPostExecute(String msg) {
+            OpenTrail activity = activityRef.get();
+            if (activity != null) {
+                DialogUtils.showDialog(activity, msg);
+            }
+        }
+
+        abstract public String doBackgroundTask(OpenTrail activity);
+    }
+
+    static class ClearPOICacheTask extends WeakRefTask  {
+
+        public ClearPOICacheTask (OpenTrail activity) {
+           super(activity);
+        }
+        @Override
+        public String doBackgroundTask(OpenTrail activity) {
+
+            activity.doDeletePOICache(new File(activity.cachedir));
+            return "POI cache cleared successfully";
+        }
+
+    };
+
+    static class ClearTileCacheTask extends WeakRefTask  {
+
+
+        public ClearTileCacheTask (OpenTrail activity) {
+            super(activity);
+        }
+
+        @Override
+        public String doBackgroundTask(OpenTrail activity) {
+            activity.tileCache.deleteTiles();
+            return "Tile cache cleared successfully";
+        }
+    };
 }

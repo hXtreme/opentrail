@@ -47,12 +47,7 @@ public class WalkrouteDetailsActivity extends AppCompatActivity implements View.
             intent.putExtras(extras);
             setResult(RESULT_OK, intent);
         }
-		/*
-		else if (v==cancel)
-		{
-			setResult(RESULT_CANCELED, intent);
-		}
-		*/
+
 
         finish();
     }
