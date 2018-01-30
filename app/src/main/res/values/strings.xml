@@ -21,6 +21,6 @@
     <string name="about">About OpenTrail</string>
     <string name="annotationTypePrompt">Please select note type</string>
     <string name="annotationType">Note type:</string>
-    <string name="userguide">User guide</string>
+    <string name="userguide">User guide / privacy</string>
     <string name="search">Search</string>
 </resources>
