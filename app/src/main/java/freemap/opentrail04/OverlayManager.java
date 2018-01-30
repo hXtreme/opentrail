@@ -127,13 +127,14 @@ public class OverlayManager  implements
 
         recordingWalkrouteLayer = new PathLayer(map, Color.BLUE,5);
         downloadedWalkrouteLayer = new PathLayer(map, Color.BLUE,5);
-        map.layers().add(myLocLayer);
+
+        map.layers().add(downloadedWalkrouteLayer);
+        map.layers().add(recordingWalkrouteLayer);
         map.layers().add(annotationLayer);
         map.layers().add(foundPOILayer);
         map.layers().add(downloadedWalkrouteStageLayer);
-        map.layers().add(downloadedWalkrouteLayer);
         map.layers().add(recordingWalkrouteStageLayer);
-        map.layers().add(recordingWalkrouteLayer);
+        map.layers().add(myLocLayer);
     }
 
 
