@@ -5,7 +5,7 @@ android {
     buildToolsVersion '27.0.3'
 
     defaultConfig {
-        applicationId "freemap.opentrail04"
+        applicationId "freemap.opentrail"
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1

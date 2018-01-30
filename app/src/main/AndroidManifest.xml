@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="freemap.opentrail04">
+    package="freemap.opentrail">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -22,7 +22,7 @@
 
         <!--configChanges: https://github.com/mapsforge/mapsforge/issues/957-->
         <activity
-            android:name="freemap.opentrail04.OpenTrail"
+            android:name=".OpenTrail"
             android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden|screenSize">
            <!-- removed, see above android:launchMode="singleTop"-->
@@ -39,17 +39,17 @@
             <!-- blog.dpdearing.com/2011/05/getting-android-to-call-onactivityresult-after-onsearchrequested-->
         </activity>
         <!-- why was this always portrait? = asynctask. again prevent resize recreate for now-->
-        <activity android:name="freemap.opentrail04.InputAnnotationActivity" android:label="Enter your note"
+        <activity android:name=".InputAnnotationActivity" android:label="Enter your note"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
-        <activity android:name="freemap.opentrail04.POIListActivity" android:label="Choose a POI" />
-        <activity android:name="freemap.opentrail04.POITypesListActivity" android:label="Choose a POI type" />
-        <activity android:name="freemap.opentrail04.RecordedWalkroutesListActivity" android:label="Choose recorded route" />
-        <activity android:name="freemap.opentrail04.WalkrouteDetailsActivity" android:label="Enter walk route details" />
-        <activity android:name="freemap.opentrail04.WalkrouteListActivity" android:label="Choose walk route" />
-        <activity android:name="freemap.opentrail04.OpenTrailPreferences" android:label="@string/settings" />
-        <activity android:name="freemap.opentrail04.SearchResultsActivity"></activity>
-        <activity android:name="freemap.opentrail04.UserGuide"></activity>
-        <service android:name="freemap.opentrail04.GPSService"></service>
+        <activity android:name=".POIListActivity" android:label="Choose a POI" />
+        <activity android:name=".POITypesListActivity" android:label="Choose a POI type" />
+        <activity android:name=".RecordedWalkroutesListActivity" android:label="Choose recorded route" />
+        <activity android:name=".WalkrouteDetailsActivity" android:label="Enter walk route details" />
+        <activity android:name=".WalkrouteListActivity" android:label="Choose walk route" />
+        <activity android:name=".OpenTrailPreferences" android:label="@string/settings" />
+        <activity android:name=".SearchResultsActivity"></activity>
+        <activity android:name=".UserGuide"></activity>
+        <service android:name=".GPSService"></service>
 
     </application>
 

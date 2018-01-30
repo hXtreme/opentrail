@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OpenTrail 0.4</string>
+    <string name="app_name">OpenTrail</string>
     <string name="input_annotation_name">Add note..</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
