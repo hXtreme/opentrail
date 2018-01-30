@@ -10,7 +10,7 @@ Current state
 OpenTrail 0.4 being worked on; this will use VTM rather than Mapsforge.
 
 OpenTrail 0.3 (previous version) available at
-http://www.free-map.org.uk/downloads/android/opentrail03-030617.apk
+http://www.free-map.org.uk/downloads/android/opentrail03-190118.apk
 
 Building
 --------
