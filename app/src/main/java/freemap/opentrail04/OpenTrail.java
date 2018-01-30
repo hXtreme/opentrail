@@ -555,7 +555,6 @@ public class OpenTrail extends AppCompatActivity {
 
                         mv.invalidate();
 
-
                         Intent startLoggingBroadcast = new Intent("freemap.opentrail.startlogging");
                         sendBroadcast(startLoggingBroadcast);
 
@@ -1059,6 +1058,7 @@ public class OpenTrail extends AppCompatActivity {
 
         public ClearPOICacheTask (OpenTrail activity) {
            super(activity);
+
         }
         @Override
         public String doBackgroundTask(OpenTrail activity) {
@@ -1067,6 +1067,13 @@ public class OpenTrail extends AppCompatActivity {
             return "POI cache cleared successfully";
         }
 
+        public void onPostExecute(String msg) {
+            OpenTrail activity = activityRef.get();
+            if (activity != null) {
+                activity.overlayManager.removeAnnotations();
+                DialogUtils.showDialog(activity, msg);
+            }
+        }
     };
 
     static class ClearTileCacheTask extends WeakRefTask  {

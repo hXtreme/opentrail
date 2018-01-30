@@ -279,8 +279,9 @@ public class OverlayManager  implements
         }
     }
 
-    private void removeAnnotations() {
+    public void removeAnnotations() {
         annotationLayer.removeAllItems();
+        mv.invalidate();
     }
 
 
