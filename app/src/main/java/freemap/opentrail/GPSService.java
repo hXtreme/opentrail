@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver;
 
 import android.os.IBinder;
 import android.content.IntentFilter;
+import android.os.PowerManager;
 import android.widget.Toast;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -35,7 +36,7 @@ public class GPSService extends Service implements LocationListener {
     WalkrouteCacheManager wrCacheMgr;
     Walkroute recordingWalkroute;
 
-
+    PowerManager.WakeLock wakeLock;
 
 
 
@@ -196,7 +197,7 @@ public class GPSService extends Service implements LocationListener {
 
     public void onDestroy()
     {
-        super.onDestroy();
+
         // 311217 if location hasn't been received yet receiver and mgr can both be null, so add check
 
         if(receiver!=null) {
@@ -214,6 +215,8 @@ public class GPSService extends Service implements LocationListener {
 
             receiver=null;
         }
+        releaseWakeLock();
+        super.onDestroy();
     }
 
     public void clearRecordingWalkroute()
@@ -226,10 +229,27 @@ public class GPSService extends Service implements LocationListener {
     {
         isLogging=true;
 
+        // Wakelock is acquired to prevent CPU going to sleep while the service is recording a
+        // track. It is released as soon as recording finishes or the service is destroyed
+        // so we minimise its use to the bare minimum needed.
+        // Credit: used the MyTracks source code for some guidance
+        // https://github.com/justin66/MyTracks/
+        PowerManager pMgr = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        if(pMgr != null && wakeLock == null) {
+            wakeLock = pMgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "freemap.opentrail.gpsLoggingWakeLock");
+        }
+
+        if(wakeLock != null && !wakeLock.isHeld()) {
+            wakeLock.acquire();
+        }
         // adjust interval to 5 secs as we are logging
         LocationManager mgr = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         mgr.removeUpdates(this);
+
+
         mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOGGING_INTERVAL, 10, this);
+
+
     }
 
     // called if user ends a recording session
@@ -241,6 +261,8 @@ public class GPSService extends Service implements LocationListener {
         LocationManager mgr = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         mgr.removeUpdates(this);
         mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, NO_LOGGING_INTERVAL, 10, this);
+
+        releaseWakeLock();
 
         // save walkroute before stopping
         new SaveWalkrouteTask().execute();
@@ -259,6 +281,14 @@ public class GPSService extends Service implements LocationListener {
         }
 
     }
+
+    private void releaseWakeLock() {
+        if(wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+            wakeLock = null;
+        }
+    }
+
     public void onLocationChanged(Location loc)
     {
         boolean refresh=false;
