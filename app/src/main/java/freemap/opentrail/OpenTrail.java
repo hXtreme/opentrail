@@ -5,7 +5,11 @@ package freemap.opentrail;
 
 
 
+import android.content.res.Configuration;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -38,7 +42,6 @@ import android.view.View;
 import android.widget.Toast;
 
 
-
 import org.oscim.android.MapView;
 import org.oscim.android.theme.AssetsRenderTheme;
 import org.oscim.core.GeoPoint;
@@ -48,7 +51,6 @@ import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.oscim.map.Map;
 import org.oscim.tiling.source.OkHttpEngine;
 import org.oscim.tiling.source.UrlTileSource;
-
 
 import freemap.andromaps.HTTPCommunicationTask;
 import freemap.andromaps.HTTPUploadTask;
@@ -112,6 +114,8 @@ public class OpenTrail extends AppCompatActivity {
     String cachedir;
 
 
+    DrawerLayout dLayout;
+    ActionBarDrawerToggle drawerToggle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -375,6 +379,8 @@ public class OpenTrail extends AppCompatActivity {
             }
         });
 
+        setupDrawer();
+
     }
 
     protected void onStart() {
@@ -444,6 +450,140 @@ public class OpenTrail extends AppCompatActivity {
         editor.commit();
     }
 
+    public void setupDrawer() {
+        NavigationView nView = (NavigationView)findViewById(R.id.navigationView);
+        dLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        drawerToggle = new ActionBarDrawerToggle(this,dLayout,R.string.drawer_open, R.string.drawer_close) {
+
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(R.string.app_name);
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View view) {
+                super.onDrawerOpened(view);
+                getSupportActionBar().setTitle("Choose an option");
+                invalidateOptionsMenu();
+            }
+        };
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        dLayout.addDrawerListener(drawerToggle);
+
+        nView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            public boolean onNavigationItemSelected(MenuItem item) {
+                Intent intent;
+                GeoPoint loc = OpenTrail.this.getGPSPositionOrMapCentre();
+
+                boolean retcode = true;
+
+                switch(item.getItemId()) {
+                    case R.id.aboutMenuItem:
+                        about();
+                        break;
+
+                    case R.id.inputAnnotationMenuItem:
+                        launchInputAnnotationActivity(loc.getLatitude(), loc.getLongitude());
+                        break;
+
+
+                    case R.id.settingsMenuItem:
+                        intent = new Intent(OpenTrail.this, OpenTrailPreferences.class);
+                        startActivity(intent);
+                        break;
+
+                    case R.id.poisMenuItem:
+                        SharedPreferences sprefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        startPOIDownload(true, false, loc);
+                        break;
+
+                    case R.id.findPoisMenuItem:
+
+                        intent = new Intent(OpenTrail.this, POITypesListActivity.class);
+                        Point p = OpenTrail.this.proj.project(new Point(loc.getLongitude(), loc.getLatitude()));
+                        intent.putExtra("projectedX", p.x);
+                        intent.putExtra("projectedY", p.y);
+                        startActivityForResult(intent, 1);
+
+                        break;
+
+                    case R.id.walkroutesMenuItem:
+                        if (loc == null) {
+                            DialogUtils.showDialog(OpenTrail.this, "Location not known");
+                        } else {
+
+                            Shared.savedData.setDataCallbackTask(new DownloadWalkroutesTask(OpenTrail.this, dataReceiver, loc));
+                            ((DownloadWalkroutesTask) Shared.savedData.getDataCallbackTask()).execute();
+                        }
+                        break;
+
+                    case R.id.findWalkroutesMenuItem:
+                        if (Shared.walkroutes != null) {
+                            intent = new Intent(OpenTrail.this, WalkrouteListActivity.class);
+                            startActivityForResult(intent, 2);
+                        } else {
+                            DialogUtils.showDialog(OpenTrail.this, "No walk routes downloaded yet");
+                        }
+                        break;
+
+                    case R.id.uploadAnnotationsMenuItem:
+                        uploadCachedAnnotations();
+                        break;
+
+                    case R.id.recordWalkrouteMenuItem:
+                        isRecordingWalkroute = !isRecordingWalkroute;
+                        item.setTitle(isRecordingWalkroute ? "Stop recording" : "Record walk route");
+
+
+                        overlayManager.removeRecordingWalkroute(true);
+
+                        if (isRecordingWalkroute) {
+
+                            mv.invalidate();
+
+                            Intent startLoggingBroadcast = new Intent("freemap.opentrail.startlogging");
+                            sendBroadcast(startLoggingBroadcast);
+
+                        } else {
+
+                            Intent stopLoggingBroadcast = new Intent("freemap.opentrail.stoplogging");
+                            sendBroadcast(stopLoggingBroadcast);
+                            showWalkrouteDetailsActivity();
+                        }
+                        break;
+                    case R.id.uploadWalkrouteMenuItem:
+                        showRecordedWalkroutesActivity();
+                        break;
+
+                    case R.id.clearCacheMenuItem:
+                        clearCache();
+                        break;
+
+                    case R.id.clearPOICacheMenuItem:
+                        clearPOICache();
+                        break;
+
+                    case R.id.userGuideMenuItem:
+                        intent = new Intent(OpenTrail.this, UserGuide.class);
+                        startActivity(intent);
+                        break;
+
+                    default:
+                        retcode = false;
+                        break;
+                }
+
+                dLayout.closeDrawers();// Close the navigation drawer
+                return retcode;
+            }
+        });
+    }
+
     private void doSearch(Intent launchSearchResultsIntent, String query) {
         if (location != null) {
             Point p = new OSGBProjection().project(new Point(location.getLongitude(),
@@ -474,17 +614,19 @@ public class OpenTrail extends AppCompatActivity {
     }
 
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem recordWalkrouteMenuItem = menu.findItem(R.id.recordWalkrouteMenuItem);
-        recordWalkrouteMenuItem.setTitle(isRecordingWalkroute ? "Stop recording" : "Record walk route");
-        return true;
+       MenuItem recordWalkrouteMenuItem = menu.findItem(R.id.recordWalkrouteMenuItem);
+       if(recordWalkrouteMenuItem != null) {
+           recordWalkrouteMenuItem.setTitle(isRecordingWalkroute ? "Stop recording" : "Record walk route");
+       }
+       return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         GeoPoint loc = this.getGPSPositionOrMapCentre();
 
         boolean retcode = true;
-        if (item.getItemId() == R.id.aboutMenuItem) {
-            about();
+        if(drawerToggle.onOptionsItemSelected(item)) {
+            return true;
         } else {
             Intent intent;
             switch (item.getItemId()) {
@@ -494,92 +636,6 @@ public class OpenTrail extends AppCompatActivity {
                     } else {
                         DialogUtils.showDialog(this, "Location not known yet");
                     }
-                    break;
-
-                case R.id.inputAnnotationMenuItem:
-                    launchInputAnnotationActivity(loc.getLatitude(), loc.getLongitude());
-                    break;
-
-
-                case R.id.settingsMenuItem:
-                    intent = new Intent(this, OpenTrailPreferences.class);
-                    startActivity(intent);
-                    break;
-
-                case R.id.poisMenuItem:
-                    SharedPreferences sprefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    startPOIDownload(true, false, loc);
-                    break;
-
-                case R.id.findPoisMenuItem:
-
-                    intent = new Intent(this, POITypesListActivity.class);
-                    Point p = this.proj.project(new Point(loc.getLongitude(), loc.getLatitude()));
-                    intent.putExtra("projectedX", p.x);
-                    intent.putExtra("projectedY", p.y);
-                    startActivityForResult(intent, 1);
-
-                    break;
-
-                case R.id.walkroutesMenuItem:
-                    if (loc == null) {
-                        DialogUtils.showDialog(this, "Location not known");
-                    } else {
-
-                        Shared.savedData.setDataCallbackTask(new DownloadWalkroutesTask(this, dataReceiver, loc));
-                        ((DownloadWalkroutesTask) Shared.savedData.getDataCallbackTask()).execute();
-                    }
-                    break;
-
-                case R.id.findWalkroutesMenuItem:
-                    if (Shared.walkroutes != null) {
-                        intent = new Intent(this, WalkrouteListActivity.class);
-                        startActivityForResult(intent, 2);
-                    } else {
-                        DialogUtils.showDialog(this, "No walk routes downloaded yet");
-                    }
-                    break;
-
-                case R.id.uploadAnnotationsMenuItem:
-                    uploadCachedAnnotations();
-                    break;
-
-                case R.id.recordWalkrouteMenuItem:
-                    isRecordingWalkroute = !isRecordingWalkroute;
-                    item.setTitle(isRecordingWalkroute ? "Stop recording" : "Record walk route");
-
-
-                    overlayManager.removeRecordingWalkroute(true);
-
-                    if (isRecordingWalkroute) {
-
-                        mv.invalidate();
-
-                        Intent startLoggingBroadcast = new Intent("freemap.opentrail.startlogging");
-                        sendBroadcast(startLoggingBroadcast);
-
-                    } else {
-
-                        Intent stopLoggingBroadcast = new Intent("freemap.opentrail.stoplogging");
-                        sendBroadcast(stopLoggingBroadcast);
-                        showWalkrouteDetailsActivity();
-                    }
-                    break;
-                case R.id.uploadWalkrouteMenuItem:
-                    showRecordedWalkroutesActivity();
-                    break;
-
-                case R.id.clearCacheMenuItem:
-                    clearCache();
-                    break;
-
-                case R.id.clearPOICacheMenuItem:
-                    clearPOICache();
-                    break;
-
-                case R.id.userGuideMenuItem:
-                    intent = new Intent(this, UserGuide.class);
-                    startActivity(intent);
                     break;
 
                 default:
@@ -952,6 +1008,15 @@ public class OpenTrail extends AppCompatActivity {
         }
     }
 
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
     public class HTTPCallback implements HTTPCommunicationTask.Callback {
 
         Context ctx;

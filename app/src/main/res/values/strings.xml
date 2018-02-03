@@ -23,4 +23,6 @@
     <string name="annotationType">Note type:</string>
     <string name="userguide">User guide / privacy</string>
     <string name="search">Search</string>
+    <string name="drawer_open">Show menu</string>
+    <string name="drawer_close">Hide menu</string>
 </resources>
