@@ -32,6 +32,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.NetworkOnMainThreadException;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -379,6 +380,9 @@ public class OpenTrail extends AppCompatActivity {
             }
         });
 
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         setupDrawer();
 
     }
@@ -453,6 +457,9 @@ public class OpenTrail extends AppCompatActivity {
     public void setupDrawer() {
         NavigationView nView = (NavigationView)findViewById(R.id.navigationView);
         dLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
+
+        MenuItem item = (MenuItem)nView.getMenu().findItem(R.id.recordWalkrouteMenuItem);
+        setRecordingMenuItem(item);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -537,7 +544,7 @@ public class OpenTrail extends AppCompatActivity {
 
                     case R.id.recordWalkrouteMenuItem:
                         isRecordingWalkroute = !isRecordingWalkroute;
-                        item.setTitle(isRecordingWalkroute ? "Stop recording" : "Record walk route");
+                        setRecordingMenuItem(item);
 
 
                         overlayManager.removeRecordingWalkroute(true);
@@ -616,7 +623,7 @@ public class OpenTrail extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
        MenuItem recordWalkrouteMenuItem = menu.findItem(R.id.recordWalkrouteMenuItem);
        if(recordWalkrouteMenuItem != null) {
-           recordWalkrouteMenuItem.setTitle(isRecordingWalkroute ? "Stop recording" : "Record walk route");
+           setRecordingMenuItem(recordWalkrouteMenuItem);
        }
        return true;
     }
@@ -1017,6 +1024,11 @@ public class OpenTrail extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
     }
+
+    private void setRecordingMenuItem(MenuItem item) {
+        item.setTitle(isRecordingWalkroute ? "Stop recording": "Record walk route");
+    }
+
     public class HTTPCallback implements HTTPCommunicationTask.Callback {
 
         Context ctx;
