@@ -42,7 +42,7 @@ public class DownloadWalkroutesTask extends DataCallbackTask<Void,Void> {
                     + location.getLatitude()
                     + "&lon="
                     + location.getLongitude();
-            Log.d("OpenTrail","URL=" + url);
+
             WebXMLSource xmlsource = new WebXMLSource(url,new WalkroutesHandler());
             setData((ArrayList<WalkrouteSummary>) xmlsource.getData());
 

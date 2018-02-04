@@ -14,8 +14,8 @@
     <string name="uploadsavedannotations">Upload saved notes</string>
     <string name="downloadpois">Download POIs</string>
     <string name="findnearbypois">Find nearby downloaded POIs</string>
-    <string name="downloadwalkroutes">Download walk routes</string>
-    <string name="findwalkroutes">Find downloaded walk routes</string>
+    <string name="downloadwalkroutes">Download list of walk routes</string>
+    <string name="findwalkroutes">Choose walk route</string>
     <string name="recordwalkroute">Record walk route</string>
     <string name="uploadrecordedwalkroute">Upload recorded walk route</string>
     <string name="about">About OpenTrail</string>

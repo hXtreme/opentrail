@@ -34,7 +34,6 @@ public class BasicListAdapter extends ListAdapter {
         LayoutInflater inflater = (LayoutInflater)
                 ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-        Log.d("opentrail", "Created a view holder");
         return new CustomViewHolder(rowView);
     }
 
@@ -42,6 +41,5 @@ public class BasicListAdapter extends ListAdapter {
         CustomViewHolder holder = (CustomViewHolder)h;
         holder.itemView.setOnClickListener (new ItemViewClickListener(position));
         holder.titlesView.setText(titles[position]);
-        Log.d("OpenTrail","Name="+titles[position]);
     }
 }

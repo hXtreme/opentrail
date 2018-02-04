@@ -37,7 +37,6 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
-import android.util.Log;
 import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.widget.Toast;
@@ -176,7 +175,7 @@ public class OpenTrail extends AppCompatActivity {
                 OpenTrail.this.location = new GeoPoint(lat, lon);
                 Point pt = new Point(lon, lat);
 
-                Log.d("opentrail", "Lon/lat=" + lon +" " + lat);
+
                 try {
                     Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
 
@@ -320,7 +319,7 @@ public class OpenTrail extends AppCompatActivity {
 
         dataReceiver = new DataReceiver() {
             public void receivePOIs(FreemapDataset ds) {
-                Log.d("OpenTrail", "POIs received");
+
                 if (ds != null) {
                     Shared.pois = ds;
                     alertDisplayMgr.setPOIs(Shared.pois);
@@ -534,7 +533,7 @@ public class OpenTrail extends AppCompatActivity {
                             intent = new Intent(OpenTrail.this, WalkrouteListActivity.class);
                             startActivityForResult(intent, 2);
                         } else {
-                            DialogUtils.showDialog(OpenTrail.this, "No walk routes downloaded yet");
+                            DialogUtils.showDialog(OpenTrail.this, "Please download list of walk routes first.");
                         }
                         break;
 
@@ -668,13 +667,6 @@ public class OpenTrail extends AppCompatActivity {
                         GeoPoint gp = new GeoPoint(extras.getDouble("lat"), extras.getDouble("lon"));
                         Point p = new Point(extras.getDouble("lon"), extras.getDouble("lat"));
                         String annotationType = extras.getString("annotationType");
-                        Log.d("OpenTrail", "Annotation type=" + annotationType);
-                        /* 311217 this appears to have never been used!
-                        Marker item = MapsforgeUtil.makeTappableMarker(this, isWalkrouteAnnotation ?
-                                getResources().getDrawable(R.mipmap.flag) :
-                                (annotationType.equals("1")?getResources().getDrawable(R.mipmap.caution):
-                                getResources().getDrawable(R.mipmap.interest)), gp, description);
-                        */
                         mv.invalidate();
 
                         Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
@@ -702,8 +694,6 @@ public class OpenTrail extends AppCompatActivity {
 
                                 Shared.pois.add(an); // this reprojects it
 
-
-                                Log.d("OpenTrail","annotation ought to have been added: ID=" + an.getId());
                             } catch (IOException e) {
                                 DialogUtils.showDialog(this, "Could not save annotation, please enable upload");
                             }
@@ -857,7 +847,6 @@ public class OpenTrail extends AppCompatActivity {
             try {
                 String xml = annCacheMgr.getAllAnnotationsXML();
                 String postData = "action=createMulti&inProj=4326&data=" + xml;
-                Log.d("OpenTrail", "XML to send=" + xml);
 
                 HTTPUploadTask task  = new HTTPUploadTask
                         (this, "http://www.free-map.org.uk/fm/ws/annotation.php",

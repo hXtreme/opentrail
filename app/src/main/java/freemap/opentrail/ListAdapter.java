@@ -37,8 +37,7 @@ abstract public class ListAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.listener = listener;
     }
 
-  //  abstract public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType);
-   // abstract public void onBindViewHolder(RecyclerView.ViewHolder holder, int position);
+
 
     public int getItemCount() {
         return titles==null? 0: titles.length;

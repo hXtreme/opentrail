@@ -34,13 +34,11 @@ public class WRUploadTask extends HTTPUploadTask {
         String postData="action=add&route="+gpx+"&format=gpx";
         setPostData(postData);
         String status = super.doInBackground(unused);
-        Log.d("OpenTrail","HTTP task status=" + status);
         return status;
     }
 
     public void onPostExecute (String code)
     {
         super.onPostExecute(code);
-        Log.d("OpenTrail", "additional data, i.e response from server: "  + addData);
     }
 }

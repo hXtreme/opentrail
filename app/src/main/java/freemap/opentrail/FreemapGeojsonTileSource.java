@@ -19,7 +19,6 @@ import java.util.Map;
 
 public class FreemapGeojsonTileSource extends GeojsonTileSource {
 
-  //  private final static String DEFAULT_URL = "http://www.free-map.org.uk/fm/ws/tsvr.php?way=highway,natural,waterway,railway,power,barrier,landuse&poi=all&ext=20&contour=1&coastline=1&outProj=4326";
     private final static String DEFAULT_URL =
           "http://www.free-map.org.uk/fm/ws/tsvr.php?way=highway,natural,waterway,railway,power,barrier&poi=all&contour=1&coastline=1&outProj=4326&ext=20";
     private final static String DEFAULT_PATH = "&x={X}&y={Y}&z={Z}";

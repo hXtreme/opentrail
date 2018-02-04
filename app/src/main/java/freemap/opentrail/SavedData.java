@@ -62,9 +62,7 @@ public class SavedData
     }
     void executeHTTPCommunicationTask (HTTPCommunicationTask dfTask, String dialogTitle, String dialogText)
     {
-        Log.d("OpenTrail", "executeHTTPCommunicationTask()");
         setHTTPCommunicationTask(dfTask, dialogTitle, dialogText);
-        Log.d("OpenTrail", "confirmAndExecute()");
         dfTask.confirmAndExecute();
     }
 
@@ -95,8 +93,6 @@ public class SavedData
 
         if (dataCallbackTask != null && dataCallbackTask.getStatus() == AsyncTask.Status.RUNNING) {
 
-            Log.d("OpenTrail", "disconnecting data dataCallbackTask");
-
             dataCallbackTask.disconnect();
         } else
             dataCallbackTask = null;
@@ -105,8 +101,6 @@ public class SavedData
     private void disconnectHTTPCommunicationTask() {
         if(httpTask!=null && httpTask.getStatus()==AsyncTask.Status.RUNNING)
         {
-
-            Log.d("OpenTrail", "disconnecting data dataCallbackTask");
 
             httpTask.disconnect();
         }

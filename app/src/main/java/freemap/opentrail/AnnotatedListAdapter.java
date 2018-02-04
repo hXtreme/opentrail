@@ -38,7 +38,6 @@ public class AnnotatedListAdapter extends ListAdapter {
         LayoutInflater inflater = (LayoutInflater)
                 ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.annotatedlistitem, parent, false);
-        Log.d("opentrail", "Created a view holder");
         return new CustomViewHolder(rowView);
     }
 
@@ -47,6 +46,5 @@ public class AnnotatedListAdapter extends ListAdapter {
         holder.itemView.setOnClickListener (new ItemViewClickListener(position));
         holder.titlesView.setText(titles[position]);
         holder.detailsView.setText(annotations[position]);
-        Log.d("opentrail","Index = "+ position + " Name="+titles[position]+" Type="+annotations[position]);
     }
 }

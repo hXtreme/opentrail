@@ -24,8 +24,6 @@ public class WalkrouteListActivity extends RecyclerViewActivity  {
                 DecimalFormat df = new DecimalFormat("#.##");
                 titles[i]=Shared.walkroutes.get(i).getTitle();
                 descriptions[i]=truncate(Shared.walkroutes.get(i).getDescription()) + " (" + df.format(Shared.walkroutes.get(i).getDistance()) + "km)";
-                Log.d("opentrail", "Found title=" + titles[i] + " description=" + descriptions[i]);
-
             }
             view.setAdapter(getAdapter());
         }

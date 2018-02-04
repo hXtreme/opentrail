@@ -50,11 +50,8 @@ public class DownloadPOIsTask extends DataCallbackTask<Void,Void>  {
             td.setForceReload(forceWebDownload);
 
             Point p = new Point(location.getLongitude(),location.getLatitude());
-    //        Log.d("OpenTrail","Updating data with point: " + p);
-     //       Log.d("OpenTrail","getSurroundingTiles()retuend:" +td.updateSurroundingTiles(p));
+
             td.updateSurroundingTiles(p);
-            //setData((FreemapDataset)td.getAllData());
-      //      Log.d("OpenTrail","done");
 
 
 
@@ -64,7 +61,6 @@ public class DownloadPOIsTask extends DataCallbackTask<Void,Void>  {
             Set<Map.Entry<String, TiledData>> entries = td.getAllTiles();
             for(Map.Entry<String, TiledData> e: entries)
             {
-           //     android.util.Log.d("OpenTrail", "RETURNED: " + e.getValue());
                 allData.merge(e.getValue());
             }
             setData(allData);

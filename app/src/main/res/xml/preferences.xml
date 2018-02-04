@@ -2,9 +2,9 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:title="GPS tracking"
+        android:title="Show current location"
         android:defaultValue="true"
-        android:summary="Turn GPS tracking on and off."
+        android:summary="Always centre map on current location."
         android:key="prefGPSTracking" />
     <CheckBoxPreference
         android:title="Show annotations"

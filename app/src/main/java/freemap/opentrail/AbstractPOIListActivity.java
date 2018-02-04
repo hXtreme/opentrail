@@ -68,7 +68,6 @@ public abstract class AbstractPOIListActivity extends RecyclerViewActivity {
                     }
                     adapter = new AnnotatedListAdapter(this,  names, types, this);
                     view.setAdapter(adapter);
-                 //   setListAdapter(adapter);
                 } else {
                     new AlertDialog.Builder(this).setMessage("No matching places found").
                             setPositiveButton("OK", new DialogInterface.OnClickListener() {

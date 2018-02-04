@@ -53,16 +53,15 @@ public class SearchTask extends DataCallbackTask<String,Void>  {
                 data += line;
             }
 
-            Log.d("OpenTrail", "data="+ data);
             JSONObject object = new JSONObject(data);
             JSONArray features = object.getJSONArray("features");
-            Log.d("OpenTrail", "Number of features: " + features.length());
+
             for(int i=0; i<features.length(); i++) {
                 POI curPOI;
                 JSONObject curFeature = features.getJSONObject(i);
                 JSONObject geometry = curFeature.getJSONObject("geometry");
                 if(geometry!=null) {
-                    Log.d("OpenTrail", "For "+i+ " found a geometry");
+
                     JSONArray coords = geometry.getJSONArray("coordinates");
                     if(coords!=null) {
 
@@ -97,7 +96,6 @@ public class SearchTask extends DataCallbackTask<String,Void>  {
 
     public void receive(Object data) {
         if(receiver!=null) {
-            Log.d("OpenTrail", "RECEIVER: received: " + data);
             ((SearchTask.Receiver) receiver).receivePOIs((ArrayList<POI>) data);
         }
     }
