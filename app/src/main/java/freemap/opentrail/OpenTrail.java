@@ -567,11 +567,7 @@ public class OpenTrail extends AppCompatActivity {
                         break;
 
                     case R.id.clearCacheMenuItem:
-                        clearCache();
-                        break;
-
-                    case R.id.clearPOICacheMenuItem:
-                        clearPOICache();
+                        clearAllCaches();
                         break;
 
                     case R.id.userGuideMenuItem:
@@ -944,9 +940,9 @@ public class OpenTrail extends AppCompatActivity {
         task.execute();
     }
 
-    private void clearPOICache() {
+    private void clearAllCaches() {
 
-        ClearPOICacheTask clearCacheTask = new ClearPOICacheTask(this);
+        ClearAllCacheTask clearCacheTask = new ClearAllCacheTask(this);
         clearCacheTask.execute();
     }
 
@@ -1120,9 +1116,9 @@ public class OpenTrail extends AppCompatActivity {
         abstract public String doBackgroundTask(OpenTrail activity);
     }
 
-    static class ClearPOICacheTask extends WeakRefTask  {
+    static class ClearAllCacheTask extends WeakRefTask  {
 
-        public ClearPOICacheTask (OpenTrail activity) {
+        public ClearAllCacheTask(OpenTrail activity) {
            super(activity);
 
         }
@@ -1130,12 +1126,14 @@ public class OpenTrail extends AppCompatActivity {
         public String doBackgroundTask(OpenTrail activity) {
 
             activity.doDeletePOICache(new File(activity.cachedir));
-            return "POI cache cleared successfully";
+            activity.tileCache.deleteTiles();
+            return "Caches cleared successfully";
         }
 
         public void onPostExecute(String msg) {
             OpenTrail activity = activityRef.get();
             if (activity != null) {
+
                 activity.overlayManager.removeAnnotations();
                 DialogUtils.showDialog(activity, msg);
             }

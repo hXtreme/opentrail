@@ -5,15 +5,23 @@
         android:icon="@drawable/ic_note_add_white_24dp" app:showAsAction="ifRoom"/>
     <item android:id="@+id/settingsMenuItem" android:title="@string/settings"
         android:icon="@drawable/ic_settings_white_24dp" app:showAsAction="ifRoom"/>
-    <item android:id="@+id/clearCacheMenuItem" android:title="@string/clearCache" />
-    <item android:id="@+id/clearPOICacheMenuItem" android:title="@string/clearPOICache" />
-    <item android:id="@+id/uploadAnnotationsMenuItem" android:title="@string/uploadsavedannotations" />
-    <item android:id="@+id/poisMenuItem" android:title="@string/downloadpois" />
-    <item android:id="@+id/findPoisMenuItem" android:title="@string/findnearbypois" />
-    <item android:id="@+id/walkroutesMenuItem" android:title="@string/downloadwalkroutes" />
-    <item android:id="@+id/findWalkroutesMenuItem" android:title="@string/findwalkroutes" />
+    <item android:id="@+id/clearCacheMenuItem" android:title="@string/clearCache"
+        android:icon="@drawable/ic_clear_white_24dp"/>
+    <item android:id="@+id/uploadAnnotationsMenuItem" android:title="@string/uploadsavedannotations"
+        android:icon="@drawable/ic_cloud_upload_white_24dp"/>
+    <item android:id="@+id/poisMenuItem" android:title="@string/downloadpois"
+        android:icon="@drawable/ic_cloud_download_white_24dp"/>
+    <item android:id="@+id/findPoisMenuItem" android:title="@string/findnearbypois"
+        android:icon="@drawable/ic_room_white_24dp"/>
+    <item android:id="@+id/walkroutesMenuItem" android:title="@string/downloadwalkroutes"
+        android:icon="@drawable/ic_list_white_24dp"/>
+    <item android:id="@+id/findWalkroutesMenuItem" android:title="@string/findwalkroutes"
+        android:icon="@drawable/ic_timeline_white_24dp"/>
     <item android:id="@+id/recordWalkrouteMenuItem" android:title="@string/recordwalkroute" app:showAsAction="ifRoom"/>
-    <item android:id="@+id/uploadWalkrouteMenuItem" android:title="@string/uploadrecordedwalkroute" />
-    <item android:id="@+id/userGuideMenuItem" android:title="@string/userguide" />
-    <item android:id="@+id/aboutMenuItem" android:title="@string/about" />
+    <item android:id="@+id/uploadWalkrouteMenuItem" android:title="@string/uploadrecordedwalkroute"
+        android:icon="@drawable/ic_file_upload_white_24dp"/>
+    <item android:id="@+id/userGuideMenuItem" android:title="@string/userguide"
+        android:icon="@drawable/ic_info_white_24dp"/>
+    <item android:id="@+id/aboutMenuItem" android:title="@string/about"
+        android:icon="@drawable/ic_info_outline_white_24dp"/>
 </menu>

@@ -9,8 +9,7 @@
     <string name="mylocation">My Location"</string>
     <string name="addannotation">Add note</string>
     <string name="settings">Settings</string>
-    <string name="clearCache">Clear map tile cache now</string>
-    <string name="clearPOICache">Clear POI and note cache now</string>
+    <string name="clearCache">Clear map and POI cache now</string>
     <string name="uploadsavedannotations">Upload saved notes</string>
     <string name="downloadpois">Download POIs</string>
     <string name="findnearbypois">Find nearby downloaded POIs</string>
