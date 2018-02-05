@@ -5,6 +5,7 @@ package freemap.opentrail;
 
 
 
+import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -102,6 +103,7 @@ public class OpenTrail extends AppCompatActivity {
     GPSService gpsService;
     Walkroute curDownloadedWalkroute;
     TileCache tileCache;
+    AddToWalkrouteCacheTask addToWalkrouteCacheTask;
 
 
     long lastCacheClearTime;
@@ -445,6 +447,7 @@ public class OpenTrail extends AppCompatActivity {
         Shared.savedData.disconnect();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = prefs.edit();
+        Shared.savedData.disconnectWalkrouteSaveTask(addToWalkrouteCacheTask);
 
         GeoPoint loc = this.getGPSPositionOrMapCentre();
 
@@ -634,7 +637,6 @@ public class OpenTrail extends AppCompatActivity {
         if(drawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else {
-            Intent intent;
             switch (item.getItemId()) {
                 case R.id.myLocationMenuItem:
                     if (this.location != null) {
@@ -753,8 +755,8 @@ public class OpenTrail extends AppCompatActivity {
                         recordingWalkroute.setTitle(title);
                         recordingWalkroute.setDescription(description);
 
-                        AddToWalkrouteCacheTask addToCacheTask = new AddToWalkrouteCacheTask (this, recordingWalkroute);
-                        addToCacheTask.execute(fname);
+                        addToWalkrouteCacheTask = new AddToWalkrouteCacheTask (this, recordingWalkroute);
+                        addToWalkrouteCacheTask.execute(fname);
 
                     } else {
                         DialogUtils.showDialog(this, "No recorded walk route");
@@ -1054,43 +1056,78 @@ public class OpenTrail extends AppCompatActivity {
     static class AddToWalkrouteCacheTask extends AsyncTask<String, Void, Boolean> {
 
         Walkroute recWR;
-        String errMsg;
+        String resultMsg;
         WeakReference<OpenTrail> activityRef;
+        ProgressDialog dlg;
 
-        public AddToWalkrouteCacheTask (OpenTrail activity, Walkroute recWR) {
+        public AddToWalkrouteCacheTask(OpenTrail activity, Walkroute recWR) {
             this.activityRef = new WeakReference<OpenTrail>(activity);
             this.recWR = recWR;
+        }
+
+        public void onPreExecute() {
+           showProgressDialog();
         }
 
         public Boolean doInBackground(String... fname) {
 
             OpenTrail activity = activityRef.get();
-            if(activity!=null) {
-                try {
+            if (activity != null) {
 
+                try {
                     activity.wrCacheMgr.addRecordingWalkroute(recWR);
                     activity.wrCacheMgr.renameRecordingWalkroute(fname[0]);
                     activity.gpsService.clearRecordingWalkroute();
 
                 } catch (IOException e) {
-                    errMsg = e.toString();
+                    resultMsg = e.toString();
                     return false;
                 }
             }
+            resultMsg = "Successfully saved walk route.";
             return true;
         }
 
         protected void onPostExecute(Boolean result) {
             OpenTrail activity = activityRef.get();
-            if(activity!=null) {
-                if (!result) {
-                    DialogUtils.showDialog(activity, "Unable to save walk route: error=" + errMsg);
-                } else {
+            if (activity != null) {
+                hideProgressDialog();
+                if (result) {
                     activity.overlayManager.removeRecordingWalkroute(true);
-
-                    DialogUtils.showDialog(activity, "Successfully saved walk route.");
                 }
+                showResultDialog(activity);
             }
+        }
+
+        public void disconnect() {
+            hideProgressDialog();
+        }
+
+        public void reconnect(OpenTrail activity) {
+            if(getStatus()== Status.FINISHED && activity!=null) {
+                showResultDialog(activity);
+            } else {
+                activityRef = new WeakReference<OpenTrail>(activity);
+                showProgressDialog();
+            }
+        }
+
+        private void showProgressDialog() {
+            OpenTrail activity = activityRef.get();
+            if (activity != null) {
+                dlg = ProgressDialog.show(activity, "Saving...", "Saving walk route...");
+            }
+        }
+
+        private void hideProgressDialog() {
+            if(dlg!=null) {
+                dlg.dismiss();
+            }
+            dlg = null;
+        }
+
+        private void showResultDialog(Context ctx) {
+            DialogUtils.showDialog(ctx, resultMsg);
         }
     }
 

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import freemap.andromaps.ConfigChangeSafeTask;
 import freemap.andromaps.DataCallbackTask;
 import freemap.andromaps.HTTPCommunicationTask;
 
@@ -19,6 +20,7 @@ public class SavedData
 
     private DataCallbackTask<?,?> dataCallbackTask;
     private HTTPCommunicationTask httpTask;
+    private OpenTrail.AddToWalkrouteCacheTask addToWalkrouteTask;
 
     private static SavedData instance;
 
@@ -35,8 +37,6 @@ public class SavedData
     {
         if(dataCallbackTask !=null)
         {
-
-
                dataCallbackTask.reconnect(ctx, callback);
         }
         if(httpTask!=null)
@@ -44,6 +44,7 @@ public class SavedData
 
             httpTask.reconnect(ctx, callback);
         }
+        reconnectWalkrouteSaveTask(ctx);
     }
 
     void setHTTPCommunicationTask (HTTPCommunicationTask dfTask) {
@@ -106,5 +107,20 @@ public class SavedData
         }
         else
             httpTask = null;
+    }
+
+    public void disconnectWalkrouteSaveTask(OpenTrail.AddToWalkrouteCacheTask task) {
+        if(task!=null && task.getStatus()==AsyncTask.Status.RUNNING) {
+            addToWalkrouteTask = task;
+            task.disconnect();
+        } else {
+            addToWalkrouteTask = null;
+        }
+    }
+
+    private void reconnectWalkrouteSaveTask(Context ctx) {
+        if(addToWalkrouteTask != null) {
+            addToWalkrouteTask.reconnect((OpenTrail)ctx);
+        }
     }
 }
