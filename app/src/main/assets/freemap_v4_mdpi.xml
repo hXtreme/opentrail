@@ -31,12 +31,12 @@ version="4" map-background="#add8e6">
     </rule>
 
 <rule e="way" k="contourtype" v="major" zoom-min="13">
-<line stroke="#fb9b67" stroke-width="0.5" />
+<line stroke="#fb9b67" stroke-width="0.6" />
    <pathText k="ele" font-size="10"  fill="#fb9b67"/>
 </rule>
 
 <rule e="way" k="contourtype" v="minor" zoom-min="14">
-<line stroke="#fb9b67" stroke-width="0.25" />
+<line stroke="#fb9b67" stroke-width="0.3" />
     <pathText k="ele" font-size="10" fill="#fb9b67"/>
 </rule>
 
@@ -64,7 +64,12 @@ version="4" map-background="#add8e6">
 
 <rule e="way" k="highway" v="path|footway|bridleway|steps|pedestrian" 
 zoom-min="14">
-<line stroke="#000000" stroke-width="0.5" stroke-dasharray="2,4" />
+    <rule k="access" v="private">
+        <line stroke="#ff4f69" stroke-width="0.5" stroke-dasharray="2,4" />
+    </rule>
+    <rule k="access" v="~|yes|public|foot|permissive">
+        <line stroke="#000000" stroke-width="0.5" stroke-dasharray="2,4" />
+    </rule>
 </rule>
 
 <rule e="way" k="highway" v="cycleway" 
@@ -73,7 +78,12 @@ zoom-min="14">
 </rule>
 
 <rule e="way" k="highway" v="track|byway" zoom-min="13">
-<line stroke="#000000" stroke-width="0.5" stroke-dasharray="4,4" />
+    <rule k="access" v="private">
+        <line stroke="#ff4f69" stroke-width="0.5" stroke-dasharray="4,4" />
+    </rule>
+    <rule k="access" v="~|yes|public|foot|permissive">
+        <line stroke="#000000" stroke-width="0.5" stroke-dasharray="4,4" />
+    </rule>
 </rule>
 
 <rule e="way" k="highway" v="residential|residential_link|service|service_link"
@@ -122,6 +132,11 @@ zoom-min="16">
         <line stroke="#ffffff" stroke-width="3" />
         <pathText k="name" font-size="16" />
     </rule>
+
+    <rule e="way" k="foot|access" v="permissive" zoom-min="14">
+        <line stroke="#0080c0" stroke-width="1" />
+    </rule>
+
 <rule e="way" k="designation" v="public_footpath" zoom-min="14">
 <line stroke="#008000" stroke-width="1" />
 </rule>

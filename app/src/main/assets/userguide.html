@@ -19,12 +19,13 @@
     <h2> What can you do with OpenTrail?</h2>
     <ul style="margin-left: 10px">
         <li>View OpenStreetMap-derived
-            maps of England and Wales, showing public rights of way in the
-            same colour scheme as Freemap itself:
+            maps of England and Wales, showing public rights of way and other
+            paths with access rights in the same colour scheme as Freemap itself:
                 <ul>
                     <li>green = public footpath;</li>
                     <li>brown = public bridleway;</li>
-                    <li>red = byway or restricted byway</li>
+                    <li>red = byway or restricted byway;</li>
+                    <li>blue = permissive (unofficial) footpath</li>
                 </ul>
             together with Ordnance Survey LandForm PANORAMA contours. The maps are
             rendered using the <a href='https://github.com/mapsforge/vtm'>VTM</a> library.
@@ -34,6 +35,9 @@
             connection. <strong>A good approach is to download the maps of your chosen area before you go out
             (using the search facility if needed) and then you'll be able to view them without an
             internet connection.</strong></li>
+        <li>Paths and tracks which are not labelled in OpenStreetMap as rights of way or permissive footpaths
+         will appear as dashed black lines, unless they are known to be private, in which case they appear as dashed red.
+        </li>
         <li>Locally saved map data can be cleared with the <strong>Clear map cache now</strong> option. In
         that way, you can force OpenTrail to download new map data and keep up-to-date with the
         latest OpenStreetMap maps. You can also set the cache to auto-clear every so many days
