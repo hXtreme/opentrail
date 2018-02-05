@@ -172,31 +172,35 @@ public class OpenTrail extends AppCompatActivity {
             }
 
             public void receiveLocation(double lon, double lat, boolean refresh) {
-                OpenTrail.this.location = new GeoPoint(lat, lon);
-                Point pt = new Point(lon, lat);
+                // Prevent locating to somewhere outside OpenTrail's area
+                // (e.g the California location provided by the emulator)
+                if (lon >= -7 && lon <= 2 && lat >= 49 && lat <= 59) {
+                    OpenTrail.this.location = new GeoPoint(lat, lon);
+                    Point pt = new Point(lon, lat);
 
 
-                try {
-                    Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
+                    try {
+                        Walkroute recordingWalkroute = gpsService.getRecordingWalkroute();
 
-                    if (recordingWalkroute != null && recordingWalkroute.getPoints().size() != 0) {
+                        if (recordingWalkroute != null && recordingWalkroute.getPoints().size() != 0) {
 
-                        if (overlayManager.hasRenderedRecordingWalkroute()) {
-                            overlayManager.addPointToRecordingWalkroute(pt);
-                        } else {
-                            overlayManager.addRecordingWalkroute(recordingWalkroute, false);
+                            if (overlayManager.hasRenderedRecordingWalkroute()) {
+                                overlayManager.addPointToRecordingWalkroute(pt);
+                            } else {
+                                overlayManager.addRecordingWalkroute(recordingWalkroute, false);
+                            }
                         }
+                    } catch (Exception e) {
+                        DialogUtils.showDialog(OpenTrail.this, "Unable to read GPS track for drawing");
                     }
-                } catch (Exception e) {
-                    DialogUtils.showDialog(OpenTrail.this, "Unable to read GPS track for drawing");
-                }
 
-                alertDisplayMgr.update(pt);
+                    alertDisplayMgr.update(pt);
 
-                downloadNewPOIs(location);
+                    downloadNewPOIs(location);
 
-                if (prefGPSTracking) {
-                    gotoMyLocation();
+                    if (prefGPSTracking) {
+                        gotoMyLocation();
+                    }
                 }
             }
         }, this, overlayManager);
