@@ -6,7 +6,7 @@
             app:showAsAction="ifRoom" />
         <item android:id="@+id/myLocationMenuItem" android:title="@string/mylocation" app:showAsAction="ifRoom"
             android:icon="@drawable/ic_my_location_white_24dp"/>
-    <!--
+
         <item android:id="@+id/inputAnnotationMenuItem" android:title="@string/addannotation"
             android:icon="@drawable/ic_add_white_24dp" app:showAsAction="ifRoom"/>
         <item android:id="@+id/settingsMenuItem" android:title="@string/settings"
@@ -22,5 +22,5 @@
     <item android:id="@+id/uploadWalkrouteMenuItem" android:title="@string/uploadrecordedwalkroute" />
     <item android:id="@+id/userGuideMenuItem" android:title="@string/userguide" />
     <item android:id="@+id/aboutMenuItem" android:title="@string/about" />
-    -->
+
 </menu>
