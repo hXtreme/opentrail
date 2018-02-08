@@ -34,7 +34,9 @@ public class WRUploadTask extends HTTPUploadTask {
         String postData="action=add&route="+gpx+"&format=gpx";
         setPostData(postData);
         String status = super.doInBackground(unused);
-        return status;
+        return status.equals("Successfully uploaded") ?
+                "Successfully uploaded. The Freemap site admin will need to authorise your route,  "+
+                        "this should be done within 24 hours." : status;
     }
 
     public void onPostExecute (String code)

@@ -951,8 +951,6 @@ public class OpenTrail extends AppCompatActivity {
 
                 case 3:
                     // walkroute uploaded
-                    DialogUtils.showDialog(OpenTrail.this, "Freemap site admin will need to authorise your route, "+
-                                            "this should be done in 24 hours.");
                     break;
             }
         }
