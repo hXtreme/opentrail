@@ -184,7 +184,8 @@ public class InputAnnotationActivity extends AppCompatActivity implements InputA
                     }
                 }
 
-        ).setMessage("Successfully uploaded").setCancelable(false).show();
+        ).setMessage("Successfully uploaded. Freemap admin will need to authorise your note, this should be done within 24 hours").
+                setCancelable(false).show();
         //finish();
     }
 
