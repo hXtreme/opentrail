@@ -799,8 +799,6 @@ public class OpenTrail extends AppCompatActivity {
                                 "Upload annotations?", httpCallback, 2);
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                String username=prefs.getString("prefUsername",""), password=prefs.getString("prefPassword","");
-                task.setLoginDetails(username, password);
                 Shared.savedData.executeHTTPCommunicationTask(task, "Uploading...", "Uploading annotations...");
             } catch(IOException e) {
                 DialogUtils.showDialog(this,"Error retrieving cached annotations: " + e.getMessage());
@@ -830,21 +828,7 @@ public class OpenTrail extends AppCompatActivity {
             final Walkroute walkroute = this.wrCacheMgr.getRecordedWalkroute(wrFile);
             if(walkroute!=null && walkroute.getPoints().size()>0) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                if(prefs.getString("prefUsername", "").equals("") || prefs.getString("prefPassword","").equals("")) {
-                    new AlertDialog.Builder(this).setMessage("WARNING: Username and password not specified in the preferences." +
-                            " Walk route will still be uploaded but will need to be authorised before becoming "+
-                            "visible.").setPositiveButton("OK",
-
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface i, int which) {
-                                    doUploadRecordedWalkroute(walkroute);
-                                }
-                            }
-
-                    ).setNegativeButton("Cancel",null).show();
-                } else {
-                    doUploadRecordedWalkroute(walkroute);
-                }
+                doUploadRecordedWalkroute(walkroute);
             }
         } catch(Exception e) {
             DialogUtils.showDialog(this,"Error obtaining walk route: " + e.getMessage());
@@ -856,16 +840,10 @@ public class OpenTrail extends AppCompatActivity {
         if(walkroute!=null) {
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            String username = prefs.getString("prefUsername",""), password = prefs.getString("prefPassword", "");
             float dpDist = Float.parseFloat(prefs.getString("prefDPDist", "5.0"));
             Shared.savedData.setHTTPCommunicationTask (new WRUploadTask(OpenTrail.this,walkroute,
                     "http://www.free-map.org.uk/fm/ws/wr.php",
                     "Upload walk route?", httpCallback, 3, dpDist), "Uploading...", "Uploading walk route...");
-
-
-            if(!(username.equals("")) && !(password.equals("")))
-                ((HTTPUploadTask)Shared.savedData.getHTTPCommunicationTask()).setLoginDetails(username, password);
-
             Shared.savedData.getHTTPCommunicationTask().confirmAndExecute();
         }
     }

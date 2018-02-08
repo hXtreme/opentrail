@@ -147,25 +147,7 @@ public class InputAnnotationActivity extends AppCompatActivity implements InputA
         iaTask=new InputAnnotationTask(this, this);
         iaTask.setDialogDetails("Sending...", "Sending annotation");
         iaTask.setShowDialogOnFinish(false);
-        String username=prefs.getString("prefUsername",""), password=prefs.getString("prefPassword","");
-        if(username.equals("") || password.equals(""))
-        {
-            new AlertDialog.Builder(this).setMessage("You have not supplied a username and password in the " +
-                    "preferences. Your annotation will be sent but will need to " +
-                    "be authorised.").setPositiveButton
-                    ("OK", new DialogInterface.OnClickListener()
-                    {
-                        public void onClick(DialogInterface i, int which)
-                        {
-                            iaTask.execute(postData);
-                        }
-                    } ).setNegativeButton("Cancel",null).show();
-        }
-        else
-        {
-            iaTask.setLoginDetails(username,password);
-            iaTask.execute(postData);
-        }
+        iaTask.execute(postData);
     }
 
     public void receiveResponse(String response)

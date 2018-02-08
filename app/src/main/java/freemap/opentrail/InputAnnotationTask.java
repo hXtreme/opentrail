@@ -15,7 +15,6 @@ import java.net.URL;
 
 import freemap.andromaps.DataCallbackTask;
 import android.content.Context;
-import freemap.andromaps.Base64;
 
 
 public class InputAnnotationTask extends DataCallbackTask<String, Void> {
@@ -25,7 +24,6 @@ public class InputAnnotationTask extends DataCallbackTask<String, Void> {
     }
 
     boolean success;
-    String username, password;
 
     public InputAnnotationTask(Context ctx, InputAnnotationTask.Receiver receiver) {
         super(ctx,receiver);
@@ -36,10 +34,6 @@ public class InputAnnotationTask extends DataCallbackTask<String, Void> {
         try {
             URL url = new URL("http://www.free-map.org.uk/fm/ws/annotation.php");
             conn = (HttpURLConnection)url.openConnection();
-            if(username!=null && password!=null) {
-                String details=username+":"+password;
-                conn.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(details.getBytes()));
-            }
             conn.setDoOutput(true);
             conn.setFixedLengthStreamingMode(postData[0].length());
             OutputStream out = conn.getOutputStream();
@@ -80,8 +74,4 @@ public class InputAnnotationTask extends DataCallbackTask<String, Void> {
         return success;
     }
 
-    public void setLoginDetails(String username, String password) {
-        this.username=username;
-        this.password=password;
-    }
 }

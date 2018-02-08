@@ -17,17 +17,6 @@
         android:summary="Auto-download POIs and annotations as you move to a new area."
         android:key="prefAutoDownload" />
     <EditTextPreference
-        android:title="Username"
-        android:defaultValue=""
-        android:summary="Your Freemap username"
-        android:key="prefUsername" />
-    <EditTextPreference
-        android:title="Password"
-        android:defaultValue=""
-        android:summary="Your Freemap password - WARNING, stored in plain text on phone, at risk if your phone is stolen!"
-        android:password="true"
-        android:key="prefPassword" />
-    <EditTextPreference
         android:title="Track simplification distance"
         android:defaultValue="20"
         android:summary="Douglas-Peucker simplification distance in metres for GPS track, points within this distance of track are removed.
