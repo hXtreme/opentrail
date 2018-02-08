@@ -38,8 +38,11 @@ public class WalkrouteDetailsActivity extends AppCompatActivity implements View.
         if(v==ok)
         {
             Bundle extras = new Bundle();
-            extras.putString("freemap.opentrail.wrfilename",
-                    ((EditText)findViewById(R.id.etWrFilename)).getText().toString());
+            String filename = ((EditText)findViewById(R.id.etWrFilename)).getText().toString();
+            if(!filename.endsWith(".xml") && !filename.endsWith(".gpx")) {
+                filename += ".gpx";
+            }
+            extras.putString("freemap.opentrail.wrfilename", filename);
             extras.putString("freemap.opentrail.wrtitle",
                     ((EditText)findViewById(R.id.etWrTitle)).getText().toString());
             extras.putString("freemap.opentrail.wrdescription",
