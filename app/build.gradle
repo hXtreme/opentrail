@@ -8,8 +8,8 @@ android {
         applicationId "freemap.opentrail"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "0.4"
     }
     buildTypes {
         release {
@@ -18,6 +18,9 @@ android {
         }
     }
 
+    lintOptions {
+        checkReleaseBuilds false
+    }
   //  useLibrary 'org.apache.http.legacy'
 }
 
