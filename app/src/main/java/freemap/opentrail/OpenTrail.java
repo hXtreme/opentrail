@@ -869,8 +869,8 @@ public class OpenTrail extends AppCompatActivity {
 
     private void clearPOICache() {
 
-        ClearPOICacheTask clearCacheTask = new ClearPOICacheTask(this);
-        clearCacheTask.execute();
+        ClearPOICacheTask clearPOICacheTask = new ClearPOICacheTask(this);
+        clearPOICacheTask.execute();
     }
 
     private void doDeletePOICache(File dir) {
@@ -899,7 +899,7 @@ public class OpenTrail extends AppCompatActivity {
 
     public void about() {
 
-        DialogUtils.showDialog(this, "OpenTrail 0.4 (beta), using VTM. Uses OpenStreetMap data, copyright 2004-17 " +
+        DialogUtils.showDialog(this, "OpenTrail 0.4, using VTM. Uses OpenStreetMap data, copyright 2004-17 " +
                 "OpenStreetMap contributors, Open Database Licence. Uses " +
                 "Ordnance Survey OpenData LandForm Panorama contours, Crown Copyright." +
                 "Person icon taken from the osmdroid project. Annotation icon based on " +
@@ -1078,7 +1078,7 @@ public class OpenTrail extends AppCompatActivity {
         public String doBackgroundTask(OpenTrail activity) {
 
             activity.doDeletePOICache(new File(activity.cachedir));
-            return "Caches cleared successfully";
+            return "POI cache cleared successfully";
         }
 
         public void onPostExecute(String msg) {
